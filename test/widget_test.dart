@@ -7,11 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jansuvidha/login.dart';
-import 'package:jansuvidha/landing.dart';
 import 'package:jansuvidha/main.dart';
-import 'package:jansuvidha/signup.dart';
-import 'package:jansuvidha/myacount.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

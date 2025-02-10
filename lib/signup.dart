@@ -335,7 +335,7 @@ class Signup extends StatelessWidget {
                             Colors.transparent, // Remove default shadow
                       ),
                       child: const Text(
-                        'Sign Up',
+                        'Sign up',
                         style: TextStyle(
                             fontSize: 24,
                             color: Color.fromARGB(255, 14, 66, 170),

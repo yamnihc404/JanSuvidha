@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/common_widgets.dart';
 import 'inquiry.dart';
 import 'filecomplain.dart';
 import 'landing.dart';
@@ -7,7 +8,7 @@ import 'signup.dart';
 import 'myacount.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Myacc());
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Splashscreen(), // Start with SplashScreen
+      home: Splashscreen(), // Start with SplashScreen
     );
   }
 }
@@ -68,63 +69,34 @@ class _MyAppState extends State<Splashscreen> {
       home: Scaffold(
         body: Stack(
           children: [
-            // Background container with gradient
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(
-                        255, 255, 196, 107), // Starting color of the gradient
-                    Colors.white,
-                    Color.fromARGB(
-                        255, 143, 255, 147), // Ending color of the gradient
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
+            const GradientBackground(),
             Center(
               child: Stack(
-                alignment: Alignment.center, // Align children to center
+                alignment: Alignment.center,
                 children: [
                   Transform.scale(
-                    scale: 1.4, // Scale the widget by 130%
-                    child: Image.asset(
-                      'images/Logo.png', // Path to your logo image
-                      // Adjust size as needed
-                    ),
+                    scale: 1.4,
+                    child: Image.asset('images/Logo.png'),
                   ),
-                  // Add your text on top of the image
                   const Positioned(
                     top: 0,
                     child: Text(
                       'Welcome',
                       style: TextStyle(
-                        color: Color.fromARGB(
-                            255, 242, 132, 7), // Change text color as needed
-                        fontSize: 24, // Adjust font size
-                        fontWeight: FontWeight.bold, // Optional: make text bold
+                        color: Color.fromARGB(255, 242, 132, 7),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            Positioned(
+            const Positioned(
               bottom: 0,
               left: 0,
               right: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 25),
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(
-                      255, 15, 62, 129), // Background color of the rectangle
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(13), // Circular radius for top corners
-                  ),
-                ),
-              ),
+              child: BottomRoundedBar(),
             ),
           ],
         ),
