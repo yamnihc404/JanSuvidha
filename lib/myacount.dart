@@ -49,7 +49,7 @@ class Myacc extends StatelessWidget {
                     Stack(alignment: Alignment.center, children: [
                       Container(
                         padding:
-                            const EdgeInsets.only(top: 72, left: 20, right: 20),
+                            const EdgeInsets.only(top: 45, left: 20, right: 20),
                         width: 284,
                         height: 380,
                         decoration: BoxDecoration(
@@ -61,8 +61,8 @@ class Myacc extends StatelessWidget {
                                   .withOpacity(0.5),
                               spreadRadius: 2,
                               blurRadius: 5,
-                              offset: const Offset(
-                                  0, 3), // changes position of shadow
+                              offset:
+                                  Offset(0, 3), // changes position of shadow
                             ),
                           ],
                         ),
@@ -111,7 +111,14 @@ class Myacc extends StatelessWidget {
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            border: InputBorder.none,
+                                            hintText: "", // Placeholder text
+                                            hintStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Color.fromARGB(255, 14, 66,
+                                                  170), // Placeholder color
+                                            ),
+                                            border: InputBorder
+                                                .none, // Remove the default underline
                                           ),
                                         ),
                                       ),
@@ -160,7 +167,14 @@ class Myacc extends StatelessWidget {
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            border: InputBorder.none,
+                                            hintText: "", // Placeholder text
+                                            hintStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Color.fromARGB(255, 14, 66,
+                                                  170), // Placeholder color
+                                            ),
+                                            border: InputBorder
+                                                .none, // Remove the default underline
                                           ),
                                         ),
                                       ),
@@ -209,7 +223,14 @@ class Myacc extends StatelessWidget {
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            border: InputBorder.none,
+                                            hintText: "", // Placeholder text
+                                            hintStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Color.fromARGB(255, 14, 66,
+                                                  170), // Placeholder color
+                                            ),
+                                            border: InputBorder
+                                                .none, // Remove the default underline
                                           ),
                                         ),
                                       ),
@@ -258,7 +279,14 @@ class Myacc extends StatelessWidget {
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            border: InputBorder.none,
+                                            hintText: "", // Placeholder text
+                                            hintStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Color.fromARGB(255, 14, 66,
+                                                  170), // Placeholder color
+                                            ),
+                                            border: InputBorder
+                                                .none, // Remove the default underline
                                           ),
                                         ),
                                       ),
@@ -295,7 +323,7 @@ class Myacc extends StatelessWidget {
                                       Align(
                                         alignment: Alignment.topLeft,
                                         child: Text(
-                                          "Username", // Label
+                                          "", // Label
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Color.fromARGB(
@@ -307,7 +335,14 @@ class Myacc extends StatelessWidget {
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            border: InputBorder.none,
+                                            hintText: "", // Placeholder text
+                                            hintStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Color.fromARGB(255, 14, 66,
+                                                  170), // Placeholder color
+                                            ),
+                                            border: InputBorder
+                                                .none, // Remove the default underline
                                           ),
                                         ),
                                       ),
@@ -321,13 +356,6 @@ class Myacc extends StatelessWidget {
                       ),
                     ])
                   ],
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 150, right: 150),
-                    child: ProfilePhoto(),
-                  ),
                 ),
               ],
             ),
@@ -422,113 +450,6 @@ class Myacc extends StatelessWidget {
               ),
             )
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProfilePhoto extends StatefulWidget {
-  const ProfilePhoto({super.key});
-
-  @override
-  _ProfileState createState() => _ProfileState();
-}
-
-class _ProfileState extends State<ProfilePhoto>
-    with SingleTickerProviderStateMixin {
-  bool _isExpanded = false;
-  late AnimationController _animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _toggleExpanded() {
-    setState(() {
-      _isExpanded = !_isExpanded;
-    });
-
-    if (_isExpanded) {
-      showGeneralDialog(
-        context: context,
-        barrierColor: Colors.black87,
-        barrierDismissible: true,
-        transitionDuration: const Duration(milliseconds: 300),
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-              setState(() {
-                _isExpanded = false;
-              });
-            },
-            child: Center(
-              child: Hero(
-                tag: 'profilePhoto',
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.width * 0.8,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: const DecorationImage(
-                      image: AssetImage('images/pfp.webp'),
-                      fit: BoxFit.cover,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-        transitionBuilder: (context, animation, secondaryAnimation, child) {
-          return ScaleTransition(
-            scale: Tween<double>(begin: 0.5, end: 1.0).animate(
-              CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeInOut,
-              ),
-            ),
-            child: FadeTransition(
-              opacity: animation,
-              child: child,
-            ),
-          );
-        },
-      ).then((_) => setState(() => _isExpanded = false));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleExpanded,
-      child: Hero(
-        tag: 'profilePhoto',
-        child: CircleAvatar(
-          radius: 50,
-          backgroundImage: const AssetImage('images/pfp.webp'),
         ),
       ),
     );

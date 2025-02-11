@@ -4,9 +4,9 @@ import 'package:http/http.dart' as http;
 class AuthService {
   // URL to your backend signin route
   static const String apiUrl =
-      ' https://aada-103-172-159-98.ngrok-free.app/user/signin';
+      '  https://2764-114-143-215-162.ngrok-free.app/user/signin';
   static const String apiUrlSignUp =
-      ' https://aada-103-172-159-98.ngrok-free.app/user/signup';
+      '  https://2764-114-143-215-162.ngrok-free.app/user/signup';
 
   // Function to handle sign-in
   static Future<Map<String, dynamic>> signIn(

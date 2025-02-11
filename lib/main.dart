@@ -6,9 +6,10 @@ import 'landing.dart';
 import 'login.dart';
 import 'signup.dart';
 import 'myacount.dart';
+import 'otp_verification.dart';
 
 void main() {
-  runApp(const Myacc());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
