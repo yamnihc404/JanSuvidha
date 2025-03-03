@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/login.dart';
 import '../services/auth_services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:jansuvidha/landing.dart';
 
 class Signup extends StatelessWidget {
   Signup({super.key});
@@ -10,6 +13,35 @@ class Signup extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
   final TextEditingController aadharNumberController = TextEditingController();
+
+  void showErrorSnackbars(BuildContext context, List<String> errors) {
+    // Clear any existing SnackBars
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    // Calculate total height of all SnackBars
+    double totalHeight = 0;
+
+    // Show errors from top to bottom
+    for (int i = 0; i < errors.length; i++) {
+      final snackBar = SnackBar(
+        content: Text(
+          errors[i],
+          style: const TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 100 - totalHeight,
+          left: 10,
+          right: 10,
+        ),
+        duration: const Duration(seconds: 4),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      totalHeight += 60; // Approximate height of each SnackBar
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -287,34 +319,7 @@ class Signup extends StatelessWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                      final username = usernameController.text;
-                      final password = passwordController.text;
-                      final email = emailController.text;
-                      final contactnumber = contactNumberController.text;
-                      final aadharnumber = aadharNumberController.text;
-
-                      await AuthService.signUp(
-                        username,
-                        password,
-                        email,
-                        contactnumber,
-                        aadharnumber,
-                        (message) {
-                          // Success callback: Navigate to LoginPage
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Login(),
-                            ),
-                          );
-                        },
-                        (errorMessage) {
-                          // Error callback: Show error message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(errorMessage)),
-                          );
-                        },
-                      );
+                      Navigator.pushReplacementNamed(context, '/login');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors
@@ -333,24 +338,7 @@ class Signup extends StatelessWidget {
               ]),
             ),
           ]),
-          Positioned(
-            top: 40,
-            right: 15,
-            child: SizedBox(
-              width: 50,
-              height: 60,
-              child: FloatingActionButton(
-                onPressed: () {
-                  print('Call button pressed');
-                },
-                // No const here
-                shape: const CircleBorder(),
-                backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                mini: true,
-                child: const Icon(Icons.phone, color: Colors.white, size: 30),
-              ),
-            ),
-          ),
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -358,10 +346,9 @@ class Signup extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 25),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(
-                    255, 15, 62, 129), // Background color of the rectangle
+                color: Color.fromARGB(255, 15, 62, 129),
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(13), // Circular radius for top corners
+                  top: Radius.circular(13),
                 ),
               ),
             ),
@@ -373,11 +360,12 @@ class Signup extends StatelessWidget {
               width: 50,
               height: 60,
               child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.pop(
-                      context); // Navigate back to the previous screen
+                onPressed: () async {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Landing()),
+                  );
                 },
-                // No const here
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 254, 183, 101),
                 mini: true,

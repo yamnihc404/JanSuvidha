@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/auth_services.dart';
-import 'package:jansuvidha/filecomplain.dart';
+import 'package:jansuvidha/dashboard.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
@@ -142,27 +144,10 @@ class Login extends StatelessWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                      final username = usernameController.text;
-                      final password = passwordController.text;
-
-                      // Call the sign-in function
-                      final result =
-                          await AuthService.signIn(username, password);
-
-                      if (result['success']) {
-                        // On success, navigate to InquiryPage
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Addcomplain(),
-                          ),
-                        );
-                      } else {
-                        // On failure, show an error message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(result['message'])),
-                        );
-                      }
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => Dashboard()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors

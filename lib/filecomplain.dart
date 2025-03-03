@@ -126,28 +126,39 @@ class Addcomplain extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 15),
                       Center(
-                        child: StyledContainer(
+                        child: Container(
+                          width: 149,
+                          height: 55,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 254, 232, 179),
+                            borderRadius:
+                                BorderRadius.circular(20), // Rounded edges
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(
+                                    0.3), // Shadow color with opacity
+                                offset: const Offset(5,
+                                    5), // Shadow offset (light coming from top left)
+                                blurRadius: 10, // Blur radius of the shadow
+                              ),
+                            ],
+                          ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              // Code to execute when the button is pressed
-                              // ignore: avoid_print
-                              print('Button Pressed!');
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all<Color>(
-                                  const Color.fromARGB(255, 254, 232, 179)),
-                              elevation: WidgetStateProperty.all<double>(10),
+                            onPressed: () async {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors
+                                  .transparent, // Make the ElevatedButton background transparent
                               shadowColor:
-                                  WidgetStateProperty.all<Color>(Colors.grey),
+                                  Colors.transparent, // Remove default shadow
                             ),
                             child: const Text(
                               'Submit',
                               style: TextStyle(
-                                fontSize: 20,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                              ),
+                                  fontSize: 24,
+                                  color: Color.fromARGB(255, 14, 66, 170),
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -157,7 +168,28 @@ class Addcomplain extends StatelessWidget {
                 ),
               ],
             ),
-            const TopNavButtons(),
+            Positioned(
+              top: 40,
+              right: 13,
+              child: Column(
+                children: [
+                  NavButton(
+                    icon: Icons.person,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(height: 8),
+                  NavButton(
+                    icon: Icons.home,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(height: 8),
+                  NavButton(
+                    icon: Icons.phone,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
             const Positioned(
               bottom: 0,
               left: 0,
@@ -177,7 +209,9 @@ class Addcomplain extends StatelessWidget {
               right: 14,
               child: NavButton(
                 icon: Icons.arrow_back,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ),
           ],
