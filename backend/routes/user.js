@@ -31,6 +31,7 @@ const signupschema = z.object({
 
 UserRouter.post('/signup', async function (req, res) {
     try{
+        console.log('Hello From Backend');
 const validatedData = signupschema.parse(req.body);
 const {username: username, contactnumber: contactnumber, email : email, password: password, aadharnumber : aadharnumber} = validatedData;
 
@@ -49,7 +50,7 @@ const hashedPassword = await bcrypt.hash(password, 10);
 
     }catch(error){
         if(error instanceof z.ZodError){
-            res.status(400).json({error:error})
+            res.status(400).json({error: error.issues.map(issue => issue.message)})
         }
         else{
             res.status(400).json({message: "User already Signed up"})
@@ -81,7 +82,8 @@ UserRouter.post('/signin', async function (req, res) {
     } 
     catch(error){
         console.error("Sign-in error:", error);
-    }   
+        res.status(500).json({ message: "Internal server error" });
+    }  
     })
 
  

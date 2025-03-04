@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../widgets/common_widgets.dart';
 
 void main() {
-  runApp(const Dashboard());
+  runApp(const Inquiry());
 }
 
-class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
+class Inquiry extends StatelessWidget {
+  const Inquiry({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +143,7 @@ class Dashboard extends StatelessWidget {
                 height: 50,
                 child: FloatingActionButton(
                   onPressed: () {
-                    // Handle button action
+                    Navigator.pop(context);
                   },
                   shape: const CircleBorder(),
                   backgroundColor: const Color.fromARGB(255, 72, 113, 73),

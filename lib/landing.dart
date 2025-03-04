@@ -1,6 +1,5 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'widgets/common_widgets.dart';
 import 'login.dart';
 import 'signup.dart';

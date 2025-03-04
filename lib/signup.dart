@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/login.dart';
 import '../services/auth_services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:jansuvidha/landing.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -347,10 +350,9 @@ class _SignupState extends State<Signup> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 25),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(
-                    255, 15, 62, 129), // Background color of the rectangle
+                color: Color.fromARGB(255, 15, 62, 129),
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(13), // Circular radius for top corners
+                  top: Radius.circular(13),
                 ),
               ),
             ),
@@ -362,11 +364,12 @@ class _SignupState extends State<Signup> {
               width: 50,
               height: 60,
               child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.pop(
-                      context); // Navigate back to the previous screen
+                onPressed: () async {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Landing()),
+                  );
                 },
-                // No const here
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 254, 183, 101),
                 mini: true,

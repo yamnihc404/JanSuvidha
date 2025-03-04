@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
-import 'inquiry.dart';
-import 'filecomplain.dart';
 import 'landing.dart';
-import 'login.dart';
-import 'signup.dart';
-import 'myacount.dart';
-import 'otp_verification.dart';
-import 'dart:io';
-import 'contact.dart';
 
 void main() {
   runApp(const MyApp());
