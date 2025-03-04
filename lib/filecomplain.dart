@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
+import 'contact.dart';
+
 
 void main() {
   runApp(const Addcomplain());
@@ -157,7 +159,33 @@ class Addcomplain extends StatelessWidget {
                 ),
               ],
             ),
-            const TopNavButtons(),
+            Positioned(
+              top: 40,
+              right: 13,
+              child: Column(
+                children: [
+                  NavButton(
+                    icon: Icons.person,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(height: 8),
+                  NavButton(
+                    icon: Icons.home,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(height: 8),
+                  NavButton(
+                    icon: Icons.phone,
+                    onPressed: () {Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Contact(),
+                          ),
+                        );}
+                  ),
+                ],
+              ),
+            ),
             const Positioned(
               bottom: 0,
               left: 0,

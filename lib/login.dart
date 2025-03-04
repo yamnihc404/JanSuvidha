@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import '../services/auth_services.dart';
 import 'package:jansuvidha/filecomplain.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  Login({super.key});
+  bool _passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,17 +114,31 @@ class Login extends StatelessWidget {
                   ),
                   child: TextField(
                     controller: passwordController,
-                    decoration: const InputDecoration(
+                    obscureText: !_passwordVisible, // Hide text when false
+                    decoration: InputDecoration(
                       hintText: "Enter Password", // Placeholder text
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                           fontSize: 20,
                           color: Color.fromARGB(
                               255, 14, 66, 170) // Color of the placeholder text
                           ),
                       border: InputBorder.none, // Remove the default underline
-                      prefixIcon: Icon(
-                        Icons.lock, // User icon
+                      prefixIcon: const Icon(
+                        Icons.lock, // Lock icon
                         color: Color.fromARGB(255, 14, 66, 170), // Icon color
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          // Change icon based on password visibility
+                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: const Color.fromARGB(255, 14, 66, 170),
+                        ),
+                        onPressed: () {
+                          // Toggle password visibility
+                          setState(() {
+                            _passwordVisible = !_passwordVisible;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -142,27 +162,12 @@ class Login extends StatelessWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                      final username = usernameController.text;
-                      final password = passwordController.text;
-
-                      // Call the sign-in function
-                      final result =
-                          await AuthService.signIn(username, password);
-
-                      if (result['success']) {
-                        // On success, navigate to InquiryPage
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const Addcomplain(),
                           ),
                         );
-                      } else {
-                        // On failure, show an error message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(result['message'])),
-                        );
-                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors
@@ -181,24 +186,7 @@ class Login extends StatelessWidget {
               ]),
             ),
           ]),
-          Positioned(
-            top: 40,
-            right: 15,
-            child: SizedBox(
-              width: 50,
-              height: 60,
-              child: FloatingActionButton(
-                onPressed: () {
-                  print('Call button pressed');
-                },
-                // No const here
-                shape: const CircleBorder(),
-                backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                mini: true,
-                child: const Icon(Icons.phone, color: Colors.white, size: 30),
-              ),
-            ),
-          ),
+          
           Positioned(
             bottom: 0,
             left: 0,

@@ -55,7 +55,7 @@ class LandingScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 130,
+            bottom: 180,
             left: 50,
             right: 50,
             child: Column(
@@ -106,23 +106,7 @@ class LandingScreen extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(
-            top: 40,
-            right: 15,
-            child: SizedBox(
-              width: 50,
-              height: 60,
-              child: FloatingActionButton(
-                onPressed: () {
-                  print('Call button pressed');
-                },
-                shape: const CircleBorder(),
-                backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                mini: true,
-                child: const Icon(Icons.phone, color: Colors.white, size: 30),
-              ),
-            ),
-          ),
+          
           const Positioned(
             bottom: 0,
             left: 0,

@@ -2,14 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:jansuvidha/login.dart';
 import '../services/auth_services.dart';
 
-class Signup extends StatelessWidget {
-  Signup({super.key});
+class Signup extends StatefulWidget {
+  const Signup({super.key});
 
+  @override
+  State<Signup> createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
   final TextEditingController aadharNumberController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -207,27 +216,36 @@ class Signup extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.3), // Shadow color with opacity
-                        offset: const Offset(
-                            5, 5), // Shadow offset (light coming from top left)
-                        blurRadius: 10, // Blur radius of the shadow
+                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(5, 5),
+                        blurRadius: 10,
                       ),
                     ],
                   ),
                   child: TextField(
                     controller: passwordController,
-                    decoration: const InputDecoration(
-                      hintText: "Password", // Placeholder text
-                      hintStyle: TextStyle(
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      hintText: "Password",
+                      hintStyle: const TextStyle(
                           fontSize: 20,
-                          color: Color.fromARGB(
-                              255, 14, 66, 170) // Color of the placeholder text
-                          ),
-                      border: InputBorder.none, // Remove the default underline
-                      prefixIcon: Icon(
-                        Icons.lock, // User icon
-                        color: Color.fromARGB(255, 14, 66, 170), // Icon color
+                          color: Color.fromARGB(255, 14, 66, 170)
+                      ),
+                      border: InputBorder.none,
+                      prefixIcon: const Icon(
+                        Icons.lock,
+                        color: Color.fromARGB(255, 14, 66, 170),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: const Color.fromARGB(255, 14, 66, 170),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -242,26 +260,36 @@ class Signup extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.3), // Shadow color with opacity
-                        offset: const Offset(
-                            5, 5), // Shadow offset (light coming from top left)
-                        blurRadius: 10, // Blur radius of the shadow
+                        color: Colors.black.withOpacity(0.3),
+                        offset: const Offset(5, 5),
+                        blurRadius: 10,
                       ),
                     ],
                   ),
-                  child: const TextField(
+                  child: TextField(
+                    controller: confirmPasswordController,
+                    obscureText: !_isConfirmPasswordVisible,
                     decoration: InputDecoration(
-                      hintText: "Confirm Password", // Placeholder text
-                      hintStyle: TextStyle(
+                      hintText: "Confirm Password",
+                      hintStyle: const TextStyle(
                           fontSize: 20,
-                          color: Color.fromARGB(
-                              255, 14, 66, 170) // Color of the placeholder text
-                          ),
-                      border: InputBorder.none, // Remove the default underline
-                      prefixIcon: Icon(
-                        Icons.lock, // User icon
-                        color: Color.fromARGB(255, 14, 66, 170), // Icon color
+                          color: Color.fromARGB(255, 14, 66, 170)
+                      ),
+                      border: InputBorder.none,
+                      prefixIcon: const Icon(
+                        Icons.lock,
+                        color: Color.fromARGB(255, 14, 66, 170),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: const Color.fromARGB(255, 14, 66, 170),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -287,34 +315,12 @@ class Signup extends StatelessWidget {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                      final username = usernameController.text;
-                      final password = passwordController.text;
-                      final email = emailController.text;
-                      final contactnumber = contactNumberController.text;
-                      final aadharnumber = aadharNumberController.text;
-
-                      await AuthService.signUp(
-                        username,
-                        password,
-                        email,
-                        contactnumber,
-                        aadharnumber,
-                        (message) {
-                          // Success callback: Navigate to LoginPage
-                          Navigator.pushReplacement(
+                      Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (context) => Login(),
                             ),
                           );
-                        },
-                        (errorMessage) {
-                          // Error callback: Show error message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(errorMessage)),
-                          );
-                        },
-                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors
@@ -333,24 +339,7 @@ class Signup extends StatelessWidget {
               ]),
             ),
           ]),
-          Positioned(
-            top: 40,
-            right: 15,
-            child: SizedBox(
-              width: 50,
-              height: 60,
-              child: FloatingActionButton(
-                onPressed: () {
-                  print('Call button pressed');
-                },
-                // No const here
-                shape: const CircleBorder(),
-                backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                mini: true,
-                child: const Icon(Icons.phone, color: Colors.white, size: 30),
-              ),
-            ),
-          ),
+          
           Positioned(
             bottom: 0,
             left: 0,
