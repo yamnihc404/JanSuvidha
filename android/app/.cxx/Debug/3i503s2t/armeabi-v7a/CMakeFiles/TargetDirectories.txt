@@ -1,0 +1,2 @@
+C:/Users/arfat/OneDrive/Desktop/Project/JanSuvidha/android/app/.cxx/Debug/3i503s2t/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/arfat/OneDrive/Desktop/Project/JanSuvidha/android/app/.cxx/Debug/3i503s2t/armeabi-v7a/CMakeFiles/rebuild_cache.dir

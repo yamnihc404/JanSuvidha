@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jansuvidha/filecomplain.dart';
 import 'inquiry.dart';
+import 'contact.dart';
+import 'myacount.dart';
+
 
 class Dashboard extends StatelessWidget {
   Dashboard({super.key});
@@ -50,7 +52,12 @@ class Dashboard extends StatelessWidget {
                     height: 40,
                     child: FloatingActionButton(
                       onPressed: () {
-                        print('Profile button pressed');
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Myacc(),
+                          ),
+                        );
                       },
                       shape: const CircleBorder(),
                       backgroundColor: const Color.fromARGB(255, 72, 113, 73),
@@ -67,7 +74,12 @@ class Dashboard extends StatelessWidget {
                     height: 40,
                     child: FloatingActionButton(
                       onPressed: () {
-                        print('Call button pressed');
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Contact(),
+                            ),
+                          );
                       },
                       shape: const CircleBorder(),
                       backgroundColor: const Color.fromARGB(255, 72, 113, 73),

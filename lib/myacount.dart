@@ -406,49 +406,35 @@ class Myacc extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 25),
                 decoration: const BoxDecoration(
-                  color: Color.fromARGB(
-                      255, 15, 62, 129), // Background color of the rectangle
+                  color: Color.fromARGB(255, 15, 62, 129),
                   borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(13), // Circular radius for top corners
+                    top: Radius.circular(13),
                   ),
                 ),
               ),
             ),
-
+            // Add new back button with consistent style
             Positioned(
-              bottom: 62, // Adjust as needed
-              left: 14,
+              bottom: 20,
+              left: 20,
               child: SizedBox(
                 width: 50,
-                height: 50,
+                height: 60,
                 child: FloatingActionButton(
                   onPressed: () {
-                    // Handle settings button action
+                    Navigator.pop(context);
                   },
                   shape: const CircleBorder(),
-                  backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                  child:
-                      const Icon(Icons.settings, color: Colors.white, size: 35),
+                  backgroundColor: const Color.fromARGB(255, 254, 183, 101),
+                  mini: true,
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_sharp,
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    size: 25,
+                  ),
                 ),
               ),
             ),
-            Positioned(
-              bottom: 62, // Adjust this value for vertical positioning
-              right: 14,
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    // Handle button action
-                  },
-                  shape: const CircleBorder(),
-                  backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                  child: const Icon(Icons.arrow_back,
-                      color: Colors.white, size: 30), // "<" Icon
-                ),
-              ),
-            )
           ],
         ),
       ),

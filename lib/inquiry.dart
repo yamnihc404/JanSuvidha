@@ -118,40 +118,28 @@ class Inquiry extends StatelessWidget {
               right: 0,
               child: BottomRoundedBar(),
             ),
+            // Back Button
             Positioned(
-              bottom: 62,
-              left: 14,
+              bottom: 20,
+              left: 20,
               child: SizedBox(
                 width: 50,
-                height: 50,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    // Handle settings button action
-                  },
-                  shape: const CircleBorder(),
-                  backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                  child:
-                      const Icon(Icons.settings, color: Colors.white, size: 35),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 62,
-              right: 14,
-              child: SizedBox(
-                width: 50,
-                height: 50,
+                height: 60,
                 child: FloatingActionButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   shape: const CircleBorder(),
-                  backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                  child: const Icon(Icons.arrow_back,
-                      color: Colors.white, size: 30),
+                  backgroundColor: const Color.fromARGB(255, 254, 183, 101),
+                  mini: true,
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_sharp,
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    size: 25,
+                  ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -203,22 +203,26 @@ class Addcomplain extends StatelessWidget {
               right: 0,
               child: BottomRoundedBar(),
             ),
+            // Back Button
             Positioned(
-              bottom: 62,
-              left: 14,
-              child: NavButton(
-                icon: Icons.settings,
-                onPressed: () {},
-              ),
-            ),
-            Positioned(
-              bottom: 62,
-              right: 14,
-              child: NavButton(
-                icon: Icons.arrow_back,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              bottom: 20,
+              left: 20,
+              child: SizedBox(
+                width: 50,
+                height: 60,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  shape: const CircleBorder(),
+                  backgroundColor: const Color.fromARGB(255, 254, 183, 101),
+                  mini: true,
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_sharp,
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    size: 25,
+                  ),
+                ),
               ),
             ),
           ],

@@ -200,19 +200,32 @@ class Contact extends StatelessWidget {
               ],
             ),
           ),
+          // Bottom Blue Bar
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: BottomRoundedBar(),
+          ),
           // Back Button
           Positioned(
-            bottom: 15,
+            bottom: 20,
             left: 20,
-            child: FloatingActionButton.small(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              backgroundColor: const Color.fromARGB(255, 254, 183, 101),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Color.fromARGB(255, 14, 66, 170),
-                size: 20,
+            child: SizedBox(
+              width: 50,
+              height: 60,
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                shape: const CircleBorder(),
+                backgroundColor: const Color.fromARGB(255, 254, 183, 101),
+                mini: true,
+                child: const Icon(
+                  Icons.arrow_back_ios_new_sharp,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                  size: 25,
+                ),
               ),
             ),
           ),
