@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dashboard.dart';  // Add import for Dashboard
+import 'contact.dart';    // Add import for Contact
 
 void main() {
   runApp(const Myacc());
@@ -371,13 +373,18 @@ class Myacc extends StatelessWidget {
                     width: 40,
                     height: 50,
                     child: FloatingActionButton(
-                      onPressed: () {},
-                      // No const here
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Dashboard(),
+                          ),
+                        );
+                      },
                       shape: const CircleBorder(),
                       backgroundColor: const Color.fromARGB(255, 72, 113, 73),
                       mini: true,
-                      child:
-                          const Icon(Icons.home, color: Colors.white, size: 30),
+                      child: const Icon(Icons.home, color: Colors.white, size: 30),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -386,13 +393,18 @@ class Myacc extends StatelessWidget {
                     width: 40,
                     height: 50,
                     child: FloatingActionButton(
-                      onPressed: () {},
-                      // No const here
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Contact(),
+                          ),
+                        );
+                      },
                       shape: const CircleBorder(),
                       backgroundColor: const Color.fromARGB(255, 72, 113, 73),
                       mini: true,
-                      child: const Icon(Icons.phone,
-                          color: Colors.white, size: 30),
+                      child: const Icon(Icons.phone, color: Colors.white, size: 30),
                     ),
                   ),
                 ],
@@ -413,7 +425,7 @@ class Myacc extends StatelessWidget {
                 ),
               ),
             ),
-            // Add new back button with consistent style
+            // Back Button
             Positioned(
               bottom: 20,
               left: 20,

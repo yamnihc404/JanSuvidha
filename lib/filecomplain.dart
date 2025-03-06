@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'contact.dart';
+import 'myacount.dart';  // Add import for MyAccount
+import 'dashboard.dart';  // Add import for Dashboard
 
 
 void main() {
@@ -177,22 +179,38 @@ class Addcomplain extends StatelessWidget {
                 children: [
                   NavButton(
                     icon: Icons.person,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Myacc(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   NavButton(
                     icon: Icons.home,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Dashboard(),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   NavButton(
                     icon: Icons.phone,
-                    onPressed: () {Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Contact(),
-                          ),
-                        );}
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Contact(),
+                        ),
+                      );
+                    }
                   ),
                 ],
               ),

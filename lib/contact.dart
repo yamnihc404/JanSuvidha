@@ -16,9 +16,9 @@ class Contact extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 100),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Transform.scale(
+          Align(
+            alignment: Alignment.topCenter,
+            child: Transform.scale(
                     scale: 3.0,
                     child: Image.asset('images/Logo.png', height: 100),
                   ),
