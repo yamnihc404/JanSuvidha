@@ -1,4 +1,3 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'login.dart';
@@ -64,7 +63,10 @@ class LandingScreen extends StatelessWidget {
                   width: 149,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/login');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -85,7 +87,10 @@ class LandingScreen extends StatelessWidget {
                   width: 149,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/signup');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Signup()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
@@ -105,7 +110,6 @@ class LandingScreen extends StatelessWidget {
               ],
             ),
           ),
-          
           const Positioned(
             bottom: 0,
             left: 0,

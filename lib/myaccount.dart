@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'dashboard.dart';  // Add import for Dashboard
 import 'contact.dart';    // Add import for Contact
 
-void main() {
-  runApp(const Myacc());
-}
-
 class Myacc extends StatelessWidget {
   const Myacc({super.key});
 

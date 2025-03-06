@@ -6,7 +6,6 @@ void main() {
   runApp(const MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -23,7 +22,6 @@ class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _MyAppState createState() => _MyAppState();
 }
 
@@ -39,7 +37,7 @@ class _MyAppState extends State<Splashscreen> {
     await Future.delayed(
         const Duration(seconds: 3)); // Simulate a 3-second splash
     if (mounted) {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>

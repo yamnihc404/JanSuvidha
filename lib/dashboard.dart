@@ -2,27 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:jansuvidha/filecomplain.dart';
 import 'inquiry.dart';
 import 'contact.dart';
-import 'myacount.dart';
+import 'myaccount.dart';
 
+class Dashboard extends StatefulWidget {
+  const Dashboard({Key? key}) : super(key: key);
 
-class Dashboard extends StatelessWidget {
-  Dashboard({super.key});
+  @override
+  _DashboardState createState() => _DashboardState();
+}
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 15, 62, 129),
+              ),
+              child: Text(
+                'Jan Suvidha',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Account'),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Myacc()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.phone),
+              title: Text('Contact Us'),
+              onTap: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Contact()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: Stack(
         children: [
-          // Background container with gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromARGB(
-                      255, 255, 196, 107), // Starting color of the gradient
+                  Color.fromARGB(255, 255, 196, 107),
                   Colors.white,
-                  Color.fromARGB(
-                      255, 143, 255, 147), // Ending color of the gradient
+                  Color.fromARGB(255, 143, 255, 147),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -43,53 +86,22 @@ class Dashboard extends StatelessWidget {
             ),
           ]),
           Positioned(
-              top: 40,
-              right: 10,
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Myacc(),
-                          ),
-                        );
-                      },
-                      shape: const CircleBorder(),
-                      backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                      mini: true,
-                      child: const Icon(Icons.person,
-                          color: Colors.white, size: 30),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Contact(),
-                            ),
-                          );
-                      },
-                      shape: const CircleBorder(),
-                      backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                      mini: true,
-                      child: const Icon(Icons.phone,
-                          color: Colors.white, size: 30),
-                    ),
-                  ),
-                ],
-              )),
+            top: 40,
+            left: 10,
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.menu, size: 30, color: Colors.black),
+                onPressed: () {
+                  if (_scaffoldKey.currentState != null) {
+                    Scaffold.of(context).openDrawer();
+                  } else {
+                    print(
+                        "_scaffoldKey.currentState: ${_scaffoldKey.currentState}");
+                  }
+                },
+              ),
+            ),
+          ),
           Positioned(
             top: 220,
             left: 0,
@@ -150,20 +162,18 @@ class Dashboard extends StatelessWidget {
               ],
             ),
           ),
-          // Action buttons
           Positioned(
             top: 400,
             left: 20,
             right: 20,
             child: Column(
               children: [
-                // File new complaint button
                 Container(
                   width: 300,
                   margin: const EdgeInsets.only(bottom: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const Addcomplain()),
@@ -190,7 +200,7 @@ class Dashboard extends StatelessWidget {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const Inquiry()),
@@ -223,15 +233,13 @@ class Dashboard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 25),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(
-                    255, 15, 62, 129), // Background color of the rectangle
+                color: Color.fromARGB(255, 15, 62, 129),
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(13), // Circular radius for top corners
+                  top: Radius.circular(13),
                 ),
               ),
             ),
           ),
-          // Back button
           Positioned(
             bottom: 20,
             left: 20,
@@ -240,8 +248,7 @@ class Dashboard extends StatelessWidget {
               height: 60,
               child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.pop(
-                      context); // Navigate back to the previous screen
+                  Navigator.pop(context);
                 },
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 254, 183, 101),
