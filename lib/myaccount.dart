@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const Myacc());
-}
-
 class Myacc extends StatelessWidget {
   const Myacc({super.key});
 

@@ -1,18 +1,70 @@
 import 'package:flutter/material.dart';
 import '../widgets/common_widgets.dart';
+import 'contact.dart';
+import 'myaccount.dart';
 
-void main() {
-  runApp(const Inquiry());
+class Inquiry extends StatefulWidget {
+  const Inquiry({Key? key}) : super(key: key);
+
+  @override
+  _InquiryState createState() => _InquiryState();
 }
 
-class Inquiry extends StatelessWidget {
-  const Inquiry({super.key});
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+class _InquiryState extends State<Inquiry> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        key: _scaffoldKey,
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 15, 62, 129),
+                ),
+                child: Text(
+                  'Jan Suvidha',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text('Account'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Myacc()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.phone),
+                title: Text('Contact Us'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Contact()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
         body: Stack(
           children: [
             const GradientBackground(),
@@ -111,7 +163,23 @@ class Inquiry extends StatelessWidget {
                 ),
               ],
             ),
-            const TopNavButtons(),
+            Positioned(
+              top: 40,
+              left: 10,
+              child: Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(Icons.menu, size: 30, color: Colors.black),
+                  onPressed: () {
+                    if (_scaffoldKey.currentState != null) {
+                      Scaffold.of(context).openDrawer();
+                    } else {
+                      print(
+                          "_scaffoldKey.currentState: ${_scaffoldKey.currentState}");
+                    }
+                  },
+                ),
+              ),
+            ),
             const Positioned(
               bottom: 0,
               left: 0,

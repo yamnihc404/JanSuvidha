@@ -1,20 +1,70 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'contact.dart';
+import 'myaccount.dart';
 
+class Addcomplain extends StatefulWidget {
+  const Addcomplain({Key? key}) : super(key: key);
 
-void main() {
-  runApp(const Addcomplain());
+  @override
+  _AddcomplainState createState() => _AddcomplainState();
 }
 
-class Addcomplain extends StatelessWidget {
-  const Addcomplain({super.key});
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+class _AddcomplainState extends State<Addcomplain> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        key: _scaffoldKey,
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 15, 62, 129),
+                ),
+                child: Text(
+                  'Jan Suvidha',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text('Account'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Myacc()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.phone),
+                title: Text('Contact Us'),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Contact()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
         body: Stack(
           children: [
             const GradientBackground(),
@@ -172,29 +222,19 @@ class Addcomplain extends StatelessWidget {
             ),
             Positioned(
               top: 40,
-              right: 13,
-              child: Column(
-                children: [
-                  NavButton(
-                    icon: Icons.person,
-                    onPressed: () {},
-                  ),
-                  const SizedBox(height: 8),
-                  NavButton(
-                    icon: Icons.home,
-                    onPressed: () {},
-                  ),
-                  const SizedBox(height: 8),
-                  NavButton(
-                    icon: Icons.phone,
-                    onPressed: () {Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Contact(),
-                          ),
-                        );}
-                  ),
-                ],
+              left: 10,
+              child: Builder(
+                builder: (context) => IconButton(
+                  icon: Icon(Icons.menu, size: 30, color: Colors.black),
+                  onPressed: () {
+                    if (_scaffoldKey.currentState != null) {
+                      Scaffold.of(context).openDrawer();
+                    } else {
+                      print(
+                          "_scaffoldKey.currentState: ${_scaffoldKey.currentState}");
+                    }
+                  },
+                ),
               ),
             ),
             const Positioned(

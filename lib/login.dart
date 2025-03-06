@@ -132,7 +132,9 @@ class _LoginState extends State<Login> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           // Change icon based on password visibility
-                          _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                          _passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: const Color.fromARGB(255, 14, 66, 170),
                         ),
                         onPressed: () {
@@ -164,12 +166,11 @@ class _LoginState extends State<Login> {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>  Dashboard(),
-                          ),
-                        );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Dashboard()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors
@@ -188,7 +189,7 @@ class _LoginState extends State<Login> {
               ]),
             ),
           ]),
-          
+
           Positioned(
             bottom: 0,
             left: 0,

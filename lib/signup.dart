@@ -18,8 +18,9 @@ class _SignupState extends State<Signup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
   final TextEditingController aadharNumberController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
-  
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
@@ -232,8 +233,7 @@ class _SignupState extends State<Signup> {
                       hintText: "Password",
                       hintStyle: const TextStyle(
                           fontSize: 20,
-                          color: Color.fromARGB(255, 14, 66, 170)
-                      ),
+                          color: Color.fromARGB(255, 14, 66, 170)),
                       border: InputBorder.none,
                       prefixIcon: const Icon(
                         Icons.lock,
@@ -241,7 +241,9 @@ class _SignupState extends State<Signup> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: const Color.fromARGB(255, 14, 66, 170),
                         ),
                         onPressed: () {
@@ -276,8 +278,7 @@ class _SignupState extends State<Signup> {
                       hintText: "Confirm Password",
                       hintStyle: const TextStyle(
                           fontSize: 20,
-                          color: Color.fromARGB(255, 14, 66, 170)
-                      ),
+                          color: Color.fromARGB(255, 14, 66, 170)),
                       border: InputBorder.none,
                       prefixIcon: const Icon(
                         Icons.lock,
@@ -285,12 +286,15 @@ class _SignupState extends State<Signup> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: const Color.fromARGB(255, 14, 66, 170),
                         ),
                         onPressed: () {
                           setState(() {
-                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -318,12 +322,12 @@ class _SignupState extends State<Signup> {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
-                      Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Login(),
-                            ),
-                          );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Login(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors
@@ -342,7 +346,7 @@ class _SignupState extends State<Signup> {
               ]),
             ),
           ]),
-          
+
           Positioned(
             bottom: 0,
             left: 0,
