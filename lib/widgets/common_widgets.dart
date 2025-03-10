@@ -78,7 +78,6 @@ class StyledContainer extends StatelessWidget {
   }
 }
 
-// Navigation button
 class NavButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onPressed;

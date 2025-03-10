@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 
-void main() {
-  runApp(const OtpVerification());
-}
-
 class OtpVerification extends StatefulWidget {
   const OtpVerification({super.key});
 
@@ -57,10 +53,10 @@ class _OtpVerificationState extends State<OtpVerification> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Enter the OTP sent to your phone',
+                    'Enter the OTP sent to your phone or email',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey,
+                      color: Color.fromARGB(255, 88, 88, 88),
                     ),
                   ),
                   const SizedBox(height: 32),

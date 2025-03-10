@@ -19,18 +19,18 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Adding resizeToAvoidBottomInset to handle keyboard appearance
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Background container with gradien
+          // Background container with gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromARGB(
-                      255, 255, 196, 107), // Starting color of the gradient
+                  Color.fromARGB(255, 255, 196, 107),
                   Colors.white,
-                  Color.fromARGB(
-                      255, 143, 255, 147), // Ending color of the gradient
+                  Color.fromARGB(255, 143, 255, 147),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -38,157 +38,159 @@ class _LoginState extends State<Login> {
             ),
           ),
 
-          Column(children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Transform.scale(
-                scale: 1.8, // Scale the widget by 130%
-                child: Image.asset(
-                  'images/Logo.png',
-                  width: 250,
-                  height: 250,
-                ),
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Transform.scale(
+                      scale: 1.8,
+                      child: Image.asset(
+                        'images/Logo.png',
+                        width: 250,
+                        height: 250,
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Log in',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 14, 66, 170),
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 27),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          width: 284,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 254, 183, 101),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: const Offset(5, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: usernameController,
+                            decoration: const InputDecoration(
+                              hintText: "Enter Username",
+                              hintStyle: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                              ),
+                              border: InputBorder.none,
+                              prefixIcon: Icon(
+                                Icons.person,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          width: 284,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 254, 183, 101),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: const Offset(5, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: passwordController,
+                            obscureText: !_passwordVisible,
+                            decoration: InputDecoration(
+                              hintText: "Enter Password",
+                              hintStyle: const TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                              ),
+                              border: InputBorder.none,
+                              prefixIcon: const Icon(
+                                Icons.lock,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: const Color.fromARGB(255, 14, 66, 170),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 35),
+                        Container(
+                          width: 149,
+                          height: 55,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 254, 183, 101),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                offset: const Offset(5, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Dashboard()),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Add extra padding at the bottom to ensure everything is visible
+                        const SizedBox(height: 100),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            Center(
-              child: Column(children: [
-                const Text(
-                  'Log in',
-                  style: TextStyle(
-                    color: Color.fromARGB(
-                        255, 14, 66, 170), // Change text color as needed
-                    fontSize: 24, // Adjust font size
-                    fontWeight: FontWeight.bold, // Optional: make text bold
-                  ),
-                ),
-                const SizedBox(height: 27),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  width: 284,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 254, 183, 101),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.3), // Shadow color with opacity
-                        offset: const Offset(
-                            5, 5), // Shadow offset (light coming from top left)
-                        blurRadius: 10, // Blur radius of the shadow
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(
-                      hintText: "Enter Username", // Placeholder text
-                      hintStyle: TextStyle(
-                          fontSize: 20,
-                          color: Color.fromARGB(
-                              255, 14, 66, 170) // Color of the placeholder text
-                          ),
-                      border: InputBorder.none, // Remove the default underline
-                      prefixIcon: Icon(
-                        Icons.person, // User icon
-                        color: Color.fromARGB(255, 14, 66, 170), // Icon color
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  width: 284,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 254, 183, 101),
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.3), // Shadow color with opacity
-                        offset: const Offset(
-                            5, 5), // Shadow offset (light coming from top left)
-                        blurRadius: 10, // Blur radius of the shadow
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: passwordController,
-                    obscureText: !_passwordVisible, // Hide text when false
-                    decoration: InputDecoration(
-                      hintText: "Enter Password", // Placeholder text
-                      hintStyle: const TextStyle(
-                          fontSize: 20,
-                          color: Color.fromARGB(
-                              255, 14, 66, 170) // Color of the placeholder text
-                          ),
-                      border: InputBorder.none, // Remove the default underline
-                      prefixIcon: const Icon(
-                        Icons.lock, // Lock icon
-                        color: Color.fromARGB(255, 14, 66, 170), // Icon color
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          // Change icon based on password visibility
-                          _passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: const Color.fromARGB(255, 14, 66, 170),
-                        ),
-                        onPressed: () {
-                          // Toggle password visibility
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 35),
-                Container(
-                  width: 149,
-                  height: 55,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 254, 183, 101),
-                    borderRadius: BorderRadius.circular(15), // Rounded edges
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black
-                            .withOpacity(0.3), // Shadow color with opacity
-                        offset: const Offset(
-                            5, 5), // Shadow offset (light coming from top left)
-                        blurRadius: 10, // Blur radius of the shadow
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Dashboard()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors
-                          .transparent, // Make the ElevatedButton background transparent
-                      shadowColor: Colors.transparent, // Remove default shadow
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                          fontSize: 24,
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ]),
-            ),
-          ]),
+          ),
 
           Positioned(
             bottom: 0,
@@ -197,10 +199,9 @@ class _LoginState extends State<Login> {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 25),
               decoration: const BoxDecoration(
-                color: Color.fromARGB(
-                    255, 15, 62, 129), // Background color of the rectangle
+                color: Color.fromARGB(255, 15, 62, 129),
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(13), // Circular radius for top corners
+                  top: Radius.circular(13),
                 ),
               ),
             ),
@@ -213,10 +214,8 @@ class _LoginState extends State<Login> {
               height: 60,
               child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.pop(
-                      context); // Navigate back to the previous screen
+                  Navigator.pop(context);
                 },
-                // No const here
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 254, 183, 101),
                 mini: true,
