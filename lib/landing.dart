@@ -28,7 +28,7 @@ class Landing extends StatelessWidget {
       routes: {
         '/': (context) => const LandingScreen(),
         '/login': (context) => Login(),
-        '/signup': (context) => Signup(),
+        '/signup': (context) => const Signup(),
       },
       navigatorKey: GlobalKey<NavigatorState>(),
     );

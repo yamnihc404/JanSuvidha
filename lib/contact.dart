@@ -1,16 +1,125 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dashboard.dart';
+import 'myacount.dart';
 
-class Contact extends StatelessWidget {
+class Contact extends StatefulWidget {
   const Contact({super.key});
 
   @override
+  State<Contact> createState() => _ContactState();
+}
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+class _ContactState extends State<Contact> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+  child: Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,  // Changed direction
+        end: Alignment.bottomRight, // Changed direction
+        colors: [
+          Color.fromARGB(255, 255, 215, 140),  // Lighter saffron
+          Colors.white,
+          Color.fromARGB(255, 170, 255, 173),  // Lighter green
+        ],
+        stops: [0.0, 0.4, 0.8],  // Adjusted stops for wider spread
+      ),
+    ),
+    child: Column(
+      children: <Widget>[
+        SizedBox(height: MediaQuery.of(context).padding.top + 20),
+        Container(
+          height: 150,
+          width: double.infinity,
+          color: Colors.transparent,
+          child: const Center(
+            child: Text(
+              'Jan Suvidha',
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 66, 170),
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          height: 0.5,
+          width: double.infinity,
+          color: Colors.grey.withOpacity(0.3),  // Lighter separator
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(
+                  Icons.home,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+                title: const Text(
+                  'Home',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                   Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Dashboard()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.person,
+                  color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
+                ),
+                title: const Text(
+                  'Account',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Myacc()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+),
       body: Stack(
         children: [
           const GradientBackground(),
+          // Add menu button
+          Positioned(
+            top: 40,
+            left: 10,
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, size: 30, color: Colors.black),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(

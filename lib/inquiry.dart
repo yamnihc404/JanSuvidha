@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../widgets/common_widgets.dart';
 import 'contact.dart';
-import 'myaccount.dart';
+import 'myacount.dart';
+import "dashboard.dart";
 
 class Inquiry extends StatefulWidget {
-  const Inquiry({Key? key}) : super(key: key);
+  const Inquiry({super.key});
 
   @override
   _InquiryState createState() => _InquiryState();
@@ -20,24 +21,58 @@ class _InquiryState extends State<Inquiry> {
       home: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(
+  child: Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,  // Changed direction
+        end: Alignment.bottomRight, // Changed direction
+        colors: [
+          Color.fromARGB(255, 255, 215, 140),  // Lighter saffron
+          Colors.white,
+          Color.fromARGB(255, 170, 255, 173),  // Lighter green
+        ],
+        stops: [0.0, 0.4, 0.8],  // Adjusted stops for wider spread
+      ),
+    ),
+    child: Column(
+      children: <Widget>[
+        SizedBox(height: MediaQuery.of(context).padding.top + 20),
+        Container(
+          height: 150,
+          width: double.infinity,
+          color: Colors.transparent,
+          child: const Center(
+            child: Text(
+              'Jan Suvidha',
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 66, 170),
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          height: 0.5,
+          width: double.infinity,
+          color: Colors.grey.withOpacity(0.3),  // Lighter separator
+        ),
+        Expanded(
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 15, 62, 129),
+              ListTile(
+                leading: const Icon(
+                  Icons.person,
+                  color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
                 ),
-                child: Text(
-                  'Jan Suvidha',
+                title: const Text(
+                  'Account',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
+                    color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text('Account'),
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
@@ -45,16 +80,38 @@ class _InquiryState extends State<Inquiry> {
                   );
                 },
               ),
+              // Rest of your list tiles with the same color styling
               ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
+                leading: const Icon(
+                  Icons.home,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+                title: const Text(
+                  'Home',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onTap: () {
-                  Navigator.pop(context);
+                   Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Dashboard()),
+                  );
                 },
               ),
               ListTile(
-                leading: Icon(Icons.phone),
-                title: Text('Contact Us'),
+                leading: const Icon(
+                  Icons.phone,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+                title: const Text(
+                  'Contact Us',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
@@ -65,6 +122,10 @@ class _InquiryState extends State<Inquiry> {
             ],
           ),
         ),
+      ],
+    ),
+  ),
+),
         body: Stack(
           children: [
             const GradientBackground(),
@@ -168,7 +229,7 @@ class _InquiryState extends State<Inquiry> {
               left: 10,
               child: Builder(
                 builder: (context) => IconButton(
-                  icon: Icon(Icons.menu, size: 30, color: Colors.black),
+                  icon: const Icon(Icons.menu, size: 30, color: Colors.black),
                   onPressed: () {
                     if (_scaffoldKey.currentState != null) {
                       Scaffold.of(context).openDrawer();
