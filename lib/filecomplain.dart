@@ -5,6 +5,10 @@ import 'myacount.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'string_extensions.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 
 class Addcomplain extends StatefulWidget {
@@ -75,139 +79,193 @@ class _AddcomplainState extends State<Addcomplain> {
   }
 
   // Add the image picker function
-  Future<void> _getImage(ImageSource source) async {
-    final status = source == ImageSource.camera
-        ? await Permission.camera.request()
-        : await Permission.photos.request();
+ Future<void> _getImage(ImageSource source) async {
+  try {
+    PermissionStatus status;
+
+    // Initial check
+    if (source == ImageSource.camera) {
+      status = await Permission.camera.status;
+    } else {
+      if (Platform.isAndroid) {
+        final androidInfo = await DeviceInfoPlugin().androidInfo;
+        status = androidInfo.version.sdkInt >= 33 
+            ? await Permission.photos.status
+            : await Permission.storage.status;
+      } else {
+        status = await Permission.photos.status;
+      }
+    }
+
+    // Auto-redirect if any denial exists
+    if (status.isDenied || status.isPermanentlyDenied) {
+      if (status.isPermanentlyDenied) {
+        _showSettingsDialog(source);
+      } else {
+        // Request first time
+        if (source == ImageSource.camera) {
+          status = await Permission.camera.request();
+        } else {
+          // Android version handling
+          if (Platform.isAndroid) {
+            final androidInfo = await DeviceInfoPlugin().androidInfo;
+            if (androidInfo.version.sdkInt >= 33) {
+              status = await Permission.photos.request();
+            } else {
+              status = await Permission.storage.request();
+            }
+          } else {
+            status = await Permission.photos.request();
+          }
+        }
+        
+        if (status.isPermanentlyDenied) {
+          _showSettingsDialog(source);
+        } else if (!status.isGranted) {
+          _showSettingsDialog(source); // Direct to settings after first deny
+        }
+      }
+      return;
+    }
+
+    // Final image picker call
+    if (status.isGranted) {
+      final XFile? pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile != null) {
+        setState(() => _image = File(pickedFile.path));
+      }
+    }
+  } catch (e) {
+    _showErrorDialog('Access error: ${e.toString()}');
+  }
+}
+void _showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color.fromARGB(255, 254, 232, 179),
+      title: const Text(
+        'Error',
+        style: TextStyle(
+          color: Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Text(
+        message,
+        style: const TextStyle(color: Color.fromARGB(255, 14, 66, 170)),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showSettingsDialog(ImageSource source) {
+  final permissionType = source == ImageSource.camera 
+      ? "Camera" 
+      : Platform.isAndroid ? "Storage" : "Photos";
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('$permissionType Permission Required'),
+      content: Text(
+         'You have permanently denied access Please allow $permissionType access to continue. Please enable it in app settings.'
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context); // Close current dialog
+            await openAppSettings();
+            
+            // Add delay for settings to update
+            await Future.delayed(const Duration(seconds: 1));
+            
+            if (context.mounted) {
+              // Re-check permissions automatically
+              _getImage(source);
+            }
+          },
+          child: const Text('Open Settings'),
+        ),
+      ],
+    ),
+  );
+}
+
+Future<void> _getLocation() async {
+  try {
+    PermissionStatus status = await Permission.locationWhenInUse.status;
+    
+    if (status.isDenied || status.isPermanentlyDenied) {
+      if (status.isPermanentlyDenied) {
+        _showLocationSettingsDialog();
+      } else {
+        status = await Permission.locationWhenInUse.request();
+        if (status.isPermanentlyDenied) {
+          _showLocationSettingsDialog();
+        } else if (!status.isGranted) {
+          _showSettingsDialog();
+        }
+      }
+      return;
+    }
 
     if (status.isGranted) {
-      try {
-        final XFile? pickedFile = await _picker.pickImage(source: source);
-        if (pickedFile != null) {
-          setState(() {
-            _image = File(pickedFile.path);
-          });
-        }
-      } catch (e) {
-        // Show error dialog
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: const Color.fromARGB(255, 254, 232, 179),
-              title: const Text(
-                'Error',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 14, 66, 170),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: Text(
-                'Failed to access ${source == ImageSource.camera ? "camera" : "gallery"}: $e',
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 14, 66, 170),
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(
-                      color: Color.fromARGB(255, 14, 66, 170),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else if (status.isDenied) {
-      // Show permission denied dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 254, 232, 179),
-            title: const Text(
-              'Permission Denied',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 66, 170),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Text(
-              'Please grant permission to access your ${source == ImageSource.camera ? "camera" : "gallery"}.',
-              style: const TextStyle(
-                color: Color.fromARGB(255, 14, 66, 170),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'OK',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
       );
-    } else if (status.isPermanentlyDenied) {
-      // Show open app settings dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 254, 232, 179),
-            title: const Text(
-              'Permission Permanently Denied',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 66, 170),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Text(
-              'You need to go to app settings to grant ${source == ImageSource.camera ? "camera" : "gallery"} permission.',
-              style: const TextStyle(
-                color: Color.fromARGB(255, 14, 66, 170),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  openAppSettings();
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Open Settings',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      );
+      // Use position data here
+      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
     }
+  } catch (e) {
+    _showErrorDialog('Location error: ${e.toString()}');
   }
+}
+
+void _showLocationSettingsDialog() {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: const Color.fromARGB(255, 254, 232, 179),
+      title: const Text(
+        'Location Permission Required',
+        style: TextStyle(
+          color: Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: const Text(
+        'You have denied location access. Please enable it in app settings to share your live location.',
+        style: TextStyle(color: Color.fromARGB(255, 14, 66, 170)),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            await openAppSettings();
+            await Future.delayed(const Duration(seconds: 1));
+            if (context.mounted) _getLocation();
+          },
+          child: const Text('Open Settings'),
+        ),
+      ],
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -317,12 +375,7 @@ class _AddcomplainState extends State<Addcomplain> {
       ],
     ),
   ),
-),
-        
-        
-
-
-              
+),           
         body: Stack(
           children: [
             const GradientBackground(),
@@ -430,8 +483,8 @@ class _AddcomplainState extends State<Addcomplain> {
                               icon: const Icon(Icons.location_on),
                               iconSize: 50,
                               color: const Color.fromARGB(255, 5, 6, 6),
-                              onPressed: () {
-                                // Action to select location
+                              onPressed: () async {
+                                await _getLocation();
                               },
                             ),
                           ),
