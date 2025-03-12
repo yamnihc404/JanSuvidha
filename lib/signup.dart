@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/login.dart';
-import '../services/auth_services.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:jansuvidha/landing.dart';
 import 'otp_verification.dart';
 

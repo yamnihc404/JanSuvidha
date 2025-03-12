@@ -1,13 +1,109 @@
 import 'package:flutter/material.dart';
+import 'dashboard.dart';  // Add import for Dashboard
+import 'contact.dart';    // Add import for Contact
 
-class Myacc extends StatelessWidget {
+class Myacc extends StatefulWidget {
   const Myacc({super.key});
 
+  @override
+  State<Myacc> createState() => _MyaccState();
+}
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+class _MyaccState extends State<Myacc> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        key: _scaffoldKey,
+        drawer: Drawer(
+  child: Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,  // Changed direction
+        end: Alignment.bottomRight, // Changed direction
+        colors: [
+          Color.fromARGB(255, 255, 215, 140),  // Lighter saffron
+          Colors.white,
+          Color.fromARGB(255, 170, 255, 173),  // Lighter green
+        ],
+        stops: [0.0, 0.4, 0.8],  // Adjusted stops for wider spread
+      ),
+    ),
+    child: Column(
+      children: <Widget>[
+        SizedBox(height: MediaQuery.of(context).padding.top + 20),
+        Container(
+          height: 150,
+          width: double.infinity,
+          color: Colors.transparent,
+          child: const Center(
+            child: Text(
+              'Jan Suvidha',
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 66, 170),
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          height: 0.5,
+          width: double.infinity,
+          color: Colors.grey.withOpacity(0.3),  // Lighter separator
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+               ListTile(
+                leading: const Icon(
+                  Icons.home,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+                title: const Text(
+                  'Home',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                   Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Dashboard()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.phone,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+                title: const Text(
+                  'Contact Us',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Contact()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+),
         body: Stack(
           children: [
             // Background container with gradient
@@ -15,14 +111,25 @@ class Myacc extends StatelessWidget {
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Color.fromARGB(
-                        255, 255, 196, 107), // Starting color of the gradient
+                    Color.fromARGB(255, 255, 196, 107),
                     Colors.white,
-                    Color.fromARGB(
-                        255, 143, 255, 147), // Ending color of the gradient
+                    Color.fromARGB(255, 143, 255, 147),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
+                ),
+              ),
+            ),
+            // Add menu button
+            Positioned(
+              top: 40,
+              left: 10,
+              child: Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(Icons.menu, size: 30, color: Colors.black),
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
                 ),
               ),
             ),
@@ -355,45 +462,6 @@ class Myacc extends StatelessWidget {
                 ),
               ],
             ),
-
-            Positioned(
-              top: 40,
-              right: 13,
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  // Home Button
-                  SizedBox(
-                    width: 40,
-                    height: 50,
-                    child: FloatingActionButton(
-                      onPressed: () {},
-                      // No const here
-                      shape: const CircleBorder(),
-                      backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                      mini: true,
-                      child:
-                          const Icon(Icons.home, color: Colors.white, size: 30),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Phone Button
-                  SizedBox(
-                    width: 40,
-                    height: 50,
-                    child: FloatingActionButton(
-                      onPressed: () {},
-                      // No const here
-                      shape: const CircleBorder(),
-                      backgroundColor: const Color.fromARGB(255, 72, 113, 73),
-                      mini: true,
-                      child: const Icon(Icons.phone,
-                          color: Colors.white, size: 30),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             // Bottom rectangle with rounded corners
             Positioned(
               bottom: 0,
@@ -409,7 +477,7 @@ class Myacc extends StatelessWidget {
                 ),
               ),
             ),
-            // Add new back button with consistent style
+            // Back Button
             Positioned(
               bottom: 20,
               left: 20,

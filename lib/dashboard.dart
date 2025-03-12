@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:jansuvidha/filecomplain.dart';
 import 'inquiry.dart';
 import 'contact.dart';
-import 'myaccount.dart';
+import 'myacount.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -18,45 +18,94 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 15, 62, 129),
-              ),
-              child: Text(
-                'Jan Suvidha',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Account'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Myacc()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.phone),
-              title: Text('Contact Us'),
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Contact()),
-                );
-              },
-            ),
-          ],
-        ),
+     drawer: Drawer(
+  child: Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,  // Changed direction
+        end: Alignment.bottomRight, // Changed direction
+        colors: [
+          Color.fromARGB(255, 255, 215, 140),  // Lighter saffron
+          Colors.white,
+          Color.fromARGB(255, 170, 255, 173),  // Lighter green
+        ],
+        stops: [0.0, 0.4, 0.8],  // Adjusted stops for wider spread
       ),
+    ),
+    child: Column(
+      children: <Widget>[
+        SizedBox(height: MediaQuery.of(context).padding.top + 20),
+        Container(
+          height: 150,
+          width: double.infinity,
+          color: Colors.transparent,
+          child: const Center(
+            child: Text(
+              'Jan Suvidha',
+              style: TextStyle(
+                color: Color.fromARGB(255, 14, 66, 170),
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        Container(
+          height: 0.5,
+          width: double.infinity,
+          color: Colors.grey.withOpacity(0.3),  // Lighter separator
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(
+                  Icons.person,
+                  color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
+                ),
+                title: const Text(
+                  'Account',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Myacc()),
+                  );
+                },
+              ),
+              // Rest of your list tiles with the same color styling
+             
+              ListTile(
+                leading: const Icon(
+                  Icons.phone,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+                title: const Text(
+                  'Contact Us',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Contact()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+),
       body: Stack(
         children: [
           Container(
@@ -90,7 +139,7 @@ class _DashboardState extends State<Dashboard> {
             left: 10,
             child: Builder(
               builder: (context) => IconButton(
-                icon: Icon(Icons.menu, size: 30, color: Colors.black),
+                icon: const Icon(Icons.menu, size: 30, color: Colors.black),
                 onPressed: () {
                   if (_scaffoldKey.currentState != null) {
                     Scaffold.of(context).openDrawer();
@@ -110,7 +159,7 @@ class _DashboardState extends State<Dashboard> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 // Complaints Registered counter
-                Column(
+                const Column(
                   children: [
                     Text(
                       "00",
@@ -138,7 +187,7 @@ class _DashboardState extends State<Dashboard> {
                   color: Colors.grey,
                 ),
                 // Complaints Solved counter
-                Column(
+                const Column(
                   children: [
                     Text(
                       "00",
@@ -180,14 +229,14 @@ class _DashboardState extends State<Dashboard> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 255, 230, 160),
-                      padding: EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: const Color.fromARGB(255, 255, 230, 160),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                       elevation: 5,
                     ),
-                    child: Text(
+                    child: const Text(
                       'File new complaint',
                       style: TextStyle(
                         fontSize: 18,
@@ -196,7 +245,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () {
@@ -207,14 +256,14 @@ class _DashboardState extends State<Dashboard> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 255, 230, 160),
-                      padding: EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: const Color.fromARGB(255, 255, 230, 160),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                       elevation: 5,
                     ),
-                    child: Text(
+                    child: const Text(
                       'Complaint Inquiry',
                       style: TextStyle(
                         fontSize: 18,
