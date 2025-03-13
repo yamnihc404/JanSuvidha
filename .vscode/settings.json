@@ -1,4 +1,5 @@
 {
     "cmake.sourceDirectory": "C:/Users/Chinmay Kamble/OneDrive/Desktop/jansuvidha/linux",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "C_Cpp.errorSquiggles": "disabled"
 }

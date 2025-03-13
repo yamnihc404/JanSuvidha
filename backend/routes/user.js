@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const UserRouter = Router();
-const usermd = require(__dirname + '/../db.js');
+const {usermd} = require(__dirname + '/../db.js');
 const {z} = require('zod');
 const jwt = require('jsonwebtoken');
 const SECRECT_KEY = 'chinmay123';
@@ -31,7 +31,6 @@ const signupschema = z.object({
 
 UserRouter.post('/signup', async function (req, res) {
     try{
-        console.log('Hello From Backend');
 const validatedData = signupschema.parse(req.body);
 const {username: username, contactnumber: contactnumber, email : email, password: password, aadharnumber : aadharnumber} = validatedData;
 
@@ -50,12 +49,15 @@ const hashedPassword = await bcrypt.hash(password, 10);
 
     }catch(error){
         if(error instanceof z.ZodError){
-            res.status(400).json({error: error.issues.map(issue => issue.message)})
+           return  res.status(400).json({error: error.issues.map(issue => issue.message)})
+        }
+        else if (error.code === 11000) {  
+            return res.status(400).json({ message: "User with this email or Aadhaar number already exists" });
         }
         else{
-            res.status(400).json({message: "User already Signed up"})
+            return res.status(500).json({ message: "Internal Server Error", error: error.message });
         }
-    }
+}
 })
 
 
@@ -87,4 +89,4 @@ UserRouter.post('/signin', async function (req, res) {
     })
 
  
-module.exports = {UserRouter:UserRouter};
+module.exports = {UserRouter};

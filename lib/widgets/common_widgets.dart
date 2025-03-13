@@ -134,3 +134,78 @@ class TopNavButtons extends StatelessWidget {
     );
   }
 }
+
+class DropdownExample extends StatefulWidget {
+  const DropdownExample({super.key});
+
+  @override
+  _DropdownExampleState createState() => _DropdownExampleState();
+}
+
+//DropDown Menu
+class _DropdownExampleState extends State<DropdownExample> {
+  String? selectedValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return StyledContainer(
+      child: DropdownButton<String>(
+        value: selectedValue,
+        hint: const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Complaint Type',
+            style: TextStyle(
+              fontSize: 20,
+              color: Color.fromARGB(255, 14, 66, 170),
+            ),
+          ),
+        ),
+        isExpanded: true,
+        underline: const SizedBox.shrink(),
+        items: <String>[
+          'Water Supply',
+          'Power Outage',
+          'Waste Management',
+        ].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Align(
+              // Align dropdown items to center-right
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          setState(() {
+            selectedValue = newValue;
+          });
+        },
+        selectedItemBuilder: (BuildContext context) {
+          return <String>[
+            'Water Supply',
+            'Power Outage',
+            'Waste Management',
+          ].map<Widget>((String value) {
+            return Align(
+                // Align dropdown items to center-right
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Color.fromARGB(255, 14, 66, 170),
+                  ),
+                ));
+          }).toList();
+        },
+      ),
+    );
+  }
+}

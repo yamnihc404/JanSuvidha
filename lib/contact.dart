@@ -112,18 +112,6 @@ class _ContactState extends State<Contact> {
         children: [
           const GradientBackground(),
           // Add menu button
-          Positioned(
-            top: 40,
-            left: 10,
-            child: Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.menu, size: 30, color: Colors.black),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-            ),
-          ),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -314,6 +302,18 @@ class _ContactState extends State<Contact> {
                   // Add extra space at bottom to ensure content doesn't get hidden behind the bottom bar
                   const SizedBox(height: 100),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: 40,
+            left: 10,
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, size: 30, color: Colors.black),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
               ),
             ),
           ),

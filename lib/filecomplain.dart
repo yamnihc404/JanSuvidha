@@ -9,7 +9,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'string_extensions.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import './widgets/common_widgets.dart';
 
 class Addcomplain extends StatefulWidget {
   const Addcomplain({super.key});
@@ -24,7 +24,7 @@ class _AddcomplainState extends State<Addcomplain> {
   // Add these variables at the top of your class
   File? _image;
   final ImagePicker _picker = ImagePicker();
-  
+
   // Add the image source action sheet function
   void _showImageSourceActionSheet(BuildContext context) {
     showModalBottomSheet(
@@ -79,193 +79,130 @@ class _AddcomplainState extends State<Addcomplain> {
   }
 
   // Add the image picker function
- Future<void> _getImage(ImageSource source) async {
-  try {
-    PermissionStatus status;
+  Future<void> _getImage(ImageSource source) async {
+    try {
+      PermissionStatus status;
 
-    // Initial check
-    if (source == ImageSource.camera) {
-      status = await Permission.camera.status;
-    } else {
-      if (Platform.isAndroid) {
-        final androidInfo = await DeviceInfoPlugin().androidInfo;
-        status = androidInfo.version.sdkInt >= 33 
-            ? await Permission.photos.status
-            : await Permission.storage.status;
+      // Initial check
+      if (source == ImageSource.camera) {
+        status = await Permission.camera.status;
       } else {
-        status = await Permission.photos.status;
-      }
-    }
-
-    // Auto-redirect if any denial exists
-    if (status.isDenied || status.isPermanentlyDenied) {
-      if (status.isPermanentlyDenied) {
-        _showSettingsDialog(source);
-      } else {
-        // Request first time
-        if (source == ImageSource.camera) {
-          status = await Permission.camera.request();
+        if (Platform.isAndroid) {
+          final androidInfo = await DeviceInfoPlugin().androidInfo;
+          status = androidInfo.version.sdkInt >= 33
+              ? await Permission.photos.status
+              : await Permission.storage.status;
         } else {
-          // Android version handling
-          if (Platform.isAndroid) {
-            final androidInfo = await DeviceInfoPlugin().androidInfo;
-            if (androidInfo.version.sdkInt >= 33) {
-              status = await Permission.photos.request();
-            } else {
-              status = await Permission.storage.request();
-            }
-          } else {
-            status = await Permission.photos.request();
-          }
+          status = await Permission.photos.status;
         }
-        
+      }
+
+      // Auto-redirect if any denial exists
+      if (status.isDenied || status.isPermanentlyDenied) {
         if (status.isPermanentlyDenied) {
           _showSettingsDialog(source);
-        } else if (!status.isGranted) {
-          _showSettingsDialog(source); // Direct to settings after first deny
-        }
-      }
-      return;
-    }
-
-    // Final image picker call
-    if (status.isGranted) {
-      final XFile? pickedFile = await _picker.pickImage(source: source);
-      if (pickedFile != null) {
-        setState(() => _image = File(pickedFile.path));
-      }
-    }
-  } catch (e) {
-    _showErrorDialog('Access error: ${e.toString()}');
-  }
-}
-void _showErrorDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color.fromARGB(255, 254, 232, 179),
-      title: const Text(
-        'Error',
-        style: TextStyle(
-          color: Color.fromARGB(255, 14, 66, 170),
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: Text(
-        message,
-        style: const TextStyle(color: Color.fromARGB(255, 14, 66, 170)),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
-
-void _showSettingsDialog(ImageSource source) {
-  final permissionType = source == ImageSource.camera 
-      ? "Camera" 
-      : Platform.isAndroid ? "Storage" : "Photos";
-
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text('$permissionType Permission Required'),
-      content: Text(
-         'You have permanently denied access Please allow $permissionType access to continue. Please enable it in app settings.'
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () async {
-            Navigator.pop(context); // Close current dialog
-            await openAppSettings();
-            
-            // Add delay for settings to update
-            await Future.delayed(const Duration(seconds: 1));
-            
-            if (context.mounted) {
-              // Re-check permissions automatically
-              _getImage(source);
+        } else {
+          // Request first time
+          if (source == ImageSource.camera) {
+            status = await Permission.camera.request();
+          } else {
+            // Android version handling
+            if (Platform.isAndroid) {
+              final androidInfo = await DeviceInfoPlugin().androidInfo;
+              if (androidInfo.version.sdkInt >= 33) {
+                status = await Permission.photos.request();
+              } else {
+                status = await Permission.storage.request();
+              }
+            } else {
+              status = await Permission.photos.request();
             }
-          },
-          child: const Text('Open Settings'),
-        ),
-      ],
-    ),
-  );
-}
+          }
 
-Future<void> _getLocation() async {
-  try {
-    PermissionStatus status = await Permission.locationWhenInUse.status;
-    
-    if (status.isDenied || status.isPermanentlyDenied) {
-      if (status.isPermanentlyDenied) {
-        _showLocationSettingsDialog();
-      } else {
-        status = await Permission.locationWhenInUse.request();
-        if (status.isPermanentlyDenied) {
-          _showLocationSettingsDialog();
-        } else if (!status.isGranted) {
-          _showSettingsDialog();
+          if (status.isPermanentlyDenied) {
+            _showSettingsDialog(source);
+          } else if (!status.isGranted) {
+            _showSettingsDialog(source); // Direct to settings after first deny
+          }
+        }
+        return;
+      }
+
+      // Final image picker call
+      if (status.isGranted) {
+        final XFile? pickedFile = await _picker.pickImage(source: source);
+        if (pickedFile != null) {
+          setState(() => _image = File(pickedFile.path));
         }
       }
-      return;
+    } catch (e) {
+      _showErrorDialog('Access error: ${e.toString()}');
     }
-
-    if (status.isGranted) {
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      // Use position data here
-      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
-    }
-  } catch (e) {
-    _showErrorDialog('Location error: ${e.toString()}');
   }
-}
 
-void _showLocationSettingsDialog() {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color.fromARGB(255, 254, 232, 179),
-      title: const Text(
-        'Location Permission Required',
-        style: TextStyle(
-          color: Color.fromARGB(255, 14, 66, 170),
-          fontWeight: FontWeight.bold,
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 254, 232, 179),
+        title: const Text(
+          'Error',
+          style: TextStyle(
+            color: Color.fromARGB(255, 14, 66, 170),
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        content: Text(
+          message,
+          style: const TextStyle(color: Color.fromARGB(255, 14, 66, 170)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
-      content: const Text(
-        'You have denied location access. Please enable it in app settings to share your live location.',
-        style: TextStyle(color: Color.fromARGB(255, 14, 66, 170)),
+    );
+  }
+
+  void _showSettingsDialog(ImageSource source) {
+    final permissionType = source == ImageSource.camera
+        ? "Camera"
+        : Platform.isAndroid
+            ? "Storage"
+            : "Photos";
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('$permissionType Permission Required'),
+        content: Text(
+            'You have permanently denied access Please allow $permissionType access to continue. Please enable it in app settings.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close current dialog
+              await openAppSettings();
+
+              // Add delay for settings to update
+              await Future.delayed(const Duration(seconds: 1));
+
+              if (context.mounted) {
+                // Re-check permissions automatically
+                _getImage(source);
+              }
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () async {
-            Navigator.pop(context);
-            await openAppSettings();
-            await Future.delayed(const Duration(seconds: 1));
-            if (context.mounted) _getLocation();
-          },
-          child: const Text('Open Settings'),
-        ),
-      ],
-    ),
-  );
-}
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -274,108 +211,112 @@ void _showLocationSettingsDialog() {
       home: Scaffold(
         key: _scaffoldKey,
         drawer: Drawer(
-  child: Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,  // Changed direction
-        end: Alignment.bottomRight, // Changed direction
-        colors: [
-          Color.fromARGB(255, 255, 215, 140),  // Lighter saffron
-          Colors.white,
-          Color.fromARGB(255, 170, 255, 173),  // Lighter green
-        ],
-        stops: [0.0, 0.4, 0.8],  // Adjusted stops for wider spread
-      ),
-    ),
-    child: Column(
-      children: <Widget>[
-        SizedBox(height: MediaQuery.of(context).padding.top + 20),
-        Container(
-          height: 150,
-          width: double.infinity,
-          color: Colors.transparent,
-          child: const Center(
-            child: Text(
-              'Jan Suvidha',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 66, 170),
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft, // Changed direction
+                end: Alignment.bottomRight, // Changed direction
+                colors: [
+                  Color.fromARGB(255, 255, 215, 140), // Lighter saffron
+                  Colors.white,
+                  Color.fromARGB(255, 170, 255, 173), // Lighter green
+                ],
+                stops: [0.0, 0.4, 0.8], // Adjusted stops for wider spread
               ),
+            ),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: MediaQuery.of(context).padding.top + 20),
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  color: Colors.transparent,
+                  child: const Center(
+                    child: Text(
+                      'Jan Suvidha',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 14, 66, 170),
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 0.5,
+                  width: double.infinity,
+                  color: Colors.grey.withOpacity(0.3), // Lighter separator
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: <Widget>[
+                      ListTile(
+                        leading: const Icon(
+                          Icons.person,
+                          color: Color.fromARGB(
+                              255, 14, 66, 170), // Matching blue color
+                        ),
+                        title: const Text(
+                          'Account',
+                          style: TextStyle(
+                            color: Color.fromARGB(
+                                255, 14, 66, 170), // Matching blue color
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Myacc()),
+                          );
+                        },
+                      ),
+                      // Rest of your list tiles with the same color styling
+                      ListTile(
+                        leading: const Icon(
+                          Icons.home,
+                          color: Color.fromARGB(255, 14, 66, 170),
+                        ),
+                        title: const Text(
+                          'Home',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 14, 66, 170),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(
+                          Icons.phone,
+                          color: Color.fromARGB(255, 14, 66, 170),
+                        ),
+                        title: const Text(
+                          'Contact Us',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 14, 66, 170),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Contact()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        Container(
-          height: 0.5,
-          width: double.infinity,
-          color: Colors.grey.withOpacity(0.3),  // Lighter separator
-        ),
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(
-                  Icons.person,
-                  color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
-                ),
-                title: const Text(
-                  'Account',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170), // Matching blue color
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Myacc()),
-                  );
-                },
-              ),
-              // Rest of your list tiles with the same color styling
-              ListTile(
-                leading: const Icon(
-                  Icons.home,
-                  color: Color.fromARGB(255, 14, 66, 170),
-                ),
-                title: const Text(
-                  'Home',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.phone,
-                  color: Color.fromARGB(255, 14, 66, 170),
-                ),
-                title: const Text(
-                  'Contact Us',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Contact()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  ),
-),           
         body: Stack(
           children: [
             const GradientBackground(),
@@ -421,29 +362,7 @@ void _showLocationSettingsDialog() {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      StyledContainer(
-                        child: DropdownButton<String>(
-                          hint: const Text(
-                            'Road Maintainence',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
-                          ),
-                          isExpanded: true,
-                          underline: const SizedBox.shrink(),
-                          items: <String>['Date 1', 'Date 2', 'Date 3']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            // Handle dropdown change
-                          },
-                        ),
-                      ),
+                      const DropdownExample(),
                       const SizedBox(height: 20),
                       const StyledContainer(
                         child: TextField(
@@ -471,7 +390,7 @@ void _showLocationSettingsDialog() {
                               color: const Color.fromARGB(255, 5, 6, 6),
                               onPressed: () {
                                 // Action to add images
-                                 _showImageSourceActionSheet(context);
+                                _showImageSourceActionSheet(context);
                               },
                             ),
                           ),
@@ -483,9 +402,7 @@ void _showLocationSettingsDialog() {
                               icon: const Icon(Icons.location_on),
                               iconSize: 50,
                               color: const Color.fromARGB(255, 5, 6, 6),
-                              onPressed: () async {
-                                await _getLocation();
-                              },
+                              onPressed: () async {},
                             ),
                           ),
                         ],
