@@ -4,7 +4,7 @@ How To Run The Project Localy:
     '''cd JanSuvidha'''
 # Install dependencies
     '''flutter pub get'''
-# Run the app (adjust entrypoint if needed)
+# Run the app (Make sure you have emulator installed)
     '''flutter run'''
   ***************************************************************
   
