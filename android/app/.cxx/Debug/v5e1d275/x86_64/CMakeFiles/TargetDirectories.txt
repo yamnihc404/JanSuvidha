@@ -1,0 +1,2 @@
+C:/Users/Chinmay Kamble/OneDrive/Desktop/jansuvidha/android/app/.cxx/Debug/v5e1d275/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Chinmay Kamble/OneDrive/Desktop/jansuvidha/android/app/.cxx/Debug/v5e1d275/x86_64/CMakeFiles/rebuild_cache.dir

@@ -27,7 +27,7 @@ class Landing extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const LandingScreen(),
-        '/login': (context) => Login(),
+        '/login': (context) => const Login(),
         '/signup': (context) => const Signup(),
       },
       navigatorKey: GlobalKey<NavigatorState>(),
@@ -65,7 +65,7 @@ class LandingScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Login()),
+                        MaterialPageRoute(builder: (context) => const Login()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

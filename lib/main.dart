@@ -37,7 +37,7 @@ class _MyAppState extends State<Splashscreen> {
     await Future.delayed(
         const Duration(seconds: 3)); // Simulate a 3-second splash
     if (mounted) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>

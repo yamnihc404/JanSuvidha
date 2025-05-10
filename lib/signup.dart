@@ -137,21 +137,23 @@ class _SignupState extends State<Signup> {
                             ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 28,
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => OtpVerification(),
+                                  builder: (context) => const OtpVerification(),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 14, 66, 170),
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              minimumSize: Size(0, 0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 14, 66, 170),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              minimumSize: const Size(0, 0),
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
@@ -201,24 +203,26 @@ class _SignupState extends State<Signup> {
                             ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 28,
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => OtpVerification(),
+                                  builder: (context) => const OtpVerification(),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 14, 66, 170),
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              minimumSize: Size(0, 0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 14, 66, 170),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              minimumSize: const Size(0, 0),
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: Text(
+                            child: const Text(
                               'Verify',
                               style: TextStyle(
                                 color: Colors.white,
@@ -227,7 +231,7 @@ class _SignupState extends State<Signup> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                       ],
                     ),
                   ),
@@ -265,24 +269,26 @@ class _SignupState extends State<Signup> {
                             ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           height: 28,
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => OtpVerification(),
+                                  builder: (context) => const OtpVerification(),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 14, 66, 170),
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              minimumSize: Size(0, 0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 14, 66, 170),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              minimumSize: const Size(0, 0),
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            child: Text(
+                            child: const Text(
                               'Verify',
                               style: TextStyle(
                                 color: Colors.white,
@@ -291,7 +297,7 @@ class _SignupState extends State<Signup> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                       ],
                     ),
                   ),
@@ -410,7 +416,7 @@ class _SignupState extends State<Signup> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Login(),
+                            builder: (context) => const Login(),
                           ),
                         );
                       },
@@ -456,9 +462,8 @@ class _SignupState extends State<Signup> {
               height: 60,
               child: FloatingActionButton(
                 onPressed: () async {
-                  Navigator.pushReplacement(
+                  Navigator.pop(
                     context,
-                    MaterialPageRoute(builder: (context) => const Landing()),
                   );
                 },
                 shape: const CircleBorder(),

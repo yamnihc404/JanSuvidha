@@ -25,21 +25,19 @@ const signupschema = z.object({
     username: z.string().min(2,"Atleast 2 Characters needed").max(10,'Username is too long').refine((val)=>/[A-Za-z]/.test(val), 'Password should contain at least one Alphabet Character.'),
     email: z.string().email('Invalid email address'),
     password: z.string().min(8,'Password should contain atleast 8 characters').refine((val)=>/[!@#$%^&*(){}+-.<>]/.test(val),'Password should contain atleast one special character').refine((val)=>/[A-Z]/.test(val), 'Password should contain at least one Uppercase Character.'),
-    contactnumber: z.string().regex(/^\d{10}$/, { message: "Contact number must be exactly 10 digits" }),
-    aadharnumber: z.string().regex(/^\d{12}$/, { message: "Invalid Aadhar Number" }),
+    contactnumber: z.string().regex(/^\d{10}$/, { message: "Contact number must be exactly 10 digits" })
 })
 
 UserRouter.post('/signup', async function (req, res) {
     try{
 const validatedData = signupschema.parse(req.body);
-const {username: username, contactnumber: contactnumber, email : email, password: password, aadharnumber : aadharnumber} = validatedData;
+const {username: username, contactnumber: contactnumber, email : email, password: password} = validatedData;
 
 const hashedPassword = await bcrypt.hash(password, 10);
     await usermd.create(
         {
             username: username,
             contactnumber: contactnumber,
-            aadharnumber: aadharnumber,
             email: email,
             password: hashedPassword
         }

@@ -56,56 +56,66 @@ const upload = multer({
 const complaintSchema = z.object({
   complaintType: z.string().min(1, "Complaint type is required"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  phoneNumber: z.string().regex(/^\d{10}$/, { message: "Phone number must be exactly 10 digits" }),
-  latitude: z.string().refine((val) => !isNaN(parseFloat(val)), "Latitude must be a valid number"),
-  longitude: z.string().refine((val) => !isNaN(parseFloat(val)), "Longitude must be a valid number"),
-  address: z.string().optional(),
-  
+  latitude: z.preprocess((val) => parseFloat(val), z.number({
+    invalid_type_error: "Latitude must be a valid number",
+  })),
+  longitude: z.preprocess((val) => parseFloat(val), z.number({
+    invalid_type_error: "Longitude must be a valid number",
+  })),
+  address: z.string().optional()
 });
 
-// Create complaint endpoint
-ComplaintRouter.post('/', auth, upload.single('image'), async function(req, res) {
+ComplaintRouter.post('/', auth, upload.single('image'), async (req, res) => {
   try {
-    // Extract username from authenticated user
     const userId = req.user.id;
-    console.log("Received file:", req.file);
-    console.log("User ID from token:", userId);
-    // Validate request data
+ 
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: ['Image is required']
+      });
+    }
+
+    // Validate body
     const validatedData = complaintSchema.parse(req.body);
-  
-    // Create new complaint
-     const newComplaint = await Complaint.create({
-      username: req.body.username,
-      phoneNumber: validatedData.phoneNumber,
+
+    // Generate short description (first three words)
+    const shortDescription = validatedData.description.split(' ').slice(0, 3).join(' ');
+
+    const newComplaint = await Complaint.create({
       complaintType: validatedData.complaintType,
       description: validatedData.description,
-      image: req.file ? `/uploads/complaints/${req.file.filename}` : null,
+      shortDescription: shortDescription, // <-- New field
+      image: `/uploads/complaints/${req.file.filename}`,
       location: {
         type: 'Point',
-        coordinates: [parseFloat(validatedData.longitude), parseFloat(validatedData.latitude)],
-        address: validatedData.address || null
+        coordinates: [validatedData.longitude, validatedData.latitude],
+        address: validatedData.address || null,
       },
       userId: userId,
-      status : "Pending"
+      status: "Pending"
     });
+
     res.status(201).json({
       success: true,
       message: 'Complaint submitted successfully',
       data: {
         complaintId: newComplaint._id,
-        status: newComplaint.status
+        status: newComplaint.status,
+        shortDescription: newComplaint.shortDescription
       }
     });
+
   } catch (error) {
     console.error('Error creating complaint:', error);
-    
+
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
         error: error.issues.map(issue => issue.message)
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: 'Failed to submit complaint'
@@ -113,11 +123,14 @@ ComplaintRouter.post('/', auth, upload.single('image'), async function(req, res)
   }
 });
 
+
 // Get all complaints for a user
-ComplaintRouter.get('/my-complaints', auth, async function(req, res) {
+ComplaintRouter.get('/', auth, async function(req, res) {
   try {
-    const userId = req.body.userId;
+    console.log('Helo');
+    const userId = req.user.id;
     const complaints = await Complaint.find({ userId: userId }).sort({ createdAt: -1 });
+    console.log(complaints);
     
     res.status(200).json({
       success: true,
@@ -125,7 +138,7 @@ ComplaintRouter.get('/my-complaints', auth, async function(req, res) {
       data: complaints
     });
   } catch (error) {
-    console.error('Error fetching complaints:', error);
+    console.log('Error fetching complaints:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch complaints'
@@ -133,37 +146,35 @@ ComplaintRouter.get('/my-complaints', auth, async function(req, res) {
   }
 });
 
-// Get complaint by ID
-ComplaintRouter.get('/:id', auth, async function(req, res) {
+
+
+ComplaintRouter.get('/counts', auth, async (req, res) => {
   try {
-    const complaint = await Complaint.findById(req.params.id);
+    const userId = req.user.id;
     
-    if (!complaint) {
-      return res.status(404).json({
-        success: false,
-        message: 'Complaint not found'
-      });
-    }
-    
-    // Check if complaint belongs to requesting user
-    if (complaint.userId.toString() !== req.body.userId) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to access this complaint'
-      });
-    }
-    
+ 
+    const totalComplaints = await Complaint.countDocuments({ userId: userId });
+
+    const resolvedComplaints = await Complaint.countDocuments({ userId: userId, status: 'Resolved' });
+
+    const disputes = await Complaint.countDocuments({ userId: userId, status: 'Dispute' });
+
     res.status(200).json({
       success: true,
-      data: complaint
+      data: {
+        total: totalComplaints,
+        resolved: resolvedComplaints,
+        disputes: disputes,
+      },
     });
   } catch (error) {
-    console.error('Error fetching complaint:', error);
+    console.error('Error fetching complaint counts:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch complaint details'
+      message: 'Failed to fetch complaint counts',
     });
   }
 });
+
 
 module.exports = { ComplaintRouter };

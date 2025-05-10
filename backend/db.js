@@ -7,27 +7,15 @@ mongoose.connect("mongodb+srv://kamblechinmay8:Chinmay%408@cluster0.kgcnr.mongod
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true},
     email: { type: String, required: true, unique: true},
-    aadharnumber: { type: String, required: true, unique: true},
     contactnumber: { type: String, required: true,unique: true},
     password: { type: String, required: true },
   });
 
   const complaintSchema = new mongoose.Schema({
-    username: {
-      type: String,
-      required: true,
-      trim: true
-    },
-    phoneNumber: {
-      type: String,
-      required: true,
-      trim: true,
-      match: [/^\d{10}$/, 'Phone number must be exactly 10 digits']
-    },
     complaintType: {
       type: String,
       required: true,
-      enum: ['Water Supply', 'Road Maintainence', 'Power Outage', 'Waste Management'],
+      enum: ['Water Supply', 'Road Maintenance', 'Power Outage', 'Waste Management'],
       trim: true
     },
     description: {
@@ -36,6 +24,10 @@ const userSchema = new mongoose.Schema({
       trim: true,
       maxlength: 1000
     },
+    shortDescription: {
+      type : String,
+      required: true,
+    }, 
     image: {
       type: String, // Store the path to the uploaded image
       required: false
@@ -62,7 +54,7 @@ const userSchema = new mongoose.Schema({
     },
     status: {
       type: String,
-      enum: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+      enum: ['Pending', 'In Progress', 'Resolved', 'Rejected', 'Dispute'],
       default: 'Pending'
     },
     createdAt: {

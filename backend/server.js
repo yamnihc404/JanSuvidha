@@ -4,6 +4,9 @@ const {UserRouter} = require('./routes/user');
 const PORT = 3000;
 const cors = require("cors");
 const {ComplaintRouter} = require('./routes/complaint');
+const path = require('path');
+
+
 
 app.use(cors());
 app.use(express.urlencoded({extended: true}));
@@ -16,7 +19,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/user', UserRouter);
 app.use('/complaints', ComplaintRouter);
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/dashboard.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'landing.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -73,7 +71,7 @@ class _LoginState extends State<Login> {
                           width: 284,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 254, 183, 101),
+                            color: const Color.fromARGB(255, 255, 230, 160),
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
@@ -105,7 +103,7 @@ class _LoginState extends State<Login> {
                           width: 284,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 254, 183, 101),
+                            color: const Color.fromARGB(255, 255, 230, 160),
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
@@ -150,7 +148,7 @@ class _LoginState extends State<Login> {
                           width: 149,
                           height: 55,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 254, 183, 101),
+                            color: const Color.fromARGB(255, 255, 230, 160),
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
@@ -162,14 +160,15 @@ class _LoginState extends State<Login> {
                           ),
                           child: ElevatedButton(
                             onPressed: () async {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const Dashboard()),
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
+                              backgroundColor:
+                                  const Color.fromARGB(255, 255, 230, 160),
                               shadowColor: Colors.transparent,
                             ),
                             child: const Text(
@@ -191,7 +190,6 @@ class _LoginState extends State<Login> {
               ),
             ),
           ),
-
           Positioned(
             bottom: 0,
             left: 0,
@@ -214,10 +212,12 @@ class _LoginState extends State<Login> {
               height: 60,
               child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(
+                    context,
+                  );
                 },
                 shape: const CircleBorder(),
-                backgroundColor: const Color.fromARGB(255, 254, 183, 101),
+                backgroundColor: const Color.fromARGB(255, 255, 230, 160),
                 mini: true,
                 child: const Icon(Icons.arrow_back_ios_new_sharp,
                     color: Color.fromARGB(255, 15, 62, 129), size: 25),

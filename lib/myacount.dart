@@ -1,506 +1,121 @@
 import 'package:flutter/material.dart';
-import 'dashboard.dart';  // Add import for Dashboard
-import 'contact.dart';    // Add import for Contact
 
-class Myacc extends StatefulWidget {
-  const Myacc({super.key});
+class Myacc extends StatelessWidget {
+  const Myacc({Key? key}) : super(key: key);
 
-  @override
-  State<Myacc> createState() => _MyaccState();
-}
-
-final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-class _MyaccState extends State<Myacc> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        key: _scaffoldKey,
-        drawer: Drawer(
-  child: Container(
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,  // Changed direction
-        end: Alignment.bottomRight, // Changed direction
-        colors: [
-          Color.fromARGB(255, 255, 215, 140),  // Lighter saffron
-          Colors.white,
-          Color.fromARGB(255, 170, 255, 173),  // Lighter green
-        ],
-        stops: [0.0, 0.4, 0.8],  // Adjusted stops for wider spread
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Account'),
+        backgroundColor: Color.fromARGB(
+            255, 255, 214, 161), // Updated to match previous theme
       ),
-    ),
-    child: Column(
-      children: <Widget>[
-        SizedBox(height: MediaQuery.of(context).padding.top + 20),
-        Container(
-          height: 150,
-          width: double.infinity,
-          color: Colors.transparent,
-          child: const Center(
-            child: Text(
-              'Jan Suvidha',
-              style: TextStyle(
-                color: Color.fromARGB(255, 14, 66, 170),
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        Container(
-          height: 0.5,
-          width: double.infinity,
-          color: Colors.grey.withOpacity(0.3),  // Lighter separator
-        ),
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-               ListTile(
-                leading: const Icon(
-                  Icons.home,
-                  color: Color.fromARGB(255, 14, 66, 170),
-                ),
-                title: const Text(
-                  'Home',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onTap: () {
-                   Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Dashboard()),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.phone,
-                  color: Color.fromARGB(255, 14, 66, 170),
-                ),
-                title: const Text(
-                  'Contact Us',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Contact()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  ),
-),
-        body: Stack(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Background container with gradient
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 255, 196, 107),
-                    Colors.white,
-                    Color.fromARGB(255, 143, 255, 147),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            // Profile Header
+            Center(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage:
+                    AssetImage('assets/images/user_placeholder.png'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                'Username',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 30, 90, 220), // Theme Color Update
                 ),
               ),
             ),
-            // Add menu button
-            Positioned(
-              top: 40,
-              left: 10,
-              child: Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.menu, size: 30, color: Colors.black),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text(
+                'user.email@example.com',
+                style: TextStyle(color: Colors.grey[600]),
               ),
             ),
-            Stack(
-              children: [
-                Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.topCenter, // Align at the top center
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            top: 60), // Push down by 50 pixels
-                        child: Transform.scale(
-                          scale: 3, // Scale the widget by 140%
-                          child: Image.asset('images/Logo.png', height: 100),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    Stack(alignment: Alignment.center, children: [
-                      Container(
-                        padding:
-                            const EdgeInsets.only(top: 45, left: 20, right: 20),
-                        width: 284,
-                        height: 380,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 254, 232, 179),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(255, 0, 0, 0)
-                                  .withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(
-                                  0, 3), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  width: 284,
-                                  height:
-                                      45, // Adjusted the height for more space
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 254, 183, 101),
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(
-                                            0.3), // Shadow color with opacity
-                                        offset:
-                                            const Offset(5, 5), // Shadow offset
-                                        blurRadius:
-                                            10, // Blur radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Column(
-                                    // Align to the left
-                                    children: [
-                                      // Username label aligned to the top left
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          "Username", // Label
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color.fromARGB(
-                                                255, 14, 66, 170),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
+            const SizedBox(height: 24),
 
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: "", // Placeholder text
-                                            hintStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Color.fromARGB(255, 14, 66,
-                                                  170), // Placeholder color
-                                            ),
-                                            border: InputBorder
-                                                .none, // Remove the default underline
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  width: 284,
-                                  height:
-                                      45, // Adjusted the height for more space
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 254, 183, 101),
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(
-                                            0.3), // Shadow color with opacity
-                                        offset:
-                                            const Offset(5, 5), // Shadow offset
-                                        blurRadius:
-                                            10, // Blur radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start, // Align to the left
-                                    children: [
-                                      // Username label aligned to the top left
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          "Change Password", // Label
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color.fromARGB(
-                                                255, 14, 66, 170),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: "", // Placeholder text
-                                            hintStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Color.fromARGB(255, 14, 66,
-                                                  170), // Placeholder color
-                                            ),
-                                            border: InputBorder
-                                                .none, // Remove the default underline
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  width: 284,
-                                  height:
-                                      45, // Adjusted the height for more space
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 254, 183, 101),
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(
-                                            0.3), // Shadow color with opacity
-                                        offset:
-                                            const Offset(5, 5), // Shadow offset
-                                        blurRadius:
-                                            10, // Blur radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start, // Align to the left
-                                    children: [
-                                      // Username label aligned to the top left
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          "Update Phone Number", // Label
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color.fromARGB(
-                                                255, 14, 66, 170),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: "", // Placeholder text
-                                            hintStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Color.fromARGB(255, 14, 66,
-                                                  170), // Placeholder color
-                                            ),
-                                            border: InputBorder
-                                                .none, // Remove the default underline
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  width: 284,
-                                  height:
-                                      45, // Adjusted the height for more space
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 254, 183, 101),
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(
-                                            0.3), // Shadow color with opacity
-                                        offset:
-                                            const Offset(5, 5), // Shadow offset
-                                        blurRadius:
-                                            10, // Blur radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start, // Align to the left
-                                    children: [
-                                      // Username label aligned to the top left
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          "Update E-mail", // Label
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color.fromARGB(
-                                                255, 14, 66, 170),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: "", // Placeholder text
-                                            hintStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Color.fromARGB(255, 14, 66,
-                                                  170), // Placeholder color
-                                            ),
-                                            border: InputBorder
-                                                .none, // Remove the default underline
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  width: 284,
-                                  height:
-                                      45, // Adjusted the height for more space
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 254, 183, 101),
-                                    borderRadius: BorderRadius.circular(15),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(
-                                            0.3), // Shadow color with opacity
-                                        offset:
-                                            const Offset(5, 5), // Shadow offset
-                                        blurRadius:
-                                            10, // Blur radius of the shadow
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start, // Align to the left
-                                    children: [
-                                      // Username label aligned to the top left
-                                      Align(
-                                        alignment: Alignment.topLeft,
-                                        child: Text(
-                                          "", // Label
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Color.fromARGB(
-                                                255, 14, 66, 170),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: "", // Placeholder text
-                                            hintStyle: TextStyle(
-                                              fontSize: 20,
-                                              color: Color.fromARGB(255, 14, 66,
-                                                  170), // Placeholder color
-                                            ),
-                                            border: InputBorder
-                                                .none, // Remove the default underline
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ])
-                  ],
-                ),
-              ],
-            ),
-            // Bottom rectangle with rounded corners
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 25),
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 15, 62, 129),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(13),
-                  ),
-                ),
+            // Account Settings
+            const Text(
+              'Account Settings',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(255, 30, 90, 220), // Theme Color Update
               ),
             ),
-            // Back Button
-            Positioned(
-              bottom: 20,
-              left: 20,
-              child: SizedBox(
-                width: 50,
-                height: 60,
-                child: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  shape: const CircleBorder(),
-                  backgroundColor: const Color.fromARGB(255, 254, 183, 101),
-                  mini: true,
-                  child: const Icon(
-                    Icons.arrow_back_ios_new_sharp,
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    size: 25,
-                  ),
+            const SizedBox(height: 10),
+            _buildAccountOption(context, 'Edit Profile', Icons.person),
+            _buildAccountOption(context, 'Change Password', Icons.lock),
+            _buildAccountOption(context, 'Update Phone Number', Icons.phone),
+            _buildAccountOption(context, 'Update Email', Icons.email),
+            const SizedBox(height: 24),
+
+            // Preferences
+            const Text(
+              'Preferences',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(255, 30, 90, 220), // Theme Color Update
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildAccountOption(context, 'Language Preference', Icons.language),
+            _buildAccountOption(context, 'Notifications', Icons.notifications),
+            _buildAccountOption(context, 'Contact Us', Icons.phone_in_talk),
+            _buildAccountOption(context, 'Rate Us', Icons.star),
+            const SizedBox(height: 24),
+
+            // Logout
+            Center(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                ),
+                onPressed: () {
+                  // TODO: Implement Logout
+                },
+                icon: const Icon(Icons.logout, color: Colors.white),
+                label: const Text(
+                  'Log Out',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAccountOption(
+      BuildContext context, String title, IconData icon) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: ListTile(
+        leading: Icon(icon,
+            color: Color.fromARGB(255, 30, 90, 220)), // Theme Color Update
+        title: Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: () {
+          // Handle navigation
+        },
       ),
     );
   }
