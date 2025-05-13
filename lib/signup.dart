@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/login.dart';
-import 'package:jansuvidha/landing.dart';
+import 'config/auth_service.dart';
 import 'otp_verification.dart';
 
 class Signup extends StatefulWidget {
@@ -15,12 +15,78 @@ class _SignupState extends State<Signup> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
-  final TextEditingController aadharNumberController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
+
+  // Validate the form fields
+  bool _validateForm() {
+    if (usernameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        contactNumberController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all the fields')),
+      );
+      return false;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return false;
+    }
+
+    // Basic email validation
+    final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegExp.hasMatch(emailController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email')),
+      );
+      return false;
+    }
+
+    // Basic phone number validation (adjust according to your requirements)
+    if (contactNumberController.text.length < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid contact number')),
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  // Handle signup
+  Future<void> _handleSignup() async {
+    if (!_validateForm()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signUpUser(
+        username: usernameController.text,
+        contactNumber: contactNumberController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        context: context,
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,72 +317,6 @@ class _SignupState extends State<Signup> {
                         ),
                       ],
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: aadharNumberController,
-                            decoration: const InputDecoration(
-                              hintText: "Aadhar Number",
-                              hintStyle: TextStyle(
-                                  fontSize: 20,
-                                  color: Color.fromARGB(255, 14, 66, 170)),
-                              border: InputBorder.none,
-                              prefixIcon: Icon(
-                                Icons.credit_card,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 28,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const OtpVerification(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 14, 66, 170),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              minimumSize: const Size(0, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'Verify',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    width: 300,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          offset: const Offset(5, 5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
                     child: TextField(
                       controller: passwordController,
                       obscureText: !_isPasswordVisible,
@@ -411,29 +411,28 @@ class _SignupState extends State<Signup> {
                         ),
                       ],
                     ),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Login(),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Color.fromARGB(255, 14, 66, 170),
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: _handleSignup,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors
+                                  .transparent, // Make the ElevatedButton background transparent
+                              shadowColor:
+                                  Colors.transparent, // Remove default shadow
+                            ),
+                            child: const Text(
+                              'Sign up',
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  color: Color.fromARGB(255, 14, 66, 170),
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors
-                            .transparent, // Make the ElevatedButton background transparent
-                        shadowColor:
-                            Colors.transparent, // Remove default shadow
-                      ),
-                      child: const Text(
-                        'Sign up',
-                        style: TextStyle(
-                            fontSize: 24,
-                            color: Color.fromARGB(255, 14, 66, 170),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
                   ),
                 ]),
               ),

@@ -8,6 +8,7 @@ import 'filecomplain.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config/app_config.dart';
+import 'config/auth_service.dart';
 
 class Complaint {
   final String id;
@@ -53,7 +54,7 @@ class Complaint {
     String imageUrl = '';
     if (json['image'] != null) {
       if (json['image'].toString().startsWith('/')) {
-        imageUrl = 'https://d8ae-103-185-109-76.ngrok-free.app${json['image']}';
+        imageUrl = '${AppConfig.apiBaseUrl}${json['image']}';
       } else {
         imageUrl = json['image'].toString();
       }
@@ -112,8 +113,8 @@ class _InquiryState extends State<Inquiry> {
     });
 
     try {
-      final appConfig = AppConfig();
-      final token = await appConfig.getToken();
+      final authservice = AuthService();
+      final token = await authservice.getToken();
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/complaints'),

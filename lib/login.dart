@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/dashboard.dart';
 import 'landing.dart';
+import 'config/auth_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,6 +14,48 @@ class _LoginState extends State<Login> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
+  bool _isLoading = false;
+
+  Future<void> _handleLogin() async {
+    // Validate input
+    if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter username and password')),
+      );
+      return;
+    }
+
+    // Show loading indicator
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final authService = AuthService();
+
+      // Use the signInUser method from the AuthService
+      await authService.signInUser(
+        username: usernameController.text,
+        password: passwordController.text,
+        context: context,
+      );
+
+      // The navigation is handled in the AuthService after successful login
+      // No need to navigate here as it will create duplicate navigation calls
+    } catch (e) {
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login error: ${e.toString()}')),
+      );
+    } finally {
+      // Hide loading indicator
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,26 +202,29 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                           child: ElevatedButton(
-                            onPressed: () async {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Dashboard()),
-                              );
-                            },
+                            onPressed: _isLoading ? null : _handleLogin,
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   const Color.fromARGB(255, 255, 230, 160),
                               shadowColor: Colors.transparent,
                             ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Color.fromARGB(255, 14, 66, 170),
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      color: Color.fromARGB(255, 14, 66, 170),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ),
                         // Add extra padding at the bottom to ensure everything is visible

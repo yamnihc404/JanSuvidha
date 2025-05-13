@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'widgets/common_widgets.dart';
 import 'login.dart';
 import 'signup.dart';
+import 'dashboard.dart';
+import 'config/auth_service.dart';
 
 void main() {
   runApp(const Landing());
@@ -15,7 +18,6 @@ class Landing extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // Add this to ensure proper navigation context
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -23,24 +25,62 @@ class Landing extends StatelessWidget {
           },
         ),
       ),
-      // Define routes with proper navigation context
       initialRoute: '/',
       routes: {
         '/': (context) => const LandingScreen(),
         '/login': (context) => const Login(),
         '/signup': (context) => const Signup(),
+        '/home': (context) => const Dashboard()
       },
       navigatorKey: GlobalKey<NavigatorState>(),
     );
   }
 }
 
-// Create a separate screen widget for the landing content
-class LandingScreen extends StatelessWidget {
+class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
 
   @override
+  _LandingScreenState createState() => _LandingScreenState();
+}
+
+class _LandingScreenState extends State<LandingScreen> {
+  final AuthService _authService = AuthService();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if user is already authenticated when landing screen loads
+    _checkAuthentication();
+  }
+
+  Future<void> _checkAuthentication() async {
+    // This is a backup check in case direct navigation from splash screen fails
+    bool isLoggedIn = await _authService.isLoggedIn();
+
+    if (isLoggedIn && mounted) {
+      // Navigate to dashboard if user is already logged in
+      Navigator.of(context).pushReplacementNamed('/home');
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: [
