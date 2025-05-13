@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dashboard.dart';
-import 'myacount.dart';
+import 'myaccount.dart';
 
 class Contact extends StatefulWidget {
   const Contact({super.key});

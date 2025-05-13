@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '../widgets/common_widgets.dart';
+import 'widgets/common_widgets.dart';
 import 'contact.dart';
-import 'myacount.dart';
+import 'myaccount.dart';
 import "dashboard.dart";
 import 'package:intl/intl.dart';
 import 'filecomplain.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config/app_config.dart';
 
 class Complaint {
   final String id;
@@ -105,22 +106,17 @@ class _InquiryState extends State<Inquiry> {
     super.dispose();
   }
 
-  Future<String> getAuthToken() async {
-    // This is a placeholder - implement according to your app's auth system
-    // For example, using SharedPreferences or flutter_secure_storage
-    return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTExNjRjN2VlZDZkZmRlNTlhMWYwMCIsImlhdCI6MTc0Njg3MDA4OCwiZXhwIjoxNzQ2ODczNjg4fQ.Iy4EZVpcJTw2pvF-Rq08bSYlyYMQ4MM2imyNKnoEqsY';
-  }
-
   Future<void> fetchComplaints() async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      final token = await getAuthToken();
+      final appConfig = AppConfig();
+      final token = await appConfig.getToken();
 
       final response = await http.get(
-        Uri.parse('https://d8ae-103-185-109-76.ngrok-free.app/complaints'),
+        Uri.parse('${AppConfig.apiBaseUrl}/complaints'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': '$token',

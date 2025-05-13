@@ -18,15 +18,17 @@ dependencies:
   # Updated these problematic dependencies to newer versions
   cupertino_icons: ^1.0.8
   share_plus: ^7.0.0  # For sharing functionality
-  flutter_map: ^6.1.0
-  latlong2: ^0.9.1
+  # Removed flutter_map and latlong2 to avoid conflicts
   geocoding: ^3.0.0
   geolocator: ^12.0.0
   permission_handler: ^11.3.1
   image_picker: ^1.1.2
   device_info_plus: ^10.1.0
   url_launcher: ^6.3.0
-  
+  google_maps_flutter: ^2.12.1
+  flutter_polyline_points: ^2.1.0
+  intl: ^0.18.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

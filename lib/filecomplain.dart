@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,10 +9,12 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'widgets/common_widgets.dart';
 import 'contact.dart';
-import 'myacount.dart';
+import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
+import 'config/app_config.dart';
+import 'map_screen.dart';
 
 class Addcomplain extends StatefulWidget {
   const Addcomplain({super.key});
@@ -49,12 +50,12 @@ class _AddcomplainState extends State<Addcomplain> {
   // Location variables
   LatLng? _selectedLocation;
   String? _humanReadableAddress;
-  final MapController _mapController = MapController();
 
   @override
   void initState() {
     super.initState();
     _descriptionController.addListener(_checkDescriptionField);
+    _selectedLocation = LatLng(19.0760, 72.8777);
   }
 
   @override
@@ -278,7 +279,6 @@ class _AddcomplainState extends State<Addcomplain> {
         LatLng newLocation =
             LatLng(locations.first.latitude, locations.first.longitude);
         _updateLocation(newLocation);
-        _mapController.move(newLocation, 15.0);
       } else {
         _showErrorDialog('No location found for the provided address');
       }
@@ -287,7 +287,6 @@ class _AddcomplainState extends State<Addcomplain> {
     }
   }
 
-  // Update location and get human-readable address
   Future<void> _updateLocation(LatLng location) async {
     setState(() {
       _selectedLocation = location;
@@ -295,175 +294,44 @@ class _AddcomplainState extends State<Addcomplain> {
     });
 
     try {
-      // Perform reverse geocoding
       List<Placemark> placemarks = await placemarkFromCoordinates(
         location.latitude,
         location.longitude,
       );
 
-      String formattedAddress;
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
+        String formattedAddress =
+            "${place.street}, ${place.locality}, ${place.country}";
 
-        // Build a human-readable address, filtering out null or empty fields
-        List<String> addressParts = [
-          if (place.street?.isNotEmpty ?? false) place.street!,
-          if (place.locality?.isNotEmpty ?? false) place.locality!,
-          if (place.subAdministrativeArea?.isNotEmpty ?? false)
-            place.subAdministrativeArea!,
-          if (place.administrativeArea?.isNotEmpty ?? false)
-            place.administrativeArea!,
-          if (place.country?.isNotEmpty ?? false) place.country!,
-        ];
-
-        formattedAddress = addressParts.join(', ').trim();
-
-        // Fallback if no meaningful address parts are available
-        if (formattedAddress.isEmpty) {
-          formattedAddress =
-              'Lat: ${location.latitude.toStringAsFixed(4)}, Long: ${location.longitude.toStringAsFixed(4)}';
-        }
-      } else {
-        // No placemarks returned
-        formattedAddress =
-            'Lat: ${location.latitude.toStringAsFixed(4)}, Long: ${location.longitude.toStringAsFixed(4)}';
+        setState(() {
+          _humanReadableAddress = formattedAddress;
+          _locationController.text = formattedAddress;
+        });
       }
-
-      setState(() {
-        _humanReadableAddress = formattedAddress;
-        _locationController.text = formattedAddress;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location selected successfully')),
-      );
     } catch (e) {
-      // Handle errors (e.g., network issues, geocoding service unavailable)
-      final fallbackAddress =
-          'Lat: ${location.latitude.toStringAsFixed(4)}, Long: ${location.longitude.toStringAsFixed(4)}';
-      setState(() {
-        _humanReadableAddress = fallbackAddress;
-        _locationController.text = fallbackAddress;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to get address: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _humanReadableAddress =
+          'Lat: ${location.latitude}, Long: ${location.longitude}';
+      _locationController.text = _humanReadableAddress!;
     }
   }
 
-  // Show location selection dialog
-  // Show location selection dialog
-  void _showLocationSelectionDialog() {
-    // Set a default location if _selectedLocation is null (e.g., a known valid location)
-    final defaultLocation =
-        LatLng(51.509364, -0.128928); // Example: London coordinates
-    if (_selectedLocation == null) {
-      _selectedLocation = defaultLocation;
-      _mapController.move(defaultLocation, 15.0);
-    }
+  void _showLocationSelectionDialog() async {
+    final LatLng defaultLocation =
+        LatLng(19.0760, 72.8777); // Mumbai as default
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: const Text(
-          'Select Location',
-          style: TextStyle(
-            color: Color.fromARGB(255, 14, 66, 170),
-            fontWeight: FontWeight.bold,
-          ),
+    final LatLng? selectedLocation = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => MapScreen(
+          initialLocation:
+              _selectedLocation != null ? _selectedLocation! : defaultLocation,
         ),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 400,
-          child: Column(
-            children: [
-              // Search bar
-              TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search address or place',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      if (_searchController.text.isNotEmpty) {
-                        _searchAddress(_searchController.text);
-                      }
-                    },
-                  ),
-                ),
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    _searchAddress(value);
-                  }
-                },
-              ),
-              const SizedBox(height: 10),
-              // Map
-              Expanded(
-                child: FlutterMap(
-                  mapController: _mapController,
-                  options: MapOptions(
-                    initialCenter:
-                        _selectedLocation!, // Corrected: Use _selectedLocation
-                    initialZoom: 15.0,
-                    onTap: (tapPosition, point) {
-                      _updateLocation(point);
-                    },
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c'],
-                    ),
-                    if (_selectedLocation != null)
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: _selectedLocation!,
-                            child: const Icon(
-                              // Corrected: Use child instead of builder
-                              Icons.location_pin,
-                              color: Colors.red,
-                              size: 40,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ),
-              // Current location button
-              ElevatedButton(
-                onPressed: _getCurrentLocation,
-                child: const Text('Use Current Location'),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (_selectedLocation != null) {
-                Navigator.pop(context);
-              } else {
-                _showErrorDialog('Please select a location');
-              }
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
       ),
     );
+
+    if (selectedLocation != null) {
+      _updateLocation(selectedLocation);
+    }
   }
 
   // Settings dialog for permissions
@@ -596,7 +464,7 @@ class _AddcomplainState extends State<Addcomplain> {
 
     try {
       final uri = Uri.parse(
-          'https://d8ae-103-185-109-76.ngrok-free.app/complaints'); // Change to your actual backend URL
+          '${AppConfig.apiBaseUrl}/complaints'); // Change to your actual backend URL
       final request = http.MultipartRequest('POST', uri);
 
       // Headers (assuming you have token based auth)

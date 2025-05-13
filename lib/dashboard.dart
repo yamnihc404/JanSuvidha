@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jansuvidha/filecomplain.dart';
 import 'inquiry.dart';
 import 'contact.dart';
-import 'myacount.dart';
+import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
