@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jansuvidha/dashboard.dart';
-import 'landing.dart';
+import 'forgot_password.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -13,6 +14,71 @@ class _LoginState extends State<Login> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
+  bool isLoading = false;
+
+  // Firebase Auth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Login function
+  Future<void> signIn(String email, String password) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        
+        // Navigate to dashboard on successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      
+      // Show appropriate error message
+      String errorMessage = 'Login failed. Please check your credentials.';
+      
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found with this email.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Wrong password provided.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (e.code == 'user-disabled') {
+        errorMessage = 'This account has been disabled.';
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login failed. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,15 +149,16 @@ class _LoginState extends State<Login> {
                           ),
                           child: TextField(
                             controller: usernameController,
+                            keyboardType: TextInputType.emailAddress,
                             decoration: const InputDecoration(
-                              hintText: "Enter Username",
+                              hintText: "Enter Email",
                               hintStyle: TextStyle(
                                 fontSize: 20,
                                 color: Color.fromARGB(255, 14, 66, 170),
                               ),
                               border: InputBorder.none,
                               prefixIcon: Icon(
-                                Icons.person,
+                                Icons.email,
                                 color: Color.fromARGB(255, 14, 66, 170),
                               ),
                             ),
@@ -143,7 +210,32 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 35),
+                        const SizedBox(height: 10),
+                        // Forgot Password Text Button
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 40),
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ForgotPassword(),
+                                  ),
+                                );
+                              },
+                              child: const Text(
+                                'Forgot Password?',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 14, 66, 170),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
                         Container(
                           width: 149,
                           height: 55,
@@ -159,26 +251,45 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                           child: ElevatedButton(
-                            onPressed: () async {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Dashboard()),
-                              );
-                            },
+                            onPressed: isLoading 
+                                ? null 
+                                : () {
+                                    final email = usernameController.text.trim();
+                                    final password = passwordController.text;
+                                    
+                                    if (email.isEmpty || password.isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Please enter email and password'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    } else {
+                                      signIn(email, password);
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   const Color.fromARGB(255, 255, 230, 160),
                               shadowColor: Colors.transparent,
                             ),
-                            child: const Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Color.fromARGB(255, 14, 66, 170),
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      color: Color.fromARGB(255, 14, 66, 170),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ),
                         // Add extra padding at the bottom to ensure everything is visible

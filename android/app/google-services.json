@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "226445239745",
+    "project_id": "jansuvidha-2adbf",
+    "storage_bucket": "jansuvidha-2adbf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226445239745:android:5a2a9bbdd9022ccab43b40",
+        "android_client_info": {
+          "package_name": "com.example.jansuvidha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN0lVauThHNxfOqzmKVOLvk4lX1C3Ypz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services" // ✅ Added Firebase plugin
 }
 
 android {
@@ -19,9 +20,9 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.jansuvidha"
-        minSdk flutter.minSdkVersion
-        targetSdk flutter.targetSdkVersion
+        applicationId "com.example.jansuvidha" // ✅ Must match Firebase
+        minSdkVersion flutter.minSdkVersion // ✅ Required minimum for Firebase Auth
+        targetSdkVersion 33
         versionCode flutter.versionCode
         versionName flutter.versionName
         multiDexEnabled true

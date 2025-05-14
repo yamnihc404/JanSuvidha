@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jansuvidha/login.dart';
 import 'package:jansuvidha/landing.dart';
 import 'otp_verification.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -15,12 +16,21 @@ class _SignupState extends State<Signup> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController contactNumberController = TextEditingController();
-  final TextEditingController aadharNumberController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+
+  void _showTemporaryUnavailableMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Temporarily not available'),
+        backgroundColor: Color.fromARGB(255, 14, 66, 170),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +88,7 @@ class _SignupState extends State<Signup> {
                     width: 300,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
+                      color: const Color.fromARGB(255, 255, 230, 160),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
@@ -109,7 +119,7 @@ class _SignupState extends State<Signup> {
                     width: 300,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
+                      color: const Color.fromARGB(255, 255, 230, 160),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
@@ -175,7 +185,7 @@ class _SignupState extends State<Signup> {
                     width: 300,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
+                      color: const Color.fromARGB(255, 255, 230, 160),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
@@ -241,73 +251,7 @@ class _SignupState extends State<Signup> {
                     width: 300,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          offset: const Offset(5, 5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: aadharNumberController,
-                            decoration: const InputDecoration(
-                              hintText: "Aadhar Number",
-                              hintStyle: TextStyle(
-                                  fontSize: 20,
-                                  color: Color.fromARGB(255, 14, 66, 170)),
-                              border: InputBorder.none,
-                              prefixIcon: Icon(
-                                Icons.credit_card,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 28,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const OtpVerification(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 14, 66, 170),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              minimumSize: const Size(0, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'Verify',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 5),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    width: 300,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
+                      color: const Color.fromARGB(255, 255, 230, 160),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
@@ -352,7 +296,7 @@ class _SignupState extends State<Signup> {
                     width: 300,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
+                      color: const Color.fromARGB(255, 255, 230, 160),
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
@@ -384,22 +328,20 @@ class _SignupState extends State<Signup> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _isConfirmPasswordVisible =
-                                  !_isConfirmPasswordVisible;
+                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
                             });
                           },
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
+                  const SizedBox(height: 15),
+                  // Sign up button
                   Container(
                     width: 149,
                     height: 55,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 254, 183, 101),
+                      color: const Color.fromARGB(255, 255, 230, 160), // Updated color
                       borderRadius: BorderRadius.circular(15), // Rounded edges
                       boxShadow: [
                         BoxShadow(
@@ -413,12 +355,73 @@ class _SignupState extends State<Signup> {
                     ),
                     child: ElevatedButton(
                       onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Login(),
-                          ),
-                        );
+                        final email = emailController.text.trim();
+                        final password = passwordController.text.trim();
+                        final confirmPassword = confirmPasswordController.text.trim();
+
+                        if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please fill in all fields.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (password != confirmPassword) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Passwords do not match.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        try {
+                          final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                            email: email,
+                            password: password,
+                          );
+
+                          final newUser = credential.user;
+                          print("✅ New user created: ${newUser?.uid}");
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Registration successful!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Login()),
+                          );
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'weak-password') {
+                            print('⚠️ Password is too weak.');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Password is too weak.'), backgroundColor: Colors.red),
+                            );
+                          } else if (e.code == 'email-already-in-use') {
+                            print('⚠️ Account already exists for this email.');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Email is already registered.'), backgroundColor: Colors.red),
+                            );
+                          } else {
+                            print('❌ Firebase Auth Error: ${e.message}');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${e.message}'), backgroundColor: Colors.red),
+                            );
+                          }
+                        } catch (e) {
+                          print('❌ Unexpected Error: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Unexpected error: $e'), backgroundColor: Colors.red),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors
@@ -432,6 +435,98 @@ class _SignupState extends State<Signup> {
                             fontSize: 24,
                             color: Color.fromARGB(255, 14, 66, 170),
                             fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  
+                  // SSO Options Section
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Or sign up with',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 14, 66, 170),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  
+                  // Google Login Button
+                  Container(
+                    width: 300,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: const Offset(3, 3),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: _showTemporaryUnavailableMessage,
+                      icon: Image.asset(
+                        'images/google_logo.png', // Make sure to add this asset
+                        height: 24,
+                        errorBuilder: (context, error, stackTrace) => 
+                          const Icon(Icons.g_mobiledata, color: Colors.red, size: 24),
+                      ),
+                      label: const Text(
+                        'Continue with Google',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  // DigiLocker Login Button
+                  const SizedBox(height: 15),
+                  Container(
+                    width: 300,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 61, 90, 254),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: const Offset(3, 3),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: _showTemporaryUnavailableMessage,
+                      icon: Image.asset(
+                        'images/digilocker_logo.png', // Make sure to add this asset
+                        height: 24,
+                        errorBuilder: (context, error, stackTrace) => 
+                          const Icon(Icons.folder_shared, color: Colors.white, size: 24),
+                      ),
+                      label: const Text(
+                        'Continue with DigiLocker',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                       ),
                     ),
                   ),
