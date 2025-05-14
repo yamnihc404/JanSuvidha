@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config/app_config.dart';
 import 'config/auth_service.dart';
+import 'package:jansuvidha/widgets/logout_dialog.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -39,7 +40,7 @@ class _DashboardState extends State<Dashboard> {
         Uri.parse('${AppConfig.apiBaseUrl}/complaints/counts'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': '$token',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -271,8 +272,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       onTap: () {
                         // Implement logout functionality
-                        Navigator.pop(context); // Close the drawer first
-                        // Add your logout code here
+                        LogoutDialog.showLogoutDialog(context);
                       },
                     ),
                   ],

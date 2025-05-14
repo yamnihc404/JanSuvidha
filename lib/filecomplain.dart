@@ -14,8 +14,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
 import 'config/app_config.dart';
-import 'map_screen.dart';
+import 'widgets/map_screen.dart';
 import 'config/auth_service.dart';
+import 'package:jansuvidha/widgets/logout_dialog.dart';
 
 class Addcomplain extends StatefulWidget {
   const Addcomplain({super.key});
@@ -56,7 +57,7 @@ class _AddcomplainState extends State<Addcomplain> {
   void initState() {
     super.initState();
     _descriptionController.addListener(_checkDescriptionField);
-    _selectedLocation = LatLng(19.0760, 72.8777);
+    _selectedLocation = const LatLng(19.0760, 72.8777);
   }
 
   @override
@@ -334,7 +335,7 @@ class _AddcomplainState extends State<Addcomplain> {
   }
 
   void _showLocationSelectionDialog() async {
-    final LatLng defaultLocation =
+    const LatLng defaultLocation =
         LatLng(19.0760, 72.8777); // Mumbai as default
 
     final LatLng? selectedLocation = await Navigator.of(context).push(
@@ -994,9 +995,7 @@ class _AddcomplainState extends State<Addcomplain> {
                       ),
                     ),
                     onTap: () {
-                      // Implement logout functionality
-                      Navigator.pop(context);
-                      // Add your logout code here
+                      LogoutDialog.showLogoutDialog(context);
                     },
                   ),
                 ],
@@ -1041,9 +1040,9 @@ class _AddcomplainState extends State<Addcomplain> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Text(
+            Text(
               'Category',
               style: TextStyle(
                 fontSize: 16,

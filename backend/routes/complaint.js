@@ -6,23 +6,8 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const SECRECT_KEY = 'chinmay123';
+const {verifyToken} = require("./middleware");
 
-// Auth middleware (reusing your existing auth function)
-function auth(req, res, next) {
-  const token = req.headers.authorization;
-  try {
-    const isValid = jwt.verify(token, SECRECT_KEY);
-    if (isValid) {
-      req.user = { id: isValid.id };
-      next();
-    } else {
-      res.status(401).json({ message: "Invalid Token" });
-    }
-  } catch (error) {
-    res.status(401).json({ message: "Authentication failed" });
-  }
-}
 
 // Configure storage for multer
 const storage = multer.diskStorage({
@@ -65,7 +50,7 @@ const complaintSchema = z.object({
   address: z.string().optional()
 });
 
-ComplaintRouter.post('/', auth, upload.single('image'), async (req, res) => {
+ComplaintRouter.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
     const userId = req.user.id;
  
@@ -125,9 +110,9 @@ ComplaintRouter.post('/', auth, upload.single('image'), async (req, res) => {
 
 
 // Get all complaints for a user
-ComplaintRouter.get('/', auth, async function(req, res) {
+ComplaintRouter.get('/', verifyToken, async function(req, res) {
   try {
-    console.log('Helo');
+   
     const userId = req.user.id;
     const complaints = await Complaint.find({ userId: userId }).sort({ createdAt: -1 });
     console.log(complaints);
@@ -148,7 +133,7 @@ ComplaintRouter.get('/', auth, async function(req, res) {
 
 
 
-ComplaintRouter.get('/counts', auth, async (req, res) => {
+ComplaintRouter.get('/counts',verifyToken, async (req, res) => {
   try {
     const userId = req.user.id;
     

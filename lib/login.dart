@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/dashboard.dart';
-import 'landing.dart';
 import 'config/auth_service.dart';
 
 class Login extends StatefulWidget {

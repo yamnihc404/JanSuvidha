@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:jansuvidha/config/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboard.dart';
 import 'contact.dart';
+import 'landing.dart';
+import 'package:jansuvidha/widgets/logout_dialog.dart';
 
 class Myacc extends StatefulWidget {
-  const Myacc({Key? key}) : super(key: key);
+  const Myacc({super.key});
 
   @override
   State<Myacc> createState() => _MyaccState();
@@ -207,7 +210,7 @@ class _MyaccState extends State<Myacc> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      LogoutDialog.showLogoutDialog(context);
                     },
                   ),
                 ],
@@ -363,7 +366,25 @@ class _MyaccState extends State<Myacc> {
                     ],
                   ),
                 ),
-
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 24),
+                  ),
+                  onPressed: () {
+                    LogoutDialog.showLogoutDialog(
+                        context); // Show confirmation dialog
+                  },
+                  child: const Text(
+                    'Log Out',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
                 // Bottom bar
                 Container(
                   height: 50,

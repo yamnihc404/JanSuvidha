@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dashboard.dart';
 import 'myaccount.dart';
+import 'package:jansuvidha/widgets/logout_dialog.dart';
 
 class Contact extends StatefulWidget {
   const Contact({super.key});
@@ -222,7 +222,8 @@ class _ContactState extends State<Contact> {
                       ),
                       onTap: () {
                         // Implement logout functionality
-                        Navigator.pop(context);
+                        LogoutDialog.showLogoutDialog(context);
+
                         // Add your logout code here
                       },
                     ),

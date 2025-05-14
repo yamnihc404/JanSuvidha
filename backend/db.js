@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 
-mongoose.connect("mongodb+srv://kamblechinmay8:Chinmay%408@cluster0.kgcnr.mongodb.net/JanSuvidha").then(()=>{console.log("Database Connected")});
+DB_URL = process.env.DB_URL;
+
+
+mongoose.connect(DB_URL).then(()=>{console.log("Database Connected")});
 
 
 const userSchema = new mongoose.Schema({
@@ -66,11 +70,21 @@ const userSchema = new mongoose.Schema({
       default: Date.now
     }
   });
+
+const RefreshTokenSchema = new mongoose.Schema({
+  token: { type: String, required: true },
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',                         
+    required: true 
+  },
+});
   
 complaintSchema.index({ location: '2dsphere' });
   
 const Complaint = mongoose.model('Complaint', complaintSchema);
 const usermd = mongoose.model('User', userSchema);
+const RefreshTokenModel = mongoose.model('RefreshToken', RefreshTokenSchema);
 
-module.exports = { usermd, Complaint };
+module.exports = { usermd, Complaint,  RefreshTokenModel};
 

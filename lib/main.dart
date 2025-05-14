@@ -3,6 +3,7 @@ import 'widgets/common_widgets.dart';
 import 'landing.dart';
 import 'dashboard.dart';
 import 'config/auth_service.dart';
+import 'widgets/token_refresh_wrapper.dart'; // Import the wrapper
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +16,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Splashscreen(), // Start with SplashScreen
+    return TokenRefreshWrapper(
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Splashscreen(), // Start with SplashScreen
+      ),
     );
   }
 }
@@ -43,12 +46,15 @@ class _MyAppState extends State<Splashscreen> {
     // Wait for 2 seconds to show splash screen
     await Future.delayed(const Duration(seconds: 2));
 
-    // Check if user is already logged in
+    // Check if user is already logged in with a valid token
     bool isLoggedIn = await _authService.isLoggedIn();
 
     if (mounted) {
       if (isLoggedIn) {
-        // User is logged in, navigate directly to dashboard
+        // If token is about to expire, refresh it silently
+        await _authService.refreshTokenIfNeeded(context);
+
+        // User is logged in with valid token, navigate directly to dashboard
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
@@ -65,7 +71,7 @@ class _MyAppState extends State<Splashscreen> {
           ),
         );
       } else {
-        // User is not logged in, navigate to landing page
+        // User is not logged in or token expired, navigate to landing page
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
