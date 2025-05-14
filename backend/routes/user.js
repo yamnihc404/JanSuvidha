@@ -1,23 +1,41 @@
 const { Router } = require('express');
 const UserRouter = Router();
-const {usermd} = require(__dirname + '/../db.js');
+const {usermd,RefreshTokenModel} = require(__dirname + '/../db.js');
 const {z} = require('zod');
 const jwt = require('jsonwebtoken');
-const SECRECT_KEY = 'chinmay123';
 const bcrypt = require("bcryptjs");
+const {verifyToken, verifyRefreshToken} = require('./middleware');
+require('dotenv').config();
 
-function auth(req, res, next) {
-const token = req.headers.authorization;
-const isValid = jwt.verify(token, SECRECT_KEY);
-if(isValid){
-    req.body.id = isValid.id;
-    console.log(isValid.id);
-    next();  
-}
-else{
-    res.status(400).json({message: "Invalid Token"});
-}
-}
+
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_EXPIRY = '7d';                        
+const ACCESS_TOKEN_EXPIRY = '1h';
+
+
+UserRouter.post('/refresh-token', verifyRefreshToken,async (req, res) => {
+    const  refreshToken  = req.headers.authorization;
+     if (!refreshToken) return res.status(401).json({ message: 'No token provided.' });
+  try {
+    const token = refreshToken.split(' ')[1];
+
+    const storedToken = await RefreshTokenModel.findOne({ token: token });
+
+    if (!storedToken) {
+      return res.status(403).json({ message: 'Invalid or expired refresh token' });
+    }
+    
+    const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    const newAccessToken = jwt.sign({ id: payload.id }, process.env.ACCESS_TOKEN_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    res.status(403).json({ message: 'Invalid or expired refresh token' });
+  }
+});
 
 
 
@@ -62,29 +80,63 @@ const hashedPassword = await bcrypt.hash(password, 10);
 
 
 UserRouter.post('/signin', async function (req, res) {
+  const { username, password } = req.body;
 
-    try{
-
-    const {username : username, password : password} = req.body;
-
-    const response = await usermd.findOne({ username: username});
-    if (!response) {
-        return res.status(404).json({ message: "User not found" });
-    }
-
-    const user = await bcrypt.compare(password, response.password);
+  try {
+    // Find the user
+    const user = await usermd.findOne({ username });
     if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: 'User not found.' });
     }
-    
-        const token = jwt.sign({id:response._id.toString()}, SECRECT_KEY,{ expiresIn: "1h" });
-        res.json({token:token});
-    } 
-    catch(error){
-        console.error("Sign-in error:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }  
+
+    // Validate password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ message: 'Invalid password.' });
+    }
+
+    // Generate Access Token and Refresh Token
+    const accessToken = jwt.sign({ id: user._id }, ACCESS_TOKEN_SECRET, {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    });
+
+    const refreshToken = jwt.sign({ id: user._id }, REFRESH_TOKEN_SECRET, {
+      expiresIn: REFRESH_TOKEN_EXPIRY,
+    });
+
+    // Store the refresh token
+    await RefreshTokenModel.create({
+        token: refreshToken,
+        userId : user._id
     })
+
+    res.status(200).json({
+      token: accessToken,
+      refreshToken: refreshToken,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        contactnumber: user.contactnumber,
+      },
+    });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+UserRouter.post('/logout', async (req, res) => {
+  const { refreshToken } = req.body;
+
+  try {
+    await RefreshTokenModel.findOneAndDelete({ token: refreshToken });
+    res.status(200).json({ message: 'User logged out and token removed' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error during logout' });
+  }
+});
 
  
 module.exports = {UserRouter};

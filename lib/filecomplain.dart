@@ -14,7 +14,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
 import 'config/app_config.dart';
-import 'map_screen.dart';
+import 'widgets/map_screen.dart';
+import 'config/auth_service.dart';
+import 'package:jansuvidha/widgets/logout_dialog.dart';
 
 class Addcomplain extends StatefulWidget {
   const Addcomplain({super.key});
@@ -55,7 +57,7 @@ class _AddcomplainState extends State<Addcomplain> {
   void initState() {
     super.initState();
     _descriptionController.addListener(_checkDescriptionField);
-    _selectedLocation = LatLng(19.0760, 72.8777);
+    _selectedLocation = const LatLng(19.0760, 72.8777);
   }
 
   @override
@@ -300,9 +302,25 @@ class _AddcomplainState extends State<Addcomplain> {
       );
 
       if (placemarks.isNotEmpty) {
-        Placemark place = placemarks.first;
-        String formattedAddress =
-            "${place.street}, ${place.locality}, ${place.country}";
+        // Find the most detailed placemark
+        Placemark detailedPlace = placemarks.firstWhere(
+          (place) => place.street != null && place.locality != null,
+          orElse: () => placemarks.first,
+        );
+
+        String formattedAddress = "${detailedPlace.street ?? ''}, "
+            "${detailedPlace.subLocality ?? ''}, "
+            "${detailedPlace.locality ?? ''}, "
+            "${detailedPlace.administrativeArea ?? ''}, "
+            "${detailedPlace.country ?? ''}";
+
+        // Remove any extra commas or spaces
+        formattedAddress =
+            formattedAddress.replaceAll(RegExp(r'\s+,|,\s+'), ', ').trim();
+        if (formattedAddress.endsWith(',')) {
+          formattedAddress =
+              formattedAddress.substring(0, formattedAddress.length - 1);
+        }
 
         setState(() {
           _humanReadableAddress = formattedAddress;
@@ -317,7 +335,7 @@ class _AddcomplainState extends State<Addcomplain> {
   }
 
   void _showLocationSelectionDialog() async {
-    final LatLng defaultLocation =
+    const LatLng defaultLocation =
         LatLng(19.0760, 72.8777); // Mumbai as default
 
     final LatLng? selectedLocation = await Navigator.of(context).push(
@@ -466,10 +484,11 @@ class _AddcomplainState extends State<Addcomplain> {
       final uri = Uri.parse(
           '${AppConfig.apiBaseUrl}/complaints'); // Change to your actual backend URL
       final request = http.MultipartRequest('POST', uri);
-
+      final authservice = AuthService();
+      final token = await authservice.getToken();
       // Headers (assuming you have token based auth)
-      request.headers['Authorization'] =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTExNjRjN2VlZDZkZmRlNTlhMWYwMCIsImlhdCI6MTc0Njg2ODAxNiwiZXhwIjoxNzQ2ODcxNjE2fQ.XatQQ0Is5kIyoDLq1oGhcdcMG2P3J11fmpO3tPhzQF4'; // Replace with actual token
+      request.headers['Authorization'] = token!;
+      // Replace with actual token
 
       // Add fields
       request.fields['complaintType'] = _selectedCategory;
@@ -976,9 +995,7 @@ class _AddcomplainState extends State<Addcomplain> {
                       ),
                     ),
                     onTap: () {
-                      // Implement logout functionality
-                      Navigator.pop(context);
-                      // Add your logout code here
+                      LogoutDialog.showLogoutDialog(context);
                     },
                   ),
                 ],
@@ -1023,9 +1040,9 @@ class _AddcomplainState extends State<Addcomplain> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           children: [
-            const Text(
+            Text(
               'Category',
               style: TextStyle(
                 fontSize: 16,

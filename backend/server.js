@@ -5,7 +5,7 @@ const PORT = 3000;
 const cors = require("cors");
 const {ComplaintRouter} = require('./routes/complaint');
 const path = require('path');
-
+require('dotenv').config();
 
 
 app.use(cors());

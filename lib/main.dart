@@ -4,10 +4,11 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'reset_password.dart';
 import 'widgets/common_widgets.dart';
 import 'landing.dart';
+import 'dashboard.dart';
+import 'config/auth_service.dart';
+import 'widgets/token_refresh_wrapper.dart'; // Import the wrapper
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // Required for Firebase
+void main() {
   runApp(const MyApp());
 }
 
@@ -16,9 +17,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const Splashscreen(), // Start with SplashScreen
+      home: Splashscreen(), // Start with SplashScreen
     );
   }
 }
@@ -34,12 +35,13 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    _handleDynamicLink(); // Check for oobCode from Firebase
-    _navigateToLandingPage(); // Splash delay
+    // Delay for 2 seconds before navigating to the next page
+    _navigateToLandingPage();
   }
 
   void _navigateToLandingPage() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(
+        const Duration(seconds: 3)); // Simulate a 3-second splash
     if (mounted) {
       Navigator.pushReplacement(
         context,
@@ -47,9 +49,14 @@ class _SplashscreenState extends State<Splashscreen> {
           pageBuilder: (context, animation, secondaryAnimation) =>
               const Landing(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
+            // Fade animation
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
           },
-          transitionDuration: const Duration(milliseconds: 800),
+          transitionDuration:
+              const Duration(milliseconds: 800), // Animation duration
         ),
       );
     }
