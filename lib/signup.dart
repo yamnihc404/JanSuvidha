@@ -3,6 +3,7 @@ import 'package:jansuvidha/login.dart';
 import 'package:jansuvidha/landing.dart';
 import 'otp_verification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'config/auth_service.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -328,7 +329,8 @@ class _SignupState extends State<Signup> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
                             });
                           },
                         ),
@@ -341,7 +343,8 @@ class _SignupState extends State<Signup> {
                     width: 149,
                     height: 55,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 230, 160), // Updated color
+                      color: const Color.fromARGB(
+                          255, 255, 230, 160), // Updated color
                       borderRadius: BorderRadius.circular(15), // Rounded edges
                       boxShadow: [
                         BoxShadow(
@@ -355,73 +358,14 @@ class _SignupState extends State<Signup> {
                     ),
                     child: ElevatedButton(
                       onPressed: () async {
-                        final email = emailController.text.trim();
-                        final password = passwordController.text.trim();
-                        final confirmPassword = confirmPasswordController.text.trim();
-
-                        if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill in all fields.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (password != confirmPassword) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Passwords do not match.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                          return;
-                        }
-
-                        try {
-                          final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-
-                          final newUser = credential.user;
-                          print("✅ New user created: ${newUser?.uid}");
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Registration successful!'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Login()),
-                          );
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'weak-password') {
-                            print('⚠️ Password is too weak.');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Password is too weak.'), backgroundColor: Colors.red),
-                            );
-                          } else if (e.code == 'email-already-in-use') {
-                            print('⚠️ Account already exists for this email.');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Email is already registered.'), backgroundColor: Colors.red),
-                            );
-                          } else {
-                            print('❌ Firebase Auth Error: ${e.message}');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: ${e.message}'), backgroundColor: Colors.red),
-                            );
-                          }
-                        } catch (e) {
-                          print('❌ Unexpected Error: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Unexpected error: $e'), backgroundColor: Colors.red),
-                          );
-                        }
+                        final authservice = AuthService();
+                        authservice.signUpUser(
+                          username: usernameController.text.trim(),
+                          password: passwordController.text.trim(),
+                          email: emailController.text.trim(),
+                          contactNumber: contactNumberController.text.trim(),
+                          context: context,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors
@@ -438,7 +382,7 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                   ),
-                  
+
                   // SSO Options Section
                   const SizedBox(height: 20),
                   const Text(
@@ -449,7 +393,7 @@ class _SignupState extends State<Signup> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  
+
                   // Google Login Button
                   Container(
                     width: 300,
@@ -470,8 +414,9 @@ class _SignupState extends State<Signup> {
                       icon: Image.asset(
                         'images/google_logo.png', // Make sure to add this asset
                         height: 24,
-                        errorBuilder: (context, error, stackTrace) => 
-                          const Icon(Icons.g_mobiledata, color: Colors.red, size: 24),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.g_mobiledata,
+                                color: Colors.red, size: 24),
                       ),
                       label: const Text(
                         'Continue with Google',
@@ -489,7 +434,7 @@ class _SignupState extends State<Signup> {
                       ),
                     ),
                   ),
-                  
+
                   // DigiLocker Login Button
                   const SizedBox(height: 15),
                   Container(
@@ -511,8 +456,9 @@ class _SignupState extends State<Signup> {
                       icon: Image.asset(
                         'images/digilocker_logo.png', // Make sure to add this asset
                         height: 24,
-                        errorBuilder: (context, error, stackTrace) => 
-                          const Icon(Icons.folder_shared, color: Colors.white, size: 24),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.folder_shared,
+                                color: Colors.white, size: 24),
                       ),
                       label: const Text(
                         'Continue with DigiLocker',

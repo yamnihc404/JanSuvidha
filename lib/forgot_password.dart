@@ -18,59 +18,59 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   // Function to send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
-  setState(() {
-    isLoading = true;
-  });
+    setState(() {
+      isLoading = true;
+    });
 
-  try {
-    await _auth.sendPasswordResetEmail(email: email);
-    print('Password reset email sent to $email'); // ✅ Debug print
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      print('Password reset email sent to $email');
 
-    if (mounted) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResetPasswordLinkSent(email: email),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      print(
+          'Error sending reset email: ${e.code} - ${e.message}'); // ✅ Debug print
+
       setState(() {
         isLoading = false;
       });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResetPasswordLinkSent(email: email),
+      String errorMessage = 'An error occurred. Please try again.';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'No user found with this email address.';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'Please enter a valid email address.';
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+      );
+    } catch (e) {
+      print('Unknown error: $e'); // ✅ Debug print
+
+      setState(() {
+        isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred. Please try again.'),
+          backgroundColor: Colors.red,
         ),
       );
     }
-  } on FirebaseAuthException catch (e) {
-    print('Error sending reset email: ${e.code} - ${e.message}'); // ✅ Debug print
-
-    setState(() {
-      isLoading = false;
-    });
-
-    String errorMessage = 'An error occurred. Please try again.';
-    if (e.code == 'user-not-found') {
-      errorMessage = 'No user found with this email address.';
-    } else if (e.code == 'invalid-email') {
-      errorMessage = 'Please enter a valid email address.';
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
-    );
-  } catch (e) {
-    print('Unknown error: $e'); // ✅ Debug print
-
-    setState(() {
-      isLoading = false;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('An error occurred. Please try again.'),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
-
 
   // Email validation function
   bool isValidEmail(String email) {
@@ -189,21 +189,25 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             ],
                           ),
                           child: ElevatedButton(
-                            onPressed: isLoading 
-                                ? null 
+                            onPressed: isLoading
+                                ? null
                                 : () {
                                     final email = emailController.text.trim();
                                     if (email.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         const SnackBar(
-                                          content: Text('Please enter your email'),
+                                          content:
+                                              Text('Please enter your email'),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                     } else if (!isValidEmail(email)) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         const SnackBar(
-                                          content: Text('Please enter a valid email address'),
+                                          content: Text(
+                                              'Please enter a valid email address'),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
@@ -212,7 +216,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                     }
                                   },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 255, 230, 160),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 255, 230, 160),
                               shadowColor: Colors.transparent,
                             ),
                             child: isLoading

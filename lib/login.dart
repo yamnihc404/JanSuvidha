@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jansuvidha/dashboard.dart';
 import 'forgot_password.dart';
+import 'config/auth_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,7 +12,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
   bool isLoading = false;
@@ -30,12 +31,12 @@ class _LoginState extends State<Login> {
         email: email,
         password: password,
       );
-      
+
       if (mounted) {
         setState(() {
           isLoading = false;
         });
-        
+
         // Navigate to dashboard on successful login
         Navigator.pushReplacement(
           context,
@@ -46,10 +47,10 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoading = false;
       });
-      
+
       // Show appropriate error message
       String errorMessage = 'Login failed. Please check your credentials.';
-      
+
       if (e.code == 'user-not-found') {
         errorMessage = 'No user found with this email.';
       } else if (e.code == 'wrong-password') {
@@ -59,7 +60,7 @@ class _LoginState extends State<Login> {
       } else if (e.code == 'user-disabled') {
         errorMessage = 'This account has been disabled.';
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
@@ -70,7 +71,7 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Login failed. Please try again.'),
@@ -148,7 +149,7 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                           child: TextField(
-                            controller: usernameController,
+                            controller: emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: const InputDecoration(
                               hintText: "Enter Email",
@@ -221,7 +222,8 @@ class _LoginState extends State<Login> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const ForgotPassword(),
+                                    builder: (context) =>
+                                        const ForgotPassword(),
                                   ),
                                 );
                               },
@@ -237,61 +239,51 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 10),
                         Container(
-                          width: 149,
-                          height: 55,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 255, 230, 160),
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                offset: const Offset(5, 5),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            onPressed: isLoading 
-                                ? null 
-                                : () {
-                                    final email = usernameController.text.trim();
-                                    final password = passwordController.text;
-                                    
-                                    if (email.isEmpty || password.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Please enter email and password'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    } else {
-                                      signIn(email, password);
-                                    }
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 255, 230, 160),
-                              shadowColor: Colors.transparent,
+                            width: 149,
+                            height: 55,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 255, 230, 160),
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  offset: const Offset(5, 5),
+                                  blurRadius: 10,
+                                ),
+                              ],
                             ),
-                            child: isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      color: Color.fromARGB(255, 14, 66, 170),
-                                      strokeWidth: 3,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                final _authservice = AuthService();
+                                _authservice.signInUser(
+                                  username: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                  context: context,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 255, 230, 160),
+                                shadowColor: Colors.transparent,
+                              ),
+                              child: isLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Color.fromARGB(255, 14, 66, 170),
+                                        strokeWidth: 3,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Login',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        color: Color.fromARGB(255, 14, 66, 170),
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  )
-                                : const Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      color: Color.fromARGB(255, 14, 66, 170),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                          ),
-                        ),
+                            )),
                         // Add extra padding at the bottom to ensure everything is visible
                         const SizedBox(height: 100),
                       ],

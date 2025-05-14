@@ -80,11 +80,11 @@ const hashedPassword = await bcrypt.hash(password, 10);
 
 
 UserRouter.post('/signin', async function (req, res) {
-  const { username, password } = req.body;
-
+  const { email, password } = req.body;
+  console.log(req.body)
   try {
     // Find the user
-    const user = await usermd.findOne({ username });
+    const user = await usermd.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'User not found.' });
     }

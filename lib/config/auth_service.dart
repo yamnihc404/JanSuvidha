@@ -57,7 +57,7 @@ class AuthService {
     required BuildContext context,
   }) async {
     final Map<String, dynamic> requestBody = {
-      'username': username,
+      'email': username,
       'password': password,
     };
 
