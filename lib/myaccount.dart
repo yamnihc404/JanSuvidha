@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/config/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
 import 'contact.dart';
 import 'config/app_config.dart';
-import 'widgets/logout_dialog.dart';
-
 
 class Myacc extends StatefulWidget {
-  const Myacc({super.key});
+  const Myacc({Key? key}) : super(key: key);
 
   @override
   State<Myacc> createState() => _MyaccState();
@@ -272,7 +269,7 @@ class _MyaccState extends State<Myacc> {
                       ),
                     ),
                     onTap: () {
-                      LogoutDialog.showLogoutDialog(context);
+                      Navigator.pop(context);
                     },
                   ),
                 ],
@@ -396,125 +393,109 @@ class _MyaccState extends State<Myacc> {
                     ),
                     const SizedBox(height: 10),
 
-                // Update Options
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color.fromARGB(255, 255, 215, 140),
-                        Colors.white,
-                        Color.fromARGB(255, 170, 255, 173),
-                      ],
-                      stops: [0.0, 0.4, 0.8],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        spreadRadius: 1,
-                        blurRadius: 5,
+                    // Update Options
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color.fromARGB(255, 255, 215, 140),
+                            Colors.white,
+                            Color.fromARGB(255, 170, 255, 173),
+                          ],
+                          stops: [0.0, 0.4, 0.8],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Account Settings',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 14, 66, 170),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Account Settings',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 14, 66, 170),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _buildAccountOption(
+                              context, 'Update Username', Icons.person_outline, () => _navigateToUpdateUsername()),
+                          _buildAccountOption(
+                              context, 'Change Password', Icons.lock_outline, () => _navigateToChangePassword()),
+                          _buildAccountOption(
+                              context, 'Update Phone Number', Icons.phone_outlined, () => _navigateToUpdatePhone()),
+                          _buildAccountOption(
+                              context, 'Update Email', Icons.email_outlined, () => _navigateToUpdateEmail()),
+                        ],
+                      ),
+                    ),
+
+                    // Bottom bar
+                    Container(
+                      height: 50,
+                      margin: const EdgeInsets.only(top: 30),
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 15, 62, 129),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(13),
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      _buildAccountOption(
-                          context, 'Update Username', Icons.person_outline),
-                      _buildAccountOption(
-                          context, 'Change Password', Icons.lock_outline),
-                      _buildAccountOption(
-                          context, 'Update Phone Number', Icons.phone_outlined),
-                      _buildAccountOption(
-                          context, 'Update Email', Icons.email_outlined),
-                    ],
-                  ),
-                ),
-
-                // Bottom bar
-                Container(
-                  height: 50,
-                  margin: const EdgeInsets.only(top: 30),
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 15, 62, 129),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(13),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountOption(
+      BuildContext context, String title, IconData icon, VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        splashColor: const Color.fromARGB(255, 14, 66, 170).withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: ListTile(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            leading: Icon(
+              icon,
+              color: const Color.fromARGB(255, 14, 66, 170),
+            ),
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color.fromARGB(255, 14, 66, 170),
+              ),
+            ),
+            trailing: const Icon(
+              Icons.arrow_forward_ios,
+              color: Color.fromARGB(255, 14, 66, 170),
+              size: 16,
             ),
           ),
         ),
       ),
     );
   }
-
- Widget _buildAccountOption(
-    BuildContext context, String title, IconData icon) {
-  VoidCallback onTap;
-  
-  // Assign the correct navigation function based on title
-  if (title == 'Update Username') {
-    onTap = _navigateToUpdateUsername;
-  } else if (title == 'Change Password') {
-    onTap = _navigateToChangePassword;
-  } else if (title == 'Update Phone Number') {
-    onTap = _navigateToUpdatePhone;
-  } else if (title == 'Update Email') {
-    onTap = _navigateToUpdateEmail;
-  } else {
-    // Default empty callback
-    onTap = () {};
-  }
-  
-  return Material(
-    color: Colors.transparent,
-    child: InkWell(
-      splashColor: const Color.fromARGB(255, 14, 66, 170).withOpacity(0.3),
-      borderRadius: BorderRadius.circular(8),
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          leading: Icon(
-            icon,
-            color: const Color.fromARGB(255, 14, 66, 170),
-          ),
-          title: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color.fromARGB(255, 14, 66, 170),
-            ),
-          ),
-          trailing: const Icon(
-            Icons.arrow_forward_ios,
-            color: Color.fromARGB(255, 14, 66, 170),
-            size: 16,
-          ),
-        ),
-      ),
-    ),
-  );
-}
   
   // Navigation methods for update screens
   void _navigateToUpdateUsername() async {

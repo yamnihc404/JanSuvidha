@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jansuvidha/config/auth_service.dart';
 import 'widgets/common_widgets.dart';
 import 'contact.dart';
 import 'myaccount.dart';
@@ -8,8 +9,6 @@ import 'filecomplain.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config/app_config.dart';
-import 'config/auth_service.dart';
-import 'package:jansuvidha/widgets/logout_dialog.dart';
 
 class Complaint {
   final String id;
@@ -55,7 +54,7 @@ class Complaint {
     String imageUrl = '';
     if (json['image'] != null) {
       if (json['image'].toString().startsWith('/')) {
-        imageUrl = '${AppConfig.apiBaseUrl}${json['image']}';
+        imageUrl = 'https://d8ae-103-185-109-76.ngrok-free.app${json['image']}';
       } else {
         imageUrl = json['image'].toString();
       }
@@ -113,17 +112,17 @@ class _InquiryState extends State<Inquiry> {
     isLoading = true;
   });
 
-    try {
-      final appConfig = AuthService();
-      final token = await appConfig.getToken();
+  try {
+    final appConfig = AuthService();
+    final token = await appConfig.getToken();
 
-      final response = await http.get(
-        Uri.parse('${AppConfig.apiBaseUrl}/complaints'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': '$token',
-        },
-      );
+    final response = await http.get(
+      Uri.parse('${AppConfig.apiBaseUrl}/complaints'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': '$token',
+      },
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -170,28 +169,66 @@ class _InquiryState extends State<Inquiry> {
 }
 
   void applyFilters() {
-    setState(() {
-      filteredComplaints = complaints.where((complaint) {
-        if (currentFilter != 'All' && complaint.status != currentFilter)
+  setState(() {
+    filteredComplaints = complaints.where((complaint) {
+      // Status filter
+      if (currentFilter != 'All' && complaint.status != currentFilter) {
+        return false;
+      }
+      
+      // Text search filter - improved to handle case insensitivity more efficiently
+      if (searchQuery.isNotEmpty) {
+        final lowerQuery = searchQuery.toLowerCase();
+        final titleMatch = complaint.title.toLowerCase().contains(lowerQuery);
+        final locationMatch = complaint.location.toLowerCase().contains(lowerQuery);
+        
+        if (!titleMatch && !locationMatch) {
           return false;
-        if (searchQuery.isNotEmpty &&
-            !complaint.title
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase()) &&
-            !complaint.location
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase())) return false;
-        if (selectedCategory != 'All Categories' &&
-            complaint.category != selectedCategory) return false;
-        if (startDate != null && complaint.date.isBefore(startDate!))
+        }
+      }
+      
+      // Category filter - optimized to handle case sensitivity properly
+      if (selectedCategory != 'All Categories' && 
+          complaint.category.toLowerCase() != selectedCategory.toLowerCase()) {
+        return false;
+      }
+      
+      // Date range filter - improved with proper date comparison
+      final complaintDate = DateTime(
+        complaint.date.year,
+        complaint.date.month,
+        complaint.date.day,
+      );
+      
+      if (startDate != null) {
+        final startDateNormalized = DateTime(
+          startDate!.year,
+          startDate!.month,
+          startDate!.day,
+        );
+        
+        if (complaintDate.isBefore(startDateNormalized)) {
           return false;
-        if (endDate != null &&
-            complaint.date.isAfter(endDate!.add(Duration(days: 1))))
+        }
+      }
+      
+      if (endDate != null) {
+        final endDateNormalized = DateTime(
+          endDate!.year,
+          endDate!.month,
+          endDate!.day,
+          23, 59, 59, // End of day
+        );
+        
+        if (complaintDate.isAfter(endDateNormalized)) {
           return false;
-        return true;
-      }).toList();
-    });
-  }
+        }
+      }
+      
+      return true;
+    }).toList();
+  });
+}
 
   Color getStatusColor(String status) {
     switch (status) {
@@ -218,7 +255,7 @@ class _InquiryState extends State<Inquiry> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: isSelected ? Colors.blue : Colors.grey[200],
           borderRadius: BorderRadius.circular(16),
@@ -239,10 +276,10 @@ class _InquiryState extends State<Inquiry> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 255, 228, 179),
+        backgroundColor: Color.fromARGB(255, 255, 228, 179),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(complaint.title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,31 +315,31 @@ class _InquiryState extends State<Inquiry> {
                             },
                             errorBuilder: (context, error, stackTrace) {
                               print("Error loading image: $error");
-                              return const Icon(Icons.image_not_supported,
+                              return Icon(Icons.image_not_supported,
                                   size: 50, color: Colors.white);
                             },
                           ),
                         ),
                       )
-                    : const Icon(Icons.image, size: 50, color: Colors.white),
+                    : Icon(Icons.image, size: 50, color: Colors.white),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text('Status: ${complaint.status}'),
               Text("Category: ${complaint.category}"),
               Text("Location: ${complaint.location}"),
               Text("Date: ${DateFormat('MMM d, yyyy').format(complaint.date)}"),
-              const SizedBox(height: 12),
-              const Text("Description:",
+              SizedBox(height: 12),
+              Text("Description:",
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(complaint.description),
             ],
           ),
         ),
         actions: [
           TextButton(
-            child: const Text('Close', style: TextStyle(color: Colors.blue)),
+            child: Text('Close', style: TextStyle(color: Colors.blue)),
             onPressed: () {
               Navigator.of(dialogContext).pop();
             },
@@ -518,7 +555,7 @@ class _InquiryState extends State<Inquiry> {
                         ),
                       ),
                       onTap: () {
-                        LogoutDialog.showLogoutDialog(context);
+                        Navigator.pop(context);
                       },
                     ),
                   ],
@@ -529,7 +566,7 @@ class _InquiryState extends State<Inquiry> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -551,7 +588,7 @@ class _InquiryState extends State<Inquiry> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.only(top: 16.0),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Jan Suvidha',
                         style: TextStyle(
@@ -578,11 +615,11 @@ class _InquiryState extends State<Inquiry> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Search',
-                        prefixIcon: const Icon(Icons.search),
+                        prefixIcon: Icon(Icons.search),
                         // Clear button that appears only when there's text
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.clear),
+                                icon: Icon(Icons.clear),
                                 onPressed: () {
                                   setState(() {
                                     _searchController.clear();
@@ -598,7 +635,7 @@ class _InquiryState extends State<Inquiry> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                        contentPadding: EdgeInsets.symmetric(vertical: 0),
                       ),
                       onChanged: (value) {
                         setState(() {
@@ -608,7 +645,7 @@ class _InquiryState extends State<Inquiry> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -620,13 +657,13 @@ class _InquiryState extends State<Inquiry> {
                             child: Row(
                               children: [
                                 _buildFilterOption('All'),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _buildFilterOption('Pending'),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _buildFilterOption('In Progress'),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _buildFilterOption('Resolved'),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8),
                                 _buildFilterOption('Dispute'),
                               ],
                             ),
@@ -663,9 +700,9 @@ class _InquiryState extends State<Inquiry> {
                           ),
                           const SizedBox(height: 12),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            padding: EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 254, 232, 179),
+                              color: Color.fromARGB(255, 254, 232, 179),
                               borderRadius: BorderRadius.circular(10),
                               boxShadow: [
                                 BoxShadow(
@@ -677,7 +714,7 @@ class _InquiryState extends State<Inquiry> {
                               ],
                             ),
                             child: DropdownButtonFormField<String>(
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Category',
                                 border: InputBorder.none,
                                 labelStyle: TextStyle(
@@ -706,11 +743,10 @@ class _InquiryState extends State<Inquiry> {
                                   });
                                 }
                               },
-                              dropdownColor:
-                                  const Color.fromARGB(255, 254, 232, 179),
+                              dropdownColor: Color.fromARGB(255, 254, 232, 179),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Expanded(
@@ -730,11 +766,10 @@ class _InquiryState extends State<Inquiry> {
                                     }
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 12),
                                     decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 254, 232, 179),
+                                      color: Color.fromARGB(255, 254, 232, 179),
                                       borderRadius: BorderRadius.circular(10),
                                       boxShadow: [
                                         BoxShadow(
@@ -754,12 +789,12 @@ class _InquiryState extends State<Inquiry> {
                                               ? DateFormat('MMM d, yyyy')
                                                   .format(startDate!)
                                               : 'From Date',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             color: Color.fromARGB(
                                                 255, 14, 66, 170),
                                           ),
                                         ),
-                                        const Icon(
+                                        Icon(
                                           Icons.calendar_today,
                                           color:
                                               Color.fromARGB(255, 14, 66, 170),
@@ -770,7 +805,7 @@ class _InquiryState extends State<Inquiry> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Expanded(
                                 child: InkWell(
                                   onTap: () async {
@@ -788,11 +823,10 @@ class _InquiryState extends State<Inquiry> {
                                     }
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
+                                    padding: EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 12),
                                     decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                          255, 254, 232, 179),
+                                      color: Color.fromARGB(255, 254, 232, 179),
                                       borderRadius: BorderRadius.circular(10),
                                       boxShadow: [
                                         BoxShadow(
@@ -812,12 +846,12 @@ class _InquiryState extends State<Inquiry> {
                                               ? DateFormat('MMM d, yyyy')
                                                   .format(endDate!)
                                               : 'To Date',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             color: Color.fromARGB(
                                                 255, 14, 66, 170),
                                           ),
                                         ),
-                                        const Icon(
+                                        Icon(
                                           Icons.calendar_today,
                                           color:
                                               Color.fromARGB(255, 14, 66, 170),
@@ -830,27 +864,27 @@ class _InquiryState extends State<Inquiry> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Row(
                             children: [
                               Expanded(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
-                                        const Color.fromARGB(255, 14, 66, 170),
+                                        Color.fromARGB(255, 14, 66, 170),
                                     foregroundColor: Colors.white,
                                   ),
                                   onPressed: applyFilters,
-                                  child: const Text('Apply Filters'),
+                                  child: Text('Apply Filters'),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               Expanded(
                                 child: OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor:
-                                        const Color.fromARGB(255, 14, 66, 170),
-                                    side: const BorderSide(
+                                        Color.fromARGB(255, 14, 66, 170),
+                                    side: BorderSide(
                                         color:
                                             Color.fromARGB(255, 14, 66, 170)),
                                   ),
@@ -866,7 +900,7 @@ class _InquiryState extends State<Inquiry> {
                                           List.from(complaints);
                                     });
                                   },
-                                  child: const Text('Reset Filters'),
+                                  child: Text('Reset Filters'),
                                 ),
                               ),
                             ],
@@ -879,7 +913,7 @@ class _InquiryState extends State<Inquiry> {
                     child: RefreshIndicator(
                       onRefresh: fetchComplaints,
                       child: isLoading
-                          ? const Center(child: CircularProgressIndicator())
+                          ? Center(child: CircularProgressIndicator())
                           : filteredComplaints.isEmpty
                               ? Center(
                                   child: Text(
@@ -889,12 +923,11 @@ class _InquiryState extends State<Inquiry> {
                                   ),
                                 )
                               : ListView.builder(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
                                   shrinkWrap:
                                       true, // Ensure it takes only needed space
                                   physics:
-                                      const AlwaysScrollableScrollPhysics(), // Allow scrolling
+                                      AlwaysScrollableScrollPhysics(), // Allow scrolling
                                   itemCount: filteredComplaints.length,
                                   itemBuilder: (context, index) {
                                     final complaint = filteredComplaints[index];
@@ -903,8 +936,7 @@ class _InquiryState extends State<Inquiry> {
                                           context, complaint),
                                       child: Card(
                                         elevation: 2,
-                                        margin:
-                                            const EdgeInsets.only(bottom: 12),
+                                        margin: EdgeInsets.only(bottom: 12),
                                         child: Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(
@@ -919,17 +951,17 @@ class _InquiryState extends State<Inquiry> {
                                                   Expanded(
                                                     child: Text(
                                                       complaint.title,
-                                                      style: const TextStyle(
+                                                      style: TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 4),
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 4),
                                                     decoration: BoxDecoration(
                                                       color: getStatusColor(
                                                           complaint.status),
@@ -953,16 +985,16 @@ class _InquiryState extends State<Inquiry> {
                                                   ),
                                                 ],
                                               ),
-                                              const SizedBox(height: 8),
+                                              SizedBox(height: 8),
                                               Text(
                                                   DateFormat('MMM d, yyyy')
                                                       .format(complaint.date),
                                                   style: TextStyle(
                                                       color: Colors.grey[600])),
-                                              const SizedBox(height: 4),
+                                              SizedBox(height: 4),
                                               Text(complaint.location,
-                                                  style: const TextStyle(
-                                                      fontSize: 14)),
+                                                  style:
+                                                      TextStyle(fontSize: 14)),
                                             ],
                                           ),
                                         ),
