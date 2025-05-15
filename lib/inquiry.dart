@@ -9,6 +9,7 @@ import 'filecomplain.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config/app_config.dart';
+import 'widgets/logout_dialog.dart';
 
 class Complaint {
   final String id;
@@ -108,127 +109,129 @@ class _InquiryState extends State<Inquiry> {
   }
 
   Future<void> fetchComplaints() async {
-  setState(() {
-    isLoading = true;
-  });
+    setState(() {
+      isLoading = true;
+    });
 
-  try {
-    final appConfig = AuthService();
-    final token = await appConfig.getToken();
+    try {
+      final appConfig = AuthService();
+      final token = await appConfig.getToken();
 
-    final response = await http.get(
-      Uri.parse('${AppConfig.apiBaseUrl}/complaints'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': '$token',
-      },
-    );
+      final response = await http.get(
+        Uri.parse('${AppConfig.apiBaseUrl}/complaints'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-      if (data['success'] == true && data['data'] != null) {
-        final complaintsData = data['data'];
+        if (data['success'] == true && data['data'] != null) {
+          final complaintsData = data['data'];
 
-        // Improved processing to handle potential errors
-        List<Complaint> loadedComplaints = [];
-        for (var complaintData in complaintsData) {
-          try {
-            loadedComplaints.add(Complaint.fromJson(complaintData));
-          } catch (e) {
-            print('Error processing complaint: $e');
-            // Continue with other complaints even if one fails
+          // Improved processing to handle potential errors
+          List<Complaint> loadedComplaints = [];
+          for (var complaintData in complaintsData) {
+            try {
+              loadedComplaints.add(Complaint.fromJson(complaintData));
+            } catch (e) {
+              print('Error processing complaint: $e');
+              // Continue with other complaints even if one fails
+            }
           }
-        }
 
-        setState(() {
-          complaints = loadedComplaints;
-          // Apply filters after loading
-          applyFilters();
-          isLoading = false;
-        });
+          setState(() {
+            complaints = loadedComplaints;
+            // Apply filters after loading
+            applyFilters();
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            complaints = [];
+            filteredComplaints = [];
+            isLoading = false;
+          });
+        }
       } else {
         setState(() {
-          complaints = [];
-          filteredComplaints = [];
           isLoading = false;
         });
+        print('Failed to load complaints: ${response.body}');
       }
-    } else {
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
-      print('Failed to load complaints: ${response.body}');
+      print('Error fetching complaints: $e');
     }
-  } catch (e) {
-    setState(() {
-      isLoading = false;
-    });
-    print('Error fetching complaints: $e');
   }
-}
 
   void applyFilters() {
-  setState(() {
-    filteredComplaints = complaints.where((complaint) {
-      // Status filter
-      if (currentFilter != 'All' && complaint.status != currentFilter) {
-        return false;
-      }
-      
-      // Text search filter - improved to handle case insensitivity more efficiently
-      if (searchQuery.isNotEmpty) {
-        final lowerQuery = searchQuery.toLowerCase();
-        final titleMatch = complaint.title.toLowerCase().contains(lowerQuery);
-        final locationMatch = complaint.location.toLowerCase().contains(lowerQuery);
-        
-        if (!titleMatch && !locationMatch) {
+    setState(() {
+      filteredComplaints = complaints.where((complaint) {
+        // Status filter
+        if (currentFilter != 'All' && complaint.status != currentFilter) {
           return false;
         }
-      }
-      
-      // Category filter - optimized to handle case sensitivity properly
-      if (selectedCategory != 'All Categories' && 
-          complaint.category.toLowerCase() != selectedCategory.toLowerCase()) {
-        return false;
-      }
-      
-      // Date range filter - improved with proper date comparison
-      final complaintDate = DateTime(
-        complaint.date.year,
-        complaint.date.month,
-        complaint.date.day,
-      );
-      
-      if (startDate != null) {
-        final startDateNormalized = DateTime(
-          startDate!.year,
-          startDate!.month,
-          startDate!.day,
+
+        // Text search filter - improved to handle case insensitivity more efficiently
+        if (searchQuery.isNotEmpty) {
+          final lowerQuery = searchQuery.toLowerCase();
+          final titleMatch = complaint.title.toLowerCase().contains(lowerQuery);
+          final locationMatch =
+              complaint.location.toLowerCase().contains(lowerQuery);
+
+          if (!titleMatch && !locationMatch) {
+            return false;
+          }
+        }
+
+        // Category filter - optimized to handle case sensitivity properly
+        if (selectedCategory != 'All Categories' &&
+            complaint.category.toLowerCase() !=
+                selectedCategory.toLowerCase()) {
+          return false;
+        }
+
+        // Date range filter - improved with proper date comparison
+        final complaintDate = DateTime(
+          complaint.date.year,
+          complaint.date.month,
+          complaint.date.day,
         );
-        
-        if (complaintDate.isBefore(startDateNormalized)) {
-          return false;
+
+        if (startDate != null) {
+          final startDateNormalized = DateTime(
+            startDate!.year,
+            startDate!.month,
+            startDate!.day,
+          );
+
+          if (complaintDate.isBefore(startDateNormalized)) {
+            return false;
+          }
         }
-      }
-      
-      if (endDate != null) {
-        final endDateNormalized = DateTime(
-          endDate!.year,
-          endDate!.month,
-          endDate!.day,
-          23, 59, 59, // End of day
-        );
-        
-        if (complaintDate.isAfter(endDateNormalized)) {
-          return false;
+
+        if (endDate != null) {
+          final endDateNormalized = DateTime(
+            endDate!.year,
+            endDate!.month,
+            endDate!.day,
+            23, 59, 59, // End of day
+          );
+
+          if (complaintDate.isAfter(endDateNormalized)) {
+            return false;
+          }
         }
-      }
-      
-      return true;
-    }).toList();
-  });
-}
+
+        return true;
+      }).toList();
+    });
+  }
 
   Color getStatusColor(String status) {
     switch (status) {
@@ -407,12 +410,8 @@ class _InquiryState extends State<Inquiry> {
                         ),
                       ),
                       onTap: () {
+                        Navigator.of(context).pop();
                         Navigator.pop(context);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Dashboard()),
-                        );
                       },
                     ),
                     ListTile(
@@ -555,7 +554,7 @@ class _InquiryState extends State<Inquiry> {
                         ),
                       ),
                       onTap: () {
-                        Navigator.pop(context);
+                        LogoutDialog.showLogoutDialog(context);
                       },
                     ),
                   ],

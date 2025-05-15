@@ -79,7 +79,6 @@ class AuthService {
         // ✅ Save tokens and user data
         await _saveAuthData(accessToken, refreshToken, userData);
 
-        // ✅ Navigate to the home page
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         final errorMessage =

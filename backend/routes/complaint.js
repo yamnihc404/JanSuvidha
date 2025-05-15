@@ -52,6 +52,7 @@ const complaintSchema = z.object({
 
 ComplaintRouter.post('/', verifyToken, upload.single('image'), async (req, res) => {
   try {
+
     const userId = req.user.id;
  
     if (!req.file) {

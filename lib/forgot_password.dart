@@ -1,6 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'reset_password_link_sent.dart';
+import 'package:http/http.dart' as http;
+import 'config/app_config.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -13,61 +14,23 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController emailController = TextEditingController();
   bool isLoading = false;
 
-  // Firebase Auth instance
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
   // Function to send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
-    setState(() {
-      isLoading = true;
-    });
+    final email = emailController.text.trim();
 
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-      print('Password reset email sent to $email');
+    final response = await http.post(
+      Uri.parse('${AppConfig.apiBaseUrl}/user/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
 
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ResetPasswordLinkSent(email: email),
-          ),
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      print(
-          'Error sending reset email: ${e.code} - ${e.message}'); // ✅ Debug print
-
-      setState(() {
-        isLoading = false;
-      });
-
-      String errorMessage = 'An error occurred. Please try again.';
-      if (e.code == 'user-not-found') {
-        errorMessage = 'No user found with this email address.';
-      } else if (e.code == 'invalid-email') {
-        errorMessage = 'Please enter a valid email address.';
-      }
-
+    if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Check your email for reset link')),
       );
-    } catch (e) {
-      print('Unknown error: $e'); // ✅ Debug print
-
-      setState(() {
-        isLoading = false;
-      });
-
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An error occurred. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Email not found or server error')),
       );
     }
   }

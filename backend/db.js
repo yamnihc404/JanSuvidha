@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true},
     contactnumber: { type: String, required: true,unique: true},
     password: { type: String, required: true },
+    resetToken: { type: String, default: null },              // ✅ Should be a String
+  resetTokenExpiry: { type: Date, default: null },
   });
 
   const complaintSchema = new mongoose.Schema({

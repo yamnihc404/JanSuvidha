@@ -487,7 +487,7 @@ class _AddcomplainState extends State<Addcomplain> {
       final authservice = AuthService();
       final token = await authservice.getToken();
       // Headers (assuming you have token based auth)
-      request.headers['Authorization'] = token!;
+      request.headers['Authorization'] = 'Bearer $token';
       // Replace with actual token
 
       // Add fields
@@ -756,13 +756,12 @@ class _AddcomplainState extends State<Addcomplain> {
         height: 55,
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 254, 232, 179),
-          borderRadius: BorderRadius.circular(20), // Rounded edges
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3), // Shadow color with opacity
-              offset: const Offset(
-                  5, 5), // Shadow offset (light coming from top left)
-              blurRadius: 10, // Blur radius of the shadow
+              color: Colors.black.withOpacity(0.3),
+              offset: const Offset(5, 5),
+              blurRadius: 10,
             ),
           ],
         ),
@@ -771,9 +770,8 @@ class _AddcomplainState extends State<Addcomplain> {
             _submitComplaint();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors
-                .transparent, // Make the ElevatedButton background transparent
-            shadowColor: Colors.transparent, // Remove default shadow
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
           ),
           child: const Text(
             'Submit',
@@ -843,11 +841,8 @@ class _AddcomplainState extends State<Addcomplain> {
                       ),
                     ),
                     onTap: () {
+                      Navigator.of(context).pop();
                       Navigator.pop(context);
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Dashboard()));
                     },
                   ),
                   ListTile(

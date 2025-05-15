@@ -22,6 +22,8 @@ app.use((err, req, res, next) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/user', UserRouter);
 app.use('/complaints', ComplaintRouter);
-
+app.get('/reset-password/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+});
 
 app.listen(PORT, ()=>{console.log(`Server is live at ${PORT}`)})

@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'dashboard.dart';
 import 'contact.dart';
 import 'config/app_config.dart';
+import 'widgets/logout_dialog.dart';
+import 'config/auth_service.dart';
 
 class Myacc extends StatefulWidget {
   const Myacc({Key? key}) : super(key: key);
@@ -25,34 +27,35 @@ class _MyaccState extends State<Myacc> {
     super.initState();
     _fetchUserData();
   }
-  
+
   // Fetch user data from backend
   Future<void> _fetchUserData() async {
     setState(() {
       isLoading = true;
     });
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-      
+      final appConfig = AuthService();
+      final token = await appConfig.getToken();
+
       if (token == null) {
         // If no token, try to use cached data
         _loadCachedUserData();
         return;
       }
-      
+
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/user/profile'),
         headers: {
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
-      
+
       if (response.statusCode == 200) {
         final userData = json.decode(response.body);
-        
+
         // Save to state and cache
         setState(() {
           username = userData['username'] ?? 'Username';
@@ -60,7 +63,7 @@ class _MyaccState extends State<Myacc> {
           phone = userData['phone'] ?? 'Not provided';
           isLoading = false;
         });
-        
+
         // Cache data
         await prefs.setString('username', username);
         await prefs.setString('email', email);
@@ -79,7 +82,7 @@ class _MyaccState extends State<Myacc> {
       );
     }
   }
-  
+
   // Load data from cache if API call fails
   Future<void> _loadCachedUserData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -146,11 +149,8 @@ class _MyaccState extends State<Myacc> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Dashboard()),
-                      );
+                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     },
                   ),
                   ExpansionTile(
@@ -269,7 +269,7 @@ class _MyaccState extends State<Myacc> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      LogoutDialog.showLogoutDialog(context);
                     },
                   ),
                 ],
@@ -324,137 +324,167 @@ class _MyaccState extends State<Myacc> {
               end: Alignment.bottomRight,
             ),
           ),
-          child: isLoading 
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Color.fromARGB(255, 14, 66, 170),
-                ),
-              )
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // App Logo
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top,
-                      ),
-                      child: Transform.scale(
-                        scale: 1.6,
-                        child: Image.asset(
-                          'images/Logo.png',
-                          width: 250,
-                          height: 220,
+          child: isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // App Logo
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).padding.top,
+                        ),
+                        child: Transform.scale(
+                          scale: 1.6,
+                          child: Image.asset(
+                            'images/Logo.png',
+                            width: 250,
+                            height: 220,
+                          ),
                         ),
                       ),
-                    ),
 
-                    // Profile Avatar
-                    Transform.translate(
-                      offset: const Offset(0, -10),
-                      child: const Icon(
-                        Icons.account_circle,
-                        size: 90,
-                        color: Color.fromARGB(255, 14, 66, 170),
+                      // Profile Avatar
+                      Transform.translate(
+                        offset: const Offset(0, -10),
+                        child: const Icon(
+                          Icons.account_circle,
+                          size: 90,
+                          color: Color.fromARGB(255, 14, 66, 170),
+                        ),
                       ),
-                    ),
-                    Transform.translate(
-                      offset: const Offset(0, -10),
-                      child: Column(
-                        children: [
-                          Text(
-                            username,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 14, 66, 170),
+                      Transform.translate(
+                        offset: const Offset(0, -10),
+                        child: Column(
+                          children: [
+                            Text(
+                              username,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            email,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color.fromARGB(255, 14, 66, 170),
-                              fontWeight: FontWeight.w500,
+                            const SizedBox(height: 4),
+                            Text(
+                              email,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            phone,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color.fromARGB(255, 14, 66, 170),
-                              fontWeight: FontWeight.w500,
+                            const SizedBox(height: 4),
+                            Text(
+                              phone,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Update Options
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color.fromARGB(255, 255, 215, 140),
-                            Colors.white,
-                            Color.fromARGB(255, 170, 255, 173),
                           ],
-                          stops: [0.0, 0.4, 0.8],
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 5,
-                          ),
-                        ],
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Account Settings',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildAccountOption(
-                              context, 'Update Username', Icons.person_outline, () => _navigateToUpdateUsername()),
-                          _buildAccountOption(
-                              context, 'Change Password', Icons.lock_outline, () => _navigateToChangePassword()),
-                          _buildAccountOption(
-                              context, 'Update Phone Number', Icons.phone_outlined, () => _navigateToUpdatePhone()),
-                          _buildAccountOption(
-                              context, 'Update Email', Icons.email_outlined, () => _navigateToUpdateEmail()),
-                        ],
-                      ),
-                    ),
+                      const SizedBox(height: 10),
 
-                    // Bottom bar
-                    Container(
-                      height: 50,
-                      margin: const EdgeInsets.only(top: 30),
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 15, 62, 129),
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(13),
+                      // Update Options
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color.fromARGB(255, 255, 215, 140),
+                              Colors.white,
+                              Color.fromARGB(255, 170, 255, 173),
+                            ],
+                            stops: [0.0, 0.4, 0.8],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Account Settings',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 14, 66, 170),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _buildAccountOption(
+                                context,
+                                'Update Username',
+                                Icons.person_outline,
+                                () => _navigateToUpdateUsername()),
+                            _buildAccountOption(
+                                context,
+                                'Change Password',
+                                Icons.lock_outline,
+                                () => _navigateToChangePassword()),
+                            _buildAccountOption(
+                                context,
+                                'Update Phone Number',
+                                Icons.phone_outlined,
+                                () => _navigateToUpdatePhone()),
+                            _buildAccountOption(
+                                context,
+                                'Update Email',
+                                Icons.email_outlined,
+                                () => _navigateToUpdateEmail()),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 24),
+                        ),
+                        onPressed: () {
+                          LogoutDialog.showLogoutDialog(
+                              context); // Show confirmation dialog
+                        },
+                        child: const Text(
+                          'Log Out',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                      // Bottom bar
+                      Container(
+                        height: 50,
+                        margin: const EdgeInsets.only(top: 30),
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 15, 62, 129),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(13),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
         ),
       ),
     );
@@ -496,7 +526,7 @@ class _MyaccState extends State<Myacc> {
       ),
     );
   }
-  
+
   // Navigation methods for update screens
   void _navigateToUpdateUsername() async {
     final result = await Navigator.push(
@@ -518,12 +548,12 @@ class _MyaccState extends State<Myacc> {
         ),
       ),
     );
-    
+
     if (result == true) {
       _fetchUserData();
     }
   }
-  
+
   void _navigateToChangePassword() async {
     final result = await Navigator.push(
       context,
@@ -531,7 +561,7 @@ class _MyaccState extends State<Myacc> {
         builder: (context) => const ChangePasswordScreen(),
       ),
     );
-    
+
     if (result == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -541,7 +571,7 @@ class _MyaccState extends State<Myacc> {
       );
     }
   }
-  
+
   void _navigateToUpdatePhone() async {
     final result = await Navigator.push(
       context,
@@ -563,12 +593,12 @@ class _MyaccState extends State<Myacc> {
         ),
       ),
     );
-    
+
     if (result == true) {
       _fetchUserData();
     }
   }
-  
+
   void _navigateToUpdateEmail() async {
     final result = await Navigator.push(
       context,
@@ -590,7 +620,7 @@ class _MyaccState extends State<Myacc> {
         ),
       ),
     );
-    
+
     if (result == true) {
       _fetchUserData();
     }
@@ -648,8 +678,9 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-      
+      final authservice = AuthService();
+      final token = await authservice.getToken();
+
       if (token == null) {
         setState(() {
           _errorMessage = 'Authentication error. Please login again.';
@@ -657,29 +688,30 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
         });
         return;
       }
-      
+
       final response = await http.patch(
         Uri.parse('${AppConfig.apiBaseUrl}/user/profile'),
         headers: {
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: json.encode({
           widget.fieldName: _controller.text.trim(),
         }),
       );
-      
+
       if (response.statusCode == 200) {
         // Update local cache
         await prefs.setString(widget.fieldName, _controller.text.trim());
-        
+
         if (mounted) {
           Navigator.pop(context, true);
         }
       } else {
         final errorData = json.decode(response.body);
         setState(() {
-          _errorMessage = errorData['error'] ?? 'Failed to update ${widget.fieldName}';
+          _errorMessage =
+              errorData['error'] ?? 'Failed to update ${widget.fieldName}';
           _isLoading = false;
         });
       }
@@ -756,7 +788,8 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
                       keyboardType: widget.keyboardType,
                       validator: widget.validator,
                       decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 16),
                         border: InputBorder.none,
                         hintText: 'Enter your ${widget.fieldName}',
                       ),
@@ -825,8 +858,6 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
   }
 }
 
-// Specialized screen for changing password
-// Specialized screen for changing password
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
 
@@ -837,13 +868,13 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _currentPasswordController = TextEditingController();
-  final _newPasswordController     = TextEditingController();
+  final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
   String? _errorMessage;
   bool _showCurrentPassword = false;
-  bool _showNewPassword     = false;
+  bool _showNewPassword = false;
   bool _showConfirmPassword = false;
 
   @override
@@ -863,8 +894,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
+      final authservice = AuthService();
+      final token = await authservice.getToken();
       if (token == null) {
         setState(() {
           _errorMessage = 'Authentication error. Please login again.';
@@ -873,24 +904,25 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         return;
       }
 
-      final response = await http.patch(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/change-password'),
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/user/update-password'),
         headers: {
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: json.encode({
           'currentPassword': _currentPasswordController.text.trim(),
-          'newPassword':     _newPasswordController.text.trim(),
+          'newPassword': _newPasswordController.text.trim(),
         }),
       );
-
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         if (mounted) Navigator.pop(context, true);
       } else {
         final errorData = json.decode(response.body);
         setState(() {
-          _errorMessage = errorData['error'] ?? 'Failed to update password';
+          _errorMessage = errorData['message'] ?? 'Failed to update password';
           _isLoading = false;
         });
       }
@@ -969,7 +1001,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   label: 'Current Password',
                   controller: _currentPasswordController,
                   obscureText: _showCurrentPassword,
-                  toggleVisibility: () => setState(() => _showCurrentPassword = !_showCurrentPassword),
+                  toggleVisibility: () => setState(
+                      () => _showCurrentPassword = !_showCurrentPassword),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your current password';
@@ -982,7 +1015,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   label: 'New Password',
                   controller: _newPasswordController,
                   obscureText: _showNewPassword,
-                  toggleVisibility: () => setState(() => _showNewPassword = !_showNewPassword),
+                  toggleVisibility: () =>
+                      setState(() => _showNewPassword = !_showNewPassword),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a new password';
@@ -998,7 +1032,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   label: 'Confirm New Password',
                   controller: _confirmPasswordController,
                   obscureText: _showConfirmPassword,
-                  toggleVisibility: () => setState(() => _showConfirmPassword = !_showConfirmPassword),
+                  toggleVisibility: () => setState(
+                      () => _showConfirmPassword = !_showConfirmPassword),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please confirm your new password';
