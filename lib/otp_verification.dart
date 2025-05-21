@@ -1,8 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:jansuvidha/config/app_config.dart';
 import 'widgets/common_widgets.dart';
 
 class OtpVerification extends StatefulWidget {
-  const OtpVerification({super.key});
+  final String verificationType;
+  final String contactInfo;
+  const OtpVerification(
+      {super.key, required this.verificationType, required this.contactInfo});
 
   @override
   State<OtpVerification> createState() => _OtpVerificationState();
@@ -18,6 +25,9 @@ class _OtpVerificationState extends State<OtpVerification> {
     4,
     (index) => FocusNode(),
   );
+  late Timer _resendTimer;
+  int _resendTimeout = 60;
+  bool _canResend = false;
 
   @override
   void dispose() {
@@ -31,66 +41,117 @@ class _OtpVerificationState extends State<OtpVerification> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _startResendTimer();
+  }
+
+  void _startResendTimer() {
+    _canResend = false;
+    _resendTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_resendTimeout > 0) {
+        setState(() => _resendTimeout--);
+      } else {
+        _canResend = true;
+        timer.cancel();
+      }
+    });
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+      duration: const Duration(seconds: 3),
+      behavior: SnackBarBehavior.floating, // Makes it float above content
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 100, // Positions near top
+        left: 20,
+        right: 20,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(10), // Rounded bottom corners
+        ),
+      ),
+    ));
+  }
+
+  void _resendOtp() {
+    // Call send-otp API
+    http.post(
+      Uri.parse(
+          '${AppConfig.apiBaseUrl}/user/send-${widget.verificationType}-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({widget.verificationType: widget.contactInfo}),
+    );
+    _startResendTimer();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final baseColor = const Color.fromARGB(255, 14, 66, 170);
+
     return Scaffold(
       body: Stack(
         children: [
           const GradientBackground(),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'OTP Verification',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: screenWidth * 0.07,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 14, 66, 170),
+                    color: baseColor,
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Enter the OTP sent to your phone or email',
+                SizedBox(height: screenHeight * 0.015),
+                Text(
+                  'Enter the OTP sent to ${widget.contactInfo}',
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Color.fromARGB(255, 88, 88, 88),
+                    fontSize: screenWidth * 0.04,
+                    color: const Color.fromARGB(255, 88, 88, 88),
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: screenHeight * 0.04),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(
                     4,
                     (index) => SizedBox(
-                      width: 60,
-                      height: 60,
+                      width: screenWidth * 0.15,
+                      height: screenWidth * 0.15,
                       child: TextField(
                         controller: _controllers[index],
                         focusNode: _focusNodes[index],
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                         maxLength: 1,
-                        style: const TextStyle(fontSize: 24),
+                        style: TextStyle(fontSize: screenWidth * 0.06),
                         decoration: InputDecoration(
                           counterText: '',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.025),
+                            borderSide: BorderSide(color: baseColor),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.025),
+                            borderSide: BorderSide(color: baseColor),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                              width: 2,
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.025),
+                            borderSide: BorderSide(
+                              color: baseColor,
+                              width: screenWidth * 0.005,
                             ),
                           ),
                         ),
@@ -106,40 +167,68 @@ class _OtpVerificationState extends State<OtpVerification> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: screenHeight * 0.04),
                 StyledContainer(
-                  height: 60,
-                  width: 200,
+                  height: screenHeight * 0.07,
+                  width: screenWidth * 0.5,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Verify OTP logic here
+                    onPressed: () async {
                       String otp = _controllers.map((c) => c.text).join();
-                      print('Entered OTP: $otp');
+                      if (otp.length != 4) {
+                        _showErrorSnackBar('Enter complete OTP');
+                        return;
+                      }
+
+                      try {
+                        final endpoint = widget.verificationType == 'email'
+                            ? 'verify-email-otp'
+                            : 'verify-phone-otp';
+
+                        final response = await http.post(
+                          Uri.parse('${AppConfig.apiBaseUrl}/user/$endpoint'),
+                          headers: {'Content-Type': 'application/json'},
+                          body: jsonEncode({
+                            widget.verificationType: widget.contactInfo,
+                            'otp': otp
+                          }),
+                        );
+
+                        if (response.statusCode == 200) {
+                          Navigator.pop(context, true);
+                        } else {
+                          final error = jsonDecode(response.body)['message'] ??
+                              'Verification failed';
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(error)),
+                          );
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${e.toString()}')),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Verify',
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Color.fromARGB(255, 14, 66, 170),
+                        fontSize: screenWidth * 0.05,
+                        color: baseColor,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: screenHeight * 0.03),
                 TextButton(
-                  onPressed: () {
-                    // Resend OTP logic here
-                    print('Resend OTP pressed');
-                  },
-                  child: const Text(
-                    'Resend OTP',
+                  onPressed: _canResend ? _resendOtp : null,
+                  child: Text(
+                    _canResend ? 'Resend OTP' : 'Resend in $_resendTimeout',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 14, 66, 170),
-                      fontSize: 16,
+                      color: baseColor,
+                      fontSize: screenWidth * 0.04,
                     ),
                   ),
                 ),
@@ -153,22 +242,20 @@ class _OtpVerificationState extends State<OtpVerification> {
             child: BottomRoundedBar(),
           ),
           Positioned(
-            bottom: 20,
-            left: 20,
+            bottom: screenHeight * 0.03,
+            left: screenWidth * 0.05,
             child: SizedBox(
-              width: 50,
-              height: 60,
+              width: screenWidth * 0.12,
+              height: screenWidth * 0.12,
               child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.pop(context); // Navigate back to signup page
-                },
+                onPressed: () => Navigator.pop(context),
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 254, 183, 101),
                 mini: true,
-                child: const Icon(
+                child: Icon(
                   Icons.arrow_back_ios_new_sharp,
-                  color: Color.fromARGB(255, 15, 62, 129),
-                  size: 25,
+                  color: const Color.fromARGB(255, 15, 62, 129),
+                  size: screenWidth * 0.06,
                 ),
               ),
             ),

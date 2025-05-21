@@ -81,12 +81,67 @@ const RefreshTokenSchema = new mongoose.Schema({
     required: true 
   },
 });
-  
+ 
+
+const notificationSchema = new mongoose.Schema({
+  userId: { 
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  complaintId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Complaint',
+    required: true
+  },
+  message: {
+    type: String,
+    required: true
+  },
+  read: {
+    type: Boolean,
+    default: false
+  },
+  actionRequired: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  resolvedAt: {
+    type: Date
+  },
+  userAction: {
+    type: String,
+    enum: ['confirmed', 'disputed'], 
+    default: null
+  },
+  actionTakenAt: { 
+    type: Date
+  }
+});
+
+const verificationRequestSchema = new mongoose.Schema({
+  email: { type: String, unique: true },
+  phone: { type: String, unique: true },
+  emailOtp: String,
+  emailOtpExpiry: Date,
+  phoneOtp: String,
+  phoneOtpExpiry: Date,
+  emailVerified: { type: Boolean, default: false },
+  phoneVerified: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+
+
 complaintSchema.index({ location: '2dsphere' });
   
 const Complaint = mongoose.model('Complaint', complaintSchema);
 const usermd = mongoose.model('User', userSchema);
 const RefreshTokenModel = mongoose.model('RefreshToken', RefreshTokenSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
+const VerificationRequest = mongoose.model('VerificationRequest', verificationRequestSchema);
 
-module.exports = { usermd, Complaint,  RefreshTokenModel};
-
+module.exports = { usermd, Complaint,  RefreshTokenModel, Notification,VerificationRequest};

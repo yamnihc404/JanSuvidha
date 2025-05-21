@@ -5,6 +5,7 @@ const PORT = 3000;
 const cors = require("cors");
 const {ComplaintRouter} = require('./routes/complaint');
 const path = require('path');
+const { NotificationRouter } = require('./routes/notification');
 require('dotenv').config();
 
 
@@ -22,6 +23,7 @@ app.use((err, req, res, next) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/user', UserRouter);
 app.use('/complaints', ComplaintRouter);
+app.use('/notifications', NotificationRouter);
 app.get('/reset-password/:token', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
 });

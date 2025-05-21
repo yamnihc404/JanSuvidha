@@ -28,12 +28,11 @@ class _MyaccState extends State<Myacc> {
     _fetchUserData();
   }
 
-  // Fetch user data from backend
+// Fetch user data from backend
   Future<void> _fetchUserData() async {
     setState(() {
       isLoading = true;
     });
-
     try {
       final prefs = await SharedPreferences.getInstance();
       final appConfig = AuthService();
@@ -83,7 +82,7 @@ class _MyaccState extends State<Myacc> {
     }
   }
 
-  // Load data from cache if API call fails
+// Load data from cache if API call fails
   Future<void> _loadCachedUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -94,440 +93,228 @@ class _MyaccState extends State<Myacc> {
     });
   }
 
-  Widget _buildDrawer() {
-    return Drawer(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.fromARGB(255, 255, 215, 140), // Lighter saffron
-              Colors.white,
-              Color.fromARGB(255, 170, 255, 173), // Lighter green
-            ],
-            stops: [0.0, 0.4, 0.8],
-          ),
-        ),
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: MediaQuery.of(context).padding.top + 20),
-            Container(
-              height: 150,
-              width: double.infinity,
-              color: Colors.transparent,
-              child: const Center(
-                child: Text(
-                  'Jan Suvidha',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              height: 0.5,
-              width: double.infinity,
-              color: Colors.grey.withOpacity(0.3),
-            ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  ListTile(
-                    leading: const Icon(
-                      Icons.home,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Home',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ExpansionTile(
-                    leading: const Icon(
-                      Icons.language,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Language Preference',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    children: [
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72),
-                        title: const Text(
-                          'English',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72),
-                        title: const Text(
-                          'हिंदी',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72),
-                        title: const Text(
-                          'मराठी',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.notifications,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Notifications',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.phone,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Contact Us',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Contact()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.star,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Rate Us',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.logout,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Log Out',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      LogoutDialog.showLogoutDialog(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+  Widget _buildExpandableDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    List<String> options,
+    double fontSize,
+    bool isSmallScreen,
+  ) {
+    final double subFontSize = fontSize - 1;
+
+    return ExpansionTile(
+      tilePadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 0.0 : 2.0,
+      ),
+      leading: Icon(
+        icon,
+        color: const Color.fromARGB(255, 14, 66, 170),
+        size: isSmallScreen ? fontSize + 2 : fontSize + 4,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: const Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
         ),
       ),
+      childrenPadding: EdgeInsets.only(bottom: isSmallScreen ? 4.0 : 8.0),
+      children: options.map((option) {
+        return ListTile(
+          dense: isSmallScreen,
+          visualDensity: isSmallScreen
+              ? const VisualDensity(horizontal: -2, vertical: -3)
+              : const VisualDensity(horizontal: -1, vertical: -2),
+          contentPadding: EdgeInsets.only(
+            left: isSmallScreen ? fontSize * 3.5 : fontSize * 4.0,
+          ),
+          title: Text(
+            option,
+            style: TextStyle(
+              color: const Color.fromARGB(255, 14, 66, 170),
+              fontSize: subFontSize,
+            ),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        );
+      }).toList(),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context);
-        return false;
-      },
-      child: Scaffold(
-        key: _scaffoldKey,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          title: const Text(
-            'My Account',
-            style: TextStyle(
-              color: Color.fromARGB(255, 14, 66, 170),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          iconTheme:
-              const IconThemeData(color: Color.fromARGB(255, 14, 66, 170)),
-          leading: IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-          ),
+  Widget _buildDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+    double fontSize,
+    bool isSmallScreen,
+  ) {
+    return ListTile(
+      dense: isSmallScreen, // Make list tiles more compact on small screens
+      visualDensity: isSmallScreen
+          ? const VisualDensity(horizontal: -2, vertical: -2)
+          : const VisualDensity(horizontal: 0, vertical: 0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 0.0 : 2.0,
+      ),
+      leading: Icon(
+        icon,
+        color: const Color.fromARGB(255, 14, 66, 170),
+        size: isSmallScreen ? fontSize + 2 : fontSize + 4,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: const Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
         ),
-        drawer: _buildDrawer(),
-        body: Container(
-          height: MediaQuery.of(context).size.height,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 350;
+    final double drawerFontSize = isSmallScreen ? 13 : 19;
+
+    // Make drawer width responsive
+    final double drawerWidth = screenSize.width * 0.85;
+
+    return SizedBox(
+      width: drawerWidth,
+      child: Drawer(
+        width: drawerWidth, // Set custom drawer width
+        child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Color.fromARGB(255, 255, 196, 107),
-                Colors.white,
-                Color.fromARGB(255, 143, 255, 147),
-              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
+              colors: [
+                Color.fromARGB(255, 255, 215, 140), // Lighter saffron
+                Colors.white,
+                Color.fromARGB(255, 170, 255, 173), // Lighter green
+              ],
+              stops: [0.0, 0.4, 0.8],
             ),
           ),
-          child: isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                  ),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // App Logo
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).padding.top,
-                        ),
-                        child: Transform.scale(
-                          scale: 1.6,
-                          child: Image.asset(
-                            'images/Logo.png',
-                            width: 250,
-                            height: 220,
-                          ),
-                        ),
-                      ),
-
-                      // Profile Avatar
-                      Transform.translate(
-                        offset: const Offset(0, -10),
-                        child: const Icon(
-                          Icons.account_circle,
-                          size: 90,
-                          color: Color.fromARGB(255, 14, 66, 170),
-                        ),
-                      ),
-                      Transform.translate(
-                        offset: const Offset(0, -10),
-                        child: Column(
-                          children: [
-                            Text(
-                              username,
-                              style: const TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              email,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              phone,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Update Options
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color.fromARGB(255, 255, 215, 140),
-                              Colors.white,
-                              Color.fromARGB(255, 170, 255, 173),
-                            ],
-                            stops: [0.0, 0.4, 0.8],
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 1,
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Account Settings',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 14, 66, 170),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            _buildAccountOption(
-                                context,
-                                'Update Username',
-                                Icons.person_outline,
-                                () => _navigateToUpdateUsername()),
-                            _buildAccountOption(
-                                context,
-                                'Change Password',
-                                Icons.lock_outline,
-                                () => _navigateToChangePassword()),
-                            _buildAccountOption(
-                                context,
-                                'Update Phone Number',
-                                Icons.phone_outlined,
-                                () => _navigateToUpdatePhone()),
-                            _buildAccountOption(
-                                context,
-                                'Update Email',
-                                Icons.email_outlined,
-                                () => _navigateToUpdateEmail()),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 24),
-                        ),
-                        onPressed: () {
-                          LogoutDialog.showLogoutDialog(
-                              context); // Show confirmation dialog
-                        },
-                        child: const Text(
-                          'Log Out',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
-                      // Bottom bar
-                      Container(
-                        height: 50,
-                        margin: const EdgeInsets.only(top: 30),
-                        decoration: const BoxDecoration(
-                          color: Color.fromARGB(255, 15, 62, 129),
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(13),
-                          ),
-                        ),
-                      ),
-                    ],
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                  height: MediaQuery.of(context).padding.top +
+                      (isSmallScreen ? 8 : 15)),
+              Container(
+                height: isSmallScreen ? 80 : 110,
+                width: double.infinity,
+                color: Colors.transparent,
+                child: Center(
+                  child: Text(
+                    'Jan Suvidha',
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 14, 66, 170),
+                      fontSize: isSmallScreen ? 22 : 26,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAccountOption(
-      BuildContext context, String title, IconData icon, VoidCallback onTap) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        splashColor: const Color.fromARGB(255, 14, 66, 170).withOpacity(0.3),
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: ListTile(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            leading: Icon(
-              icon,
-              color: const Color.fromARGB(255, 14, 66, 170),
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color.fromARGB(255, 14, 66, 170),
               ),
-            ),
-            trailing: const Icon(
-              Icons.arrow_forward_ios,
-              color: Color.fromARGB(255, 14, 66, 170),
-              size: 16,
-            ),
+              Container(
+                height: 0.5,
+                width: double.infinity,
+                color: Colors.grey.withOpacity(0.3),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    _buildDrawerItem(
+                      context,
+                      Icons.home,
+                      'Home',
+                      () {
+                        // Close the drawer first
+                        Navigator.of(context).pop();
+
+                        // Navigate to dashboard and remove all previous routes
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Dashboard()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildExpandableDrawerItem(
+                      context,
+                      Icons.language,
+                      'Language Preference',
+                      ['English', 'हिंदी', 'मराठी'],
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.notifications,
+                      'Notifications',
+                      () {
+                        Navigator.pop(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.phone,
+                      'Contact Us',
+                      () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Contact()),
+                        );
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.star,
+                      'Rate Us',
+                      () {
+                        Navigator.pop(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.logout,
+                      'Log Out',
+                      () {
+                        LogoutDialog.showLogoutDialog(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // Navigation methods for update screens
   void _navigateToUpdateUsername() async {
     final result = await Navigator.push(
       context,
@@ -625,9 +412,254 @@ class _MyaccState extends State<Myacc> {
       _fetchUserData();
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 350;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        return false;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Text(
+            'Profile',
+            style: TextStyle(
+              color: const Color.fromARGB(255, 14, 66, 170),
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.05,
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme:
+              const IconThemeData(color: Color.fromARGB(255, 14, 66, 170)),
+          leading: IconButton(
+            icon: Icon(Icons.menu, size: screenWidth * 0.07),
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+          ),
+        ),
+        drawer: _buildDrawer(context),
+        body: Container(
+          height: screenHeight,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 255, 196, 107),
+                Colors.white,
+                Color.fromARGB(255, 143, 255, 147),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 14, 66, 170),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: screenHeight * 0.14),
+                      Transform.translate(
+                        offset: Offset(0, -screenHeight * 0.02),
+                        child: Icon(
+                          Icons.account_circle,
+                          size: screenWidth * 0.2,
+                          color: const Color.fromARGB(255, 14, 66, 170),
+                        ),
+                      ),
+                      Transform.translate(
+                        offset: Offset(0, -screenHeight * 0.02),
+                        child: Column(
+                          children: [
+                            Text(
+                              username,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.055,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 14, 66, 170),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.005),
+                            Text(
+                              email,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.035,
+                                color: const Color.fromARGB(255, 14, 66, 170),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.005),
+                            Text(
+                              phone,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.035,
+                                color: const Color.fromARGB(255, 14, 66, 170),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                      Container(
+                        width: screenWidth * 0.9,
+                        padding: EdgeInsets.all(screenWidth * 0.04),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color.fromARGB(255, 255, 215, 140),
+                              Colors.white,
+                              Color.fromARGB(255, 170, 255, 173),
+                            ],
+                            stops: [0.0, 0.4, 0.8],
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.03),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Account Settings',
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.05,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 14, 66, 170),
+                              ),
+                            ),
+                            SizedBox(height: screenHeight * 0.01),
+                            ..._buildAccountOptions(context),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.03),
+                      Center(
+                        child: SizedBox(
+                          width:
+                              screenWidth * 0.3, // Set to 50% of screen width
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.03),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.02,
+                              ),
+                            ),
+                            onPressed: () =>
+                                LogoutDialog.showLogoutDialog(context),
+                            child: Text(
+                              'Log Out',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.04,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildAccountOptions(BuildContext context) {
+    final options = [
+      {
+        'title': 'Update Username',
+        'icon': Icons.person_outline,
+        'action': _navigateToUpdateUsername
+      },
+      {
+        'title': 'Change Password',
+        'icon': Icons.lock_outline,
+        'action': _navigateToChangePassword
+      },
+      {
+        'title': 'Update Phone Number',
+        'icon': Icons.phone_outlined,
+        'action': _navigateToUpdatePhone
+      },
+      {
+        'title': 'Update Email',
+        'icon': Icons.email_outlined,
+        'action': _navigateToUpdateEmail
+      },
+    ];
+    return options
+        .map((option) => _buildAccountOption(
+              context,
+              option['title'] as String,
+              option['icon'] as IconData,
+              option['action'] as VoidCallback,
+            ))
+        .toList();
+  }
+
+  Widget _buildAccountOption(
+      BuildContext context, String title, IconData icon, VoidCallback onTap) {
+    final baseColor = const Color.fromARGB(255, 14, 66, 170);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        splashColor: baseColor.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height * 0.005),
+          child: ListTile(
+            leading: Icon(icon,
+                color: baseColor,
+                size: MediaQuery.of(context).size.width * 0.06),
+            title: Text(
+              title,
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.04,
+                fontWeight: FontWeight.w500,
+                color: baseColor,
+              ),
+            ),
+            trailing: Icon(
+              Icons.arrow_forward_ios,
+              color: baseColor,
+              size: MediaQuery.of(context).size.width * 0.04,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+// Navigation methods remain the same as original...
+// [Rest of the navigation methods and classes remain unchanged to preserve functionality]
 }
 
-// Generic screen for updating profile fields
 class UpdateProfileField extends StatefulWidget {
   final String title;
   final String fieldName;
@@ -725,22 +757,30 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final baseColor = const Color.fromARGB(255, 14, 66, 170);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: const TextStyle(
-            color: Color.fromARGB(255, 14, 66, 170),
+          style: TextStyle(
+            color: baseColor,
             fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.045,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color.fromARGB(255, 14, 66, 170)),
+        iconTheme: IconThemeData(
+          color: baseColor,
+          size: screenWidth * 0.06,
+        ),
       ),
       extendBodyBehindAppBar: true,
       body: Container(
-        height: MediaQuery.of(context).size.height,
+        height: screenHeight,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -754,32 +794,36 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(screenWidth * 0.04),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.02),
                   Text(
                     'Enter new ${widget.fieldName}:',
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.04,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 14, 66, 170),
+                      color: baseColor,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: screenHeight * 0.015),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                        width: screenWidth * 0.002,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
-                          offset: const Offset(2, 2),
-                          blurRadius: 4,
+                          offset:
+                              Offset(screenWidth * 0.005, screenWidth * 0.005),
+                          blurRadius: screenWidth * 0.01,
                         ),
                       ],
                     ),
@@ -787,38 +831,48 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
                       controller: _controller,
                       keyboardType: widget.keyboardType,
                       validator: widget.validator,
+                      style: TextStyle(fontSize: screenWidth * 0.04),
                       decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 16),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.04,
+                          vertical: screenHeight * 0.02,
+                        ),
                         border: InputBorder.none,
                         hintText: 'Enter your ${widget.fieldName}',
+                        hintStyle: TextStyle(
+                          fontSize: screenWidth * 0.035,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ),
                   ),
                   if (_errorMessage != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: EdgeInsets.only(top: screenHeight * 0.01),
                       child: Text(
                         _errorMessage!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.red,
-                          fontSize: 14,
+                          fontSize: screenWidth * 0.035,
                         ),
                       ),
                     ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: screenHeight * 0.03),
                   Center(
                     child: Container(
-                      width: 130,
-                      height: 55,
+                      width: screenWidth * 0.4,
+                      height: screenHeight * 0.07,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 254, 232, 179),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(screenWidth * 0.05),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.3),
-                            offset: const Offset(5, 5),
-                            blurRadius: 10,
+                            offset: Offset(
+                              screenWidth * 0.01,
+                              screenWidth * 0.01,
+                            ),
+                            blurRadius: screenWidth * 0.02,
                           ),
                         ],
                       ),
@@ -827,21 +881,25 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.05),
+                          ),
                         ),
                         child: _isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
+                            ? SizedBox(
+                                width: screenWidth * 0.06,
+                                height: screenWidth * 0.06,
                                 child: CircularProgressIndicator(
-                                  color: Color.fromARGB(255, 14, 66, 170),
-                                  strokeWidth: 2,
+                                  color: baseColor,
+                                  strokeWidth: screenWidth * 0.005,
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Update',
                                 style: TextStyle(
-                                  fontSize: 24,
-                                  color: Color.fromARGB(255, 14, 66, 170),
+                                  fontSize: screenWidth * 0.05,
+                                  color: baseColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -941,35 +999,49 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     required VoidCallback toggleVisibility,
     String? Function(String?)? validator,
   }) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return TextFormField(
       controller: controller,
       obscureText: !obscureText,
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(fontSize: screenWidth * 0.035),
         suffixIcon: IconButton(
           icon: Icon(
             obscureText ? Icons.visibility : Icons.visibility_off,
             color: const Color.fromARGB(255, 14, 66, 170),
+            size: screenWidth * 0.06,
           ),
           onPressed: toggleVisibility,
+          padding: EdgeInsets.zero,
+          iconSize: screenWidth * 0.06,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(screenWidth * 0.02),
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.04,
+          vertical: screenWidth * 0.04,
         ),
       ),
+      style: TextStyle(fontSize: screenWidth * 0.04),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Change Password',
           style: TextStyle(
-            color: Color.fromARGB(255, 14, 66, 170),
+            color: const Color.fromARGB(255, 14, 66, 170),
             fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.045,
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -980,6 +1052,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       ),
       extendBodyBehindAppBar: true,
       body: Container(
+        height: screenHeight,
+        width: screenWidth,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -991,86 +1065,118 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             end: Alignment.bottomRight,
           ),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
             child: Column(
               children: [
-                _buildPasswordField(
-                  label: 'Current Password',
-                  controller: _currentPasswordController,
-                  obscureText: _showCurrentPassword,
-                  toggleVisibility: () => setState(
-                      () => _showCurrentPassword = !_showCurrentPassword),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your current password';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildPasswordField(
-                  label: 'New Password',
-                  controller: _newPasswordController,
-                  obscureText: _showNewPassword,
-                  toggleVisibility: () =>
-                      setState(() => _showNewPassword = !_showNewPassword),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a new password';
-                    }
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                _buildPasswordField(
-                  label: 'Confirm New Password',
-                  controller: _confirmPasswordController,
-                  obscureText: _showConfirmPassword,
-                  toggleVisibility: () => setState(
-                      () => _showConfirmPassword = !_showConfirmPassword),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please confirm your new password';
-                    }
-                    if (value != _newPasswordController.text) {
-                      return 'Passwords do not match';
-                    }
-                    return null;
-                  },
-                ),
-                if (_errorMessage != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    _errorMessage!,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ],
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _updatePassword,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 14, 66, 170),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                SizedBox(height: screenHeight * 0.02),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Change your account password',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 14, 66, 170),
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.03),
+                          _buildPasswordField(
+                            label: 'Current Password',
+                            controller: _currentPasswordController,
+                            obscureText: _showCurrentPassword,
+                            toggleVisibility: () => setState(() =>
+                                _showCurrentPassword = !_showCurrentPassword),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your current password';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          _buildPasswordField(
+                            label: 'New Password',
+                            controller: _newPasswordController,
+                            obscureText: _showNewPassword,
+                            toggleVisibility: () => setState(
+                                () => _showNewPassword = !_showNewPassword),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a new password';
+                              }
+                              if (value.length < 8) {
+                                return 'Password must be at least 8 characters';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: screenHeight * 0.02),
+                          _buildPasswordField(
+                            label: 'Confirm New Password',
+                            controller: _confirmPasswordController,
+                            obscureText: _showConfirmPassword,
+                            toggleVisibility: () => setState(() =>
+                                _showConfirmPassword = !_showConfirmPassword),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please confirm your new password';
+                              }
+                              if (value != _newPasswordController.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
+                          ),
+                          if (_errorMessage != null) ...[
+                            SizedBox(height: screenHeight * 0.015),
+                            Text(
+                              _errorMessage!,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: screenWidth * 0.035,
+                              ),
+                            ),
+                          ],
+                          SizedBox(height: screenHeight * 0.03),
+                        ],
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                          )
-                        : const Text(
-                            'Update Password',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: screenHeight * 0.065,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _updatePassword,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 14, 66, 170),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.02),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: screenWidth * 0.008,
+                            )
+                          : Text(
+                              'Update Password',
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.04,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
                   ),
                 ),
               ],

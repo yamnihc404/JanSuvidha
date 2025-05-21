@@ -55,7 +55,7 @@ class Complaint {
     String imageUrl = '';
     if (json['image'] != null) {
       if (json['image'].toString().startsWith('/')) {
-        imageUrl = 'https://d8ae-103-185-109-76.ngrok-free.app${json['image']}';
+        imageUrl = '${AppConfig.apiBaseUrl}${json['image']}';
       } else {
         imageUrl = json['image'].toString();
       }
@@ -248,6 +248,93 @@ class _InquiryState extends State<Inquiry> {
     }
   }
 
+  Widget _buildDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+    double fontSize,
+    bool isSmallScreen,
+  ) {
+    return ListTile(
+      dense: isSmallScreen, // Make list tiles more compact on small screens
+      visualDensity: isSmallScreen
+          ? const VisualDensity(horizontal: -2, vertical: -2)
+          : const VisualDensity(horizontal: 0, vertical: 0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 0.0 : 2.0,
+      ),
+      leading: Icon(
+        icon,
+        color: const Color.fromARGB(255, 14, 66, 170),
+        size: isSmallScreen ? fontSize + 2 : fontSize + 4,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: const Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildExpandableDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    List<String> options,
+    double fontSize,
+    bool isSmallScreen,
+  ) {
+    final double subFontSize = fontSize - 1;
+
+    return ExpansionTile(
+      tilePadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 0.0 : 2.0,
+      ),
+      leading: Icon(
+        icon,
+        color: const Color.fromARGB(255, 14, 66, 170),
+        size: isSmallScreen ? fontSize + 2 : fontSize + 4,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: const Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
+        ),
+      ),
+      childrenPadding: EdgeInsets.only(bottom: isSmallScreen ? 4.0 : 8.0),
+      children: options.map((option) {
+        return ListTile(
+          dense: isSmallScreen,
+          visualDensity: isSmallScreen
+              ? const VisualDensity(horizontal: -2, vertical: -3)
+              : const VisualDensity(horizontal: -1, vertical: -2),
+          contentPadding: EdgeInsets.only(
+            left: isSmallScreen ? fontSize * 3.5 : fontSize * 4.0,
+          ),
+          title: Text(
+            option,
+            style: TextStyle(
+              color: const Color.fromARGB(255, 14, 66, 170),
+              fontSize: subFontSize,
+            ),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        );
+      }).toList(),
+    );
+  }
+
   Widget _buildFilterOption(String filter) {
     bool isSelected = currentFilter == filter;
     return InkWell(
@@ -324,18 +411,18 @@ class _InquiryState extends State<Inquiry> {
                           ),
                         ),
                       )
-                    : Icon(Icons.image, size: 50, color: Colors.white),
+                    : const Icon(Icons.image, size: 50, color: Colors.white),
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text('Status: ${complaint.status}'),
               Text("Category: ${complaint.category}"),
               Text("Location: ${complaint.location}"),
               Text("Date: ${DateFormat('MMM d, yyyy').format(complaint.date)}"),
-              SizedBox(height: 12),
-              Text("Description:",
+              const SizedBox(height: 12),
+              const Text("Description:",
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(complaint.description),
             ],
           ),
@@ -352,11 +439,19 @@ class _InquiryState extends State<Inquiry> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      drawer: Drawer(
+  Widget _buildDrawer(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 350;
+    final double drawerFontSize = isSmallScreen ? 13 : 19;
+
+    // Make drawer width responsive
+    final double drawerWidth =
+        isSmallScreen ? screenSize.width * 0.75 : screenSize.width * 0.85;
+
+    return SizedBox(
+      width: drawerWidth,
+      child: Drawer(
+        width: drawerWidth, // Set custom drawer width
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -372,17 +467,19 @@ class _InquiryState extends State<Inquiry> {
           ),
           child: Column(
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).padding.top + 20),
+              SizedBox(
+                  height: MediaQuery.of(context).padding.top +
+                      (isSmallScreen ? 8 : 15)),
               Container(
-                height: 150,
+                height: isSmallScreen ? 80 : 110,
                 width: double.infinity,
                 color: Colors.transparent,
-                child: const Center(
+                child: Center(
                   child: Text(
                     'Jan Suvidha',
                     style: TextStyle(
-                      color: Color.fromARGB(255, 14, 66, 170),
-                      fontSize: 28,
+                      color: const Color.fromARGB(255, 14, 66, 170),
+                      fontSize: isSmallScreen ? 22 : 26,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -397,165 +494,83 @@ class _InquiryState extends State<Inquiry> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: <Widget>[
-                    ListTile(
-                      leading: const Icon(
-                        Icons.home,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Home',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () {
+                    _buildDrawerItem(
+                      context,
+                      Icons.home,
+                      'Home',
+                      () {
                         Navigator.of(context).pop();
+
                         Navigator.pop(context);
                       },
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.edit,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () {
+                    _buildDrawerItem(
+                      context,
+                      Icons.edit,
+                      'Edit Profile',
+                      () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const Myacc()),
                         );
                       },
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
-                    ExpansionTile(
-                      leading: const Icon(
-                        Icons.language,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Language Preference',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      children: [
-                        ListTile(
-                          contentPadding: const EdgeInsets.only(left: 72),
-                          title: const Text(
-                            'English',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        ListTile(
-                          contentPadding: const EdgeInsets.only(left: 72),
-                          title: const Text(
-                            'हिंदी',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                        ListTile(
-                          contentPadding: const EdgeInsets.only(left: 72),
-                          title: const Text(
-                            'मराठी',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
+                    _buildExpandableDrawerItem(
+                      context,
+                      Icons.language,
+                      'Language Preference',
+                      ['English', 'हिंदी', 'मराठी'],
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.notifications,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Notifications',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Addcomplain()),
-                        );
+                    _buildDrawerItem(
+                      context,
+                      Icons.notifications,
+                      'Notifications',
+                      () {
+                        Navigator.pop(context);
                       },
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.phone,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Contact Us',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () {
+                    _buildDrawerItem(
+                      context,
+                      Icons.phone,
+                      'Contact Us',
+                      () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const Contact()),
                         );
                       },
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.star,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Rate Us',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () {
+                    _buildDrawerItem(
+                      context,
+                      Icons.star,
+                      'Rate Us',
+                      () {
                         Navigator.pop(context);
                       },
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.logout,
-                        color: Color.fromARGB(255, 14, 66, 170),
-                      ),
-                      title: const Text(
-                        'Log Out',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onTap: () {
+                    _buildDrawerItem(
+                      context,
+                      Icons.logout,
+                      'Log Out',
+                      () {
                         LogoutDialog.showLogoutDialog(context);
                       },
+                      drawerFontSize,
+                      isSmallScreen,
                     ),
                   ],
                 ),
@@ -564,8 +579,16 @@ class _InquiryState extends State<Inquiry> {
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: _buildDrawer(context),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -587,7 +610,7 @@ class _InquiryState extends State<Inquiry> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.only(top: 16.0),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         'Jan Suvidha',
                         style: TextStyle(
@@ -713,7 +736,7 @@ class _InquiryState extends State<Inquiry> {
                               ],
                             ),
                             child: DropdownButtonFormField<String>(
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Category',
                                 border: InputBorder.none,
                                 labelStyle: TextStyle(
@@ -788,12 +811,12 @@ class _InquiryState extends State<Inquiry> {
                                               ? DateFormat('MMM d, yyyy')
                                                   .format(startDate!)
                                               : 'From Date',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Color.fromARGB(
                                                 255, 14, 66, 170),
                                           ),
                                         ),
-                                        Icon(
+                                        const Icon(
                                           Icons.calendar_today,
                                           color:
                                               Color.fromARGB(255, 14, 66, 170),
@@ -822,7 +845,7 @@ class _InquiryState extends State<Inquiry> {
                                     }
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 12),
                                     decoration: BoxDecoration(
                                       color: Color.fromARGB(255, 254, 232, 179),
@@ -845,12 +868,12 @@ class _InquiryState extends State<Inquiry> {
                                               ? DateFormat('MMM d, yyyy')
                                                   .format(endDate!)
                                               : 'To Date',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: Color.fromARGB(
                                                 255, 14, 66, 170),
                                           ),
                                         ),
-                                        Icon(
+                                        const Icon(
                                           Icons.calendar_today,
                                           color:
                                               Color.fromARGB(255, 14, 66, 170),
@@ -877,13 +900,13 @@ class _InquiryState extends State<Inquiry> {
                                   child: Text('Apply Filters'),
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor:
                                         Color.fromARGB(255, 14, 66, 170),
-                                    side: BorderSide(
+                                    side: const BorderSide(
                                         color:
                                             Color.fromARGB(255, 14, 66, 170)),
                                   ),

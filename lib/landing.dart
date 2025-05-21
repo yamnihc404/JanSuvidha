@@ -5,77 +5,44 @@ import 'signup.dart';
 import 'dashboard.dart';
 import 'config/auth_service.dart';
 
-void main() {
-  runApp(const Landing());
-}
-
-class Landing extends StatelessWidget {
+class Landing extends StatefulWidget {
   const Landing({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        pageTransitionsTheme: const PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          },
-        ),
-      ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const LandingScreen(),
-        '/login': (context) => const Login(),
-        '/signup': (context) => const Signup(),
-        '/home': (context) => const Dashboard()
-      },
-      navigatorKey: GlobalKey<NavigatorState>(),
-    );
-  }
-}
-
-class LandingScreen extends StatefulWidget {
-  const LandingScreen({super.key});
 
   @override
   _LandingScreenState createState() => _LandingScreenState();
 }
 
-class _LandingScreenState extends State<LandingScreen> {
+class _LandingScreenState extends State<Landing> {
   final AuthService _authService = AuthService();
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Check if user is already authenticated when landing screen loads
     _checkAuthentication();
   }
 
   Future<void> _checkAuthentication() async {
-    // This is a backup check in case direct navigation from splash screen fails
     bool isLoggedIn = await _authService.isLoggedIn();
-
     if (isLoggedIn && mounted) {
-      // Navigate to dashboard if user is already logged in
       Navigator.of(context).pushReplacementNamed('/home');
     }
-
     if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     if (_isLoading) {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            color: Color.fromARGB(255, 14, 66, 170),
+          ),
         ),
       );
     }
@@ -86,62 +53,60 @@ class _LandingScreenState extends State<LandingScreen> {
           const GradientBackground(),
           Align(
             alignment: Alignment.topCenter,
-            child: Transform.scale(
-              scale: 1.2,
-              child: Image.asset('images/Logo.png'),
+            child: Container(
+              width: screenWidth * 1,
+              height: screenHeight * .5,
+              margin: EdgeInsets.only(top: screenHeight * 0.05),
+              child: Image.asset('images/Logo.png', fit: BoxFit.contain),
             ),
           ),
           Positioned(
-            bottom: 180,
-            left: 50,
-            right: 50,
+            bottom: screenHeight * 0.25,
+            left: screenWidth * 0.1,
+            right: screenWidth * 0.1,
             child: Column(
               children: [
                 StyledContainer(
-                  height: 100,
-                  width: 149,
+                  height: screenHeight * 0.12,
+                  width: screenWidth * 0.47,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Login()),
-                      );
-                    },
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Login()),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Login',
                       style: TextStyle(
-                        fontSize: 24,
-                        color: Color.fromARGB(255, 14, 66, 170),
+                        fontSize: screenWidth * 0.06,
+                        color: const Color.fromARGB(255, 14, 66, 170),
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: screenHeight * 0.04),
                 StyledContainer(
-                  height: 100,
-                  width: 149,
+                  height: screenHeight * 0.12,
+                  width: screenWidth * 0.47,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Signup()),
-                      );
-                    },
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Signup()),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
-                      padding: EdgeInsets.zero,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Sign Up',
-                      textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 24,
-                        color: Color.fromARGB(255, 14, 66, 170),
+                        fontSize: screenWidth * 0.06,
+                        color: const Color.fromARGB(255, 14, 66, 170),
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -149,11 +114,19 @@ class _LandingScreenState extends State<LandingScreen> {
               ],
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: BottomRoundedBar(),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: screenHeight * 0.025),
+              decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 15, 62, 129),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+            ),
           ),
         ],
       ),

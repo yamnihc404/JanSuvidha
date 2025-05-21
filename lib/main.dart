@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'widgets/common_widgets.dart';
 import 'landing.dart';
 import 'dashboard.dart';
 import 'config/auth_service.dart';
 import 'widgets/token_refresh_wrapper.dart';
-import 'reset_password.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(); // initialize Firebase for dynamic links
+
   runApp(const MyApp());
 }
 
@@ -19,8 +16,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TokenRefreshWrapper(
-      child: const MaterialApp(
+    return const TokenRefreshWrapper(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Splashscreen(), // Start with our merged Splashscreen
       ),
@@ -41,44 +38,7 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    _handleDynamicLink();      // set up the "forget password" dynamic link handler
-    _checkAuthAndNavigate();   // splash delay + auth/token refresh + navigation
-  }
-
-  Future<void> _handleDynamicLink() async {
-    // Check initial link if app was launched via dynamic link
-    final PendingDynamicLinkData? initialLink =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri? deepLink = initialLink?.link;
-
-    if (deepLink != null && deepLink.queryParameters.containsKey('oobCode')) {
-      final String? oobCode = deepLink.queryParameters['oobCode'];
-      if (oobCode != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ResetPassword(oobCode: oobCode),
-          ),
-        );
-        return;
-      }
-    }
-
-    // Listen for incoming dynamic links while the app is running
-    FirebaseDynamicLinks.instance.onLink.listen((dynamicLinkData) {
-      final Uri link = dynamicLinkData.link;
-      final String? oobCode = link.queryParameters['oobCode'];
-      if (oobCode != null && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ResetPassword(oobCode: oobCode),
-          ),
-        );
-      }
-    }).onError((error) {
-      debugPrint('Dynamic link error: $error');
-    });
+    _checkAuthAndNavigate(); // splash delay + auth/token refresh + navigation
   }
 
   Future<void> _checkAuthAndNavigate() async {
@@ -98,9 +58,8 @@ class _SplashscreenState extends State<Splashscreen> {
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               const Dashboard(),
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) =>
-                  FadeTransition(opacity: animation, child: child),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
           transitionDuration: const Duration(milliseconds: 800),
         ),
       );
@@ -111,9 +70,8 @@ class _SplashscreenState extends State<Splashscreen> {
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               const Landing(),
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) =>
-                  FadeTransition(opacity: animation, child: child),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
           transitionDuration: const Duration(milliseconds: 800),
         ),
       );

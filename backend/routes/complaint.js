@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const ComplaintRouter = Router();
-const {Complaint} = require('../db');
+const {Complaint, Notification} = require('../db');
 const { z } = require('zod');
 const multer = require('multer');
 const path = require('path');
@@ -138,13 +138,14 @@ ComplaintRouter.get('/counts',verifyToken, async (req, res) => {
   try {
     const userId = req.user.id;
     
- 
+   
     const totalComplaints = await Complaint.countDocuments({ userId: userId });
 
     const resolvedComplaints = await Complaint.countDocuments({ userId: userId, status: 'Resolved' });
 
     const disputes = await Complaint.countDocuments({ userId: userId, status: 'Dispute' });
 
+    console.log(totalComplaints);
     res.status(200).json({
       success: true,
       data: {
@@ -161,6 +162,33 @@ ComplaintRouter.get('/counts',verifyToken, async (req, res) => {
     });
   }
 });
+ComplaintRouter.put('/:id/status', verifyToken, async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id);
+    const newStatus = req.body.status;
+   
+    if (complaint.status !== newStatus) {
+      const message = newStatus === 'Resolved' 
+        ? `Please confirm if your complaint "${complaint.shortDescription}" has been resolved`
+        : `Your complaint "${complaint.shortDescription}" status changed to ${newStatus}`;
 
+      const notification = new Notification({
+        userId: complaint.userId,
+        complaintId: complaint._id,
+        message: message,
+        actionRequired: newStatus === 'Resolved'
+      });
+      
+      await notification.save();
+    }
+
+    complaint.status = newStatus;
+    await complaint.save();
+
+    res.status(200).json({ success: true, data: complaint });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Status update failed' });
+  }
+});
 
 module.exports = { ComplaintRouter };

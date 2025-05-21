@@ -702,7 +702,7 @@ class _AddcomplainState extends State<Addcomplain> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: _buildDrawer(),
+      drawer: _buildDrawer(context),
       body: Stack(
         children: [
           Container(
@@ -785,218 +785,179 @@ class _AddcomplainState extends State<Addcomplain> {
     );
   }
 
-  // Drawer
-  Widget _buildDrawer() {
-    return Drawer(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color.fromARGB(255, 255, 215, 140), // Lighter saffron
-              Colors.white,
-              Color.fromARGB(255, 170, 255, 173), // Lighter green
-            ],
-            stops: [0.0, 0.4, 0.8],
-          ),
+  Widget _buildDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+    double fontSize,
+    bool isSmallScreen,
+  ) {
+    return ListTile(
+      dense: isSmallScreen, // Make list tiles more compact on small screens
+      visualDensity: isSmallScreen
+          ? const VisualDensity(horizontal: -2, vertical: -2)
+          : const VisualDensity(horizontal: 0, vertical: 0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 0.0 : 2.0,
+      ),
+      leading: Icon(
+        icon,
+        color: const Color.fromARGB(255, 14, 66, 170),
+        size: isSmallScreen ? fontSize + 2 : fontSize + 4,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: const Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
         ),
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: MediaQuery.of(context).padding.top + 20),
-            Container(
-              height: 150,
-              width: double.infinity,
-              color: Colors.transparent,
-              child: const Center(
-                child: Text(
-                  'Jan Suvidha',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 66, 170),
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+      ),
+      onTap: onTap,
+    );
+  }
+
+  // Drawer
+  Widget _buildDrawer(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final isSmallScreen = screenSize.width < 350;
+    final double drawerFontSize = isSmallScreen ? 13 : 19;
+
+    // Make drawer width responsive
+    final double drawerWidth =
+        isSmallScreen ? screenSize.width * 0.75 : screenSize.width * 0.85;
+
+    return Container(
+      width: drawerWidth,
+      child: Drawer(
+        width: drawerWidth, // Set custom drawer width
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.fromARGB(255, 255, 215, 140), // Lighter saffron
+                Colors.white,
+                Color.fromARGB(255, 170, 255, 173), // Lighter green
+              ],
+              stops: [0.0, 0.4, 0.8],
+            ),
+          ),
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                  height: MediaQuery.of(context).padding.top +
+                      (isSmallScreen ? 8 : 15)),
+              Container(
+                height: isSmallScreen ? 80 : 110,
+                width: double.infinity,
+                color: Colors.transparent,
+                child: Center(
+                  child: Text(
+                    'Jan Suvidha',
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 14, 66, 170),
+                      fontSize: isSmallScreen ? 22 : 26,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Container(
-              height: 0.5,
-              width: double.infinity,
-              color: Colors.grey.withOpacity(0.3),
-            ),
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  ListTile(
-                    leading: const Icon(
-                      Icons.home,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Home',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.edit,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Myacc()),
-                      );
-                    },
-                  ),
-                  ExpansionTile(
-                    leading: const Icon(
-                      Icons.language,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Language Preference',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    children: [
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72),
-                        title: const Text(
-                          'English',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                          ),
-                        ),
-                        onTap: () {
-                          // Change language to English
-                          // You'll need to implement language change functionality here
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72),
-                        title: const Text(
-                          'हिंदी',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                          ),
-                        ),
-                        onTap: () {
-                          // Change language to Hindi
-                          // You'll need to implement language change functionality here
-                          Navigator.pop(context);
-                        },
-                      ),
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 72),
-                        title: const Text(
-                          'मराठी',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                          ),
-                        ),
-                        onTap: () {
-                          // Change language to Marathi
-                          // You'll need to implement language change functionality here
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.notifications,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Notifications',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      // Navigate to notifications page
-                      Navigator.pop(context);
-                      // Add your navigation code here
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.phone,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Contact Us',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Contact()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.star,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Rate Us',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      // Implement rating functionality
-                      Navigator.pop(context);
-                      // Consider using a package like url_launcher to open app store
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.logout,
-                      color: Color.fromARGB(255, 14, 66, 170),
-                    ),
-                    title: const Text(
-                      'Log Out',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 14, 66, 170),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    onTap: () {
-                      LogoutDialog.showLogoutDialog(context);
-                    },
-                  ),
-                ],
+              Container(
+                height: 0.5,
+                width: double.infinity,
+                color: Colors.grey.withOpacity(0.3),
               ),
-            ),
-          ],
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    _buildDrawerItem(
+                      context,
+                      Icons.home,
+                      'Home',
+                      () {
+                        Navigator.of(context).pop();
+
+                        Navigator.pop(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.edit,
+                      'Edit Profile',
+                      () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Myacc()),
+                        );
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildExpandableDrawerItem(
+                      context,
+                      Icons.language,
+                      'Language Preference',
+                      ['English', 'हिंदी', 'मराठी'],
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.notifications,
+                      'Notifications',
+                      () {
+                        Navigator.pop(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.phone,
+                      'Contact Us',
+                      () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Contact()),
+                        );
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.star,
+                      'Rate Us',
+                      () {
+                        Navigator.pop(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                    _buildDrawerItem(
+                      context,
+                      Icons.logout,
+                      'Log Out',
+                      () {
+                        LogoutDialog.showLogoutDialog(context);
+                      },
+                      drawerFontSize,
+                      isSmallScreen,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1027,6 +988,59 @@ class _AddcomplainState extends State<Addcomplain> {
         ),
         const Spacer(),
       ],
+    );
+  }
+
+  Widget _buildExpandableDrawerItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    List<String> options,
+    double fontSize,
+    bool isSmallScreen,
+  ) {
+    final double subFontSize = fontSize - 1;
+
+    return ExpansionTile(
+      tilePadding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 0.0 : 2.0,
+      ),
+      leading: Icon(
+        icon,
+        color: const Color.fromARGB(255, 14, 66, 170),
+        size: isSmallScreen ? fontSize + 2 : fontSize + 4,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: const Color.fromARGB(255, 14, 66, 170),
+          fontWeight: FontWeight.bold,
+          fontSize: fontSize,
+        ),
+      ),
+      childrenPadding: EdgeInsets.only(bottom: isSmallScreen ? 4.0 : 8.0),
+      children: options.map((option) {
+        return ListTile(
+          dense: isSmallScreen,
+          visualDensity: isSmallScreen
+              ? const VisualDensity(horizontal: -2, vertical: -3)
+              : const VisualDensity(horizontal: -1, vertical: -2),
+          contentPadding: EdgeInsets.only(
+            left: isSmallScreen ? fontSize * 3.5 : fontSize * 4.0,
+          ),
+          title: Text(
+            option,
+            style: TextStyle(
+              color: const Color.fromARGB(255, 14, 66, 170),
+              fontSize: subFontSize,
+            ),
+          ),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        );
+      }).toList(),
     );
   }
 

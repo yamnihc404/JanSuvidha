@@ -14,40 +14,42 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController emailController = TextEditingController();
   bool isLoading = false;
 
-  // Function to send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
-    final email = emailController.text.trim();
-
-    final response = await http.post(
-      Uri.parse('${AppConfig.apiBaseUrl}/user/forgot-password'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
-    );
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Check your email for reset link')),
+    setState(() => isLoading = true);
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/user/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Email not found or server error')),
-      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Check your email for reset link')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Email not found or server error')),
+        );
+      }
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
-  // Email validation function
   bool isValidEmail(String email) {
-    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    return emailRegExp.hasMatch(email);
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -61,7 +63,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
             ),
           ),
-
           SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
@@ -69,48 +70,52 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
               child: Column(
                 children: [
+                  SizedBox(height: screenHeight * 0.05),
                   Align(
                     alignment: Alignment.topCenter,
                     child: Transform.scale(
-                      scale: 1.5,
+                      scale: screenWidth < 350 ? 1.2 : 1.5,
                       child: Image.asset(
                         'images/Logo.png',
-                        width: 200,
-                        height: 200,
+                        width: screenWidth * 0.5,
+                        height: screenWidth * 0.5,
                       ),
                     ),
                   ),
                   Center(
                     child: Column(
                       children: [
-                        const Text(
+                        Text(
                           'Forgot Password',
                           style: TextStyle(
-                            color: Color.fromARGB(255, 14, 66, 170),
-                            fontSize: 24,
+                            color: const Color.fromARGB(255, 14, 66, 170),
+                            fontSize: screenWidth * 0.065,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 40),
+                        SizedBox(height: screenHeight * 0.02),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.1),
                           child: Text(
                             'Enter your email address. We will send you a link to reset your password.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Color.fromARGB(255, 14, 66, 170),
-                              fontSize: 16,
+                              color: const Color.fromARGB(255, 14, 66, 170),
+                              fontSize: screenWidth * 0.04,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: screenHeight * 0.04),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          width: 284,
-                          height: 42,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.04),
+                          width: screenWidth * 0.8,
+                          height: screenHeight * 0.06,
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 255, 230, 160),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.04),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.3),
@@ -122,27 +127,28 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           child: TextField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: "Enter Email",
                               hintStyle: TextStyle(
-                                fontSize: 20,
-                                color: Color.fromARGB(255, 14, 66, 170),
+                                fontSize: screenWidth * 0.045,
+                                color: const Color.fromARGB(255, 14, 66, 170),
                               ),
                               border: InputBorder.none,
                               prefixIcon: Icon(
                                 Icons.email,
-                                color: Color.fromARGB(255, 14, 66, 170),
+                                color: const Color.fromARGB(255, 14, 66, 170),
+                                size: screenWidth * 0.06,
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 35),
+                        SizedBox(height: screenHeight * 0.05),
                         Container(
-                          width: 200,
-                          height: 55,
+                          width: screenWidth * 0.4,
+                          height: screenHeight * 0.07,
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 255, 230, 160),
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.04),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.3),
@@ -182,21 +188,30 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               backgroundColor:
                                   const Color.fromARGB(255, 255, 230, 160),
                               shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.04),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.02,
+                              ),
                             ),
                             child: isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
+                                ? SizedBox(
+                                    width: screenWidth * 0.06,
+                                    height: screenWidth * 0.06,
                                     child: CircularProgressIndicator(
-                                      color: Color.fromARGB(255, 14, 66, 170),
-                                      strokeWidth: 3,
+                                      color: const Color.fromARGB(
+                                          255, 14, 66, 170),
+                                      strokeWidth: screenWidth * 0.008,
                                     ),
                                   )
-                                : const Text(
+                                : Text(
                                     'Reset Password',
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      color: Color.fromARGB(255, 14, 66, 170),
+                                      fontSize: screenWidth * 0.045,
+                                      color: const Color.fromARGB(
+                                          255, 14, 66, 170),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -214,7 +229,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             left: 0,
             right: 0,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 25),
+              padding: EdgeInsets.symmetric(vertical: screenHeight * 0.025),
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 15, 62, 129),
                 borderRadius: BorderRadius.vertical(
@@ -224,20 +239,21 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
           ),
           Positioned(
-            bottom: 20,
-            left: 20,
+            bottom: screenHeight * 0.03,
+            left: screenWidth * 0.05,
             child: SizedBox(
-              width: 50,
-              height: 60,
+              width: screenWidth * 0.12,
+              height: screenWidth * 0.12,
               child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 255, 230, 160),
                 mini: true,
-                child: const Icon(Icons.arrow_back_ios_new_sharp,
-                    color: Color.fromARGB(255, 15, 62, 129), size: 25),
+                child: Icon(
+                  Icons.arrow_back_ios_new_sharp,
+                  color: const Color.fromARGB(255, 15, 62, 129),
+                  size: screenWidth * 0.06,
+                ),
               ),
             ),
           ),

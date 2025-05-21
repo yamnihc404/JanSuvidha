@@ -40,20 +40,21 @@ class _TokenRefreshWrapperState extends State<TokenRefreshWrapper>
   }
 
   Future<void> _checkAndRefreshToken() async {
-    final now = DateTime.now();
-    // Only attempt refresh if it's been at least 1 minute since the last attempt
-    if (_lastRefreshAttempt == null ||
-        now.difference(_lastRefreshAttempt!).inMinutes >= 1) {
-      _lastRefreshAttempt = now;
+    try {
+      final isLoggedIn = await _authService.isLoggedIn();
+      if (!isLoggedIn) {
+        _handleExpiredToken();
+        return;
+      }
 
-      bool isLoggedIn = await _authService.isLoggedIn();
-      if (isLoggedIn) {
-        // Silently refresh token if needed
-        await _authService.refreshTokenIfNeeded(context);
-      } else {
-        // Token is invalid or expired, redirect to login
+      // Force refresh check regardless of last attempt when app resumes
+      final newToken = await _authService.refreshTokenIfNeeded(context);
+      if (newToken == null) {
         _handleExpiredToken();
       }
+    } catch (e) {
+      print("Token refresh error: $e");
+      _handleExpiredToken();
     }
   }
 

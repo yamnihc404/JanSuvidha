@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const UserRouter = Router();
-const {usermd,RefreshTokenModel} = require(__dirname + '/../db.js');
+const {usermd,RefreshTokenModel, VerificationRequest} = require(__dirname + '/../db.js');
 const {z} = require('zod');
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcryptjs");
@@ -51,19 +51,20 @@ const signupschema = z.object({
 UserRouter.post('/signup', async function (req, res) {
     try{
 const validatedData = signupschema.parse(req.body);
-const {username: username, contactnumber: contactnumber, email : email, password: password} = validatedData;
+    const { username, contactnumber, email, password } = validatedData;
 
-const hashedPassword = await bcrypt.hash(password, 10);
-    await usermd.create(
-        {
-            username: username,
-            contactnumber: contactnumber,
-            email: email,
-            password: hashedPassword
-        }
-    );
+    // Check if email and phone are verified
+    const emailVerification = await VerificationRequest.findOne({ email, emailVerified: true });
+    const phoneVerification = await VerificationRequest.findOne({ contactnumber, phoneVerified: true });
 
-    res.json({message: 'User Signed up successfully'})
+    if (!emailVerification) return res.status(400).json({ message: 'Email not verified' });
+    if (!phoneVerification) return res.status(400).json({ message: 'Phone not verified' });
+
+    // Proceed with user creation
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await usermd.create({ username, contactnumber, email, password: hashedPassword });
+
+    res.json({ message: 'User signed up successfully' });
 
     }catch(error){
         if(error instanceof z.ZodError){
@@ -232,7 +233,7 @@ console.log("User after update: ", user);
       },
     });
 
-    const resetUrl = `https://7aa1-103-185-109-76.ngrok-free.app/reset-password/${resetToken}`;
+    const resetUrl = `https://93e2-103-185-109-76.ngrok-free.app/reset-password/${resetToken}`;
     console.log(resetUrl)
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -279,6 +280,103 @@ console.log(token)
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+UserRouter.post('/send-email-otp', async (req, res) => {
+  const { email } = req.body;
+  const otp = Math.floor(10000 * Math.random() ).toString();
+  const otpExpiry = Date.now() + 60000 * 5; 
+
+  try {
+    await VerificationRequest.findOneAndUpdate(
+      { email },
+      { emailOtp: otp, emailOtpExpiry: otpExpiry },
+      { upsert: true, new: true }
+    );
+
+    // Send OTP via Email (using nodemailer)
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Email Verification OTP',
+      html: `Your OTP is <b>${otp}</b>`
+    });
+
+    res.status(200).json({ message: 'OTP sent to email' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error sending OTP' });
+  }
+});
+
+// Verify Email OTP
+UserRouter.post('/verify-email-otp', async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    const request = await VerificationRequest.findOne({ email });
+    if (!request || request.emailOtp !== otp || request.emailOtpExpiry < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+    request.emailVerified = true;
+    await request.save();
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error verifying OTP' });
+  }
+});
+UserRouter.post('/send-phone-otp', async (req, res) => {
+  const { phone } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpExpiry = Date.now() + 60000; // 1 minute
+
+  try {
+    // Validate phone number format
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number format' });
+    }
+
+    await VerificationRequest.findOneAndUpdate(
+      { phone },
+      { phoneOtp: otp, phoneOtpExpiry: otpExpiry },
+      { upsert: true, new: true }
+    );
+
+    // Send OTP via SMS (using Twilio)
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const client = require('twilio')(accountSid, authToken);
+
+    await client.messages.create({
+      body: `Your OTP is ${otp}`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: `+91${phone}` // Assuming Indian numbers
+    });
+
+    res.status(200).json({ message: 'OTP sent to phone' });
+  } catch (error) {
+    console.error('SMS Error:', error);
+    res.status(500).json({ message: 'Error sending OTP' });
+  }
+});
+
+// Verify Phone OTP
+UserRouter.post('/verify-phone-otp', async (req, res) => {
+  const { phone, otp } = req.body;
+  try {
+    const request = await VerificationRequest.findOne({ phone });
+    if (!request || request.phoneOtp !== otp || request.phoneOtpExpiry < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+    request.phoneVerified = true;
+    await request.save();
+    res.status(200).json({ message: 'Phone verified successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error verifying OTP' });
   }
 });
 

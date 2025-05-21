@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:jansuvidha/dashboard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_config.dart';
 
@@ -79,7 +80,11 @@ class AuthService {
         // ✅ Save tokens and user data
         await _saveAuthData(accessToken, refreshToken, userData);
 
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const Dashboard()),
+          (route) => false,
+        );
       } else {
         final errorMessage =
             json.decode(response.body)['message'] ?? 'Login failed';
@@ -182,61 +187,71 @@ class AuthService {
     return token;
   }
 
-  /// Check if token will expire soon (within 5 minutes)
   bool _isTokenAboutToExpire(String token) {
     try {
       final parts = token.split('.');
-      if (parts.length != 3) {
-        return true;
+      if (parts.length != 3) return true;
+
+      final payload = json.decode(
+              utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))))
+          as Map<String, dynamic>;
+
+      if (payload.containsKey('exp')) {
+        final expiration =
+            DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
+        return expiration.difference(DateTime.now()).inMinutes < 5;
       }
-
-      String normalizedPayload = base64Url.normalize(parts[1]);
-      final payloadMap =
-          json.decode(utf8.decode(base64Url.decode(normalizedPayload)));
-
-      if (payloadMap.containsKey('exp')) {
-        final expTimestamp = payloadMap['exp'] as int;
-        final currentTimestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-        // Consider token about to expire if less than 5 minutes remaining
-        return (expTimestamp - currentTimestamp) < 300;
-      }
-
       return false;
     } catch (e) {
-      print("Error checking token expiration: $e");
+      print("Token expiration check error: $e");
       return true;
     }
   }
 
-  /// Refresh the authentication token
   Future<String?> _refreshToken(BuildContext context) async {
     try {
-      final currentToken = await getRefreshToken();
-      if (currentToken == null) return null;
+      final refreshToken = await getRefreshToken();
+      if (refreshToken == null) return null;
 
       final response = await http.post(
         Uri.parse('${AppConfig.apiBaseUrl}/user/refresh-token'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $currentToken'
+          'Authorization': 'Bearer $refreshToken'
         },
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final newToken = data['accessToken'];
+        final newAccessToken = data['accessToken'];
+        final newRefreshToken = data['refreshToken'] ?? refreshToken;
         final userData = data['user'] ?? {};
-        // Save the new token
-        await _saveAuthData(currentToken, newToken, userData);
-        return newToken;
+
+        await _saveAuthData(newAccessToken, newRefreshToken, userData);
+        return newAccessToken;
       } else {
-        // If refresh fails, force re-login
         await signOut(context);
         return null;
       }
     } catch (e) {
       print("Error refreshing token: $e");
+      await signOut(context);
       return null;
+    }
+  }
+
+  Future<bool> isRefreshTokenValid() async {
+    final refreshToken = await getRefreshToken();
+    if (refreshToken == null) return false;
+
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/user/refresh-token'),
+        headers: {'Authorization': 'Bearer $refreshToken'},
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
     }
   }
 
