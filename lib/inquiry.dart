@@ -788,7 +788,7 @@ class _InquiryState extends State<Inquiry> {
                                     }
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 12),
                                     decoration: BoxDecoration(
                                       color: Color.fromARGB(255, 254, 232, 179),
@@ -973,17 +973,17 @@ class _InquiryState extends State<Inquiry> {
                                                   Expanded(
                                                     child: Text(
                                                       complaint.title,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontSize: 16,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
                                                   ),
                                                   Container(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 10,
-                                                            vertical: 4),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 4),
                                                     decoration: BoxDecoration(
                                                       color: getStatusColor(
                                                           complaint.status),
