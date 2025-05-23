@@ -6,13 +6,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'widgets/common_widgets.dart';
 import 'contact.dart';
 import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dashboard.dart';
 import 'config/app_config.dart';
 import 'widgets/map_screen.dart';
 import 'config/auth_service.dart';
@@ -1092,13 +1089,8 @@ class _AddcomplainState extends State<Addcomplain> {
                   _selectedCategory = newValue!;
                 });
               },
-              items: <String>[
-                'Road Maintenance',
-                'Water Supply',
-                'Electricity',
-                'Garbage Collection',
-                'Others'
-              ].map<DropdownMenuItem<String>>((String value) {
+              items: <String>['Road Maintenance', 'Water Supply']
+                  .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),

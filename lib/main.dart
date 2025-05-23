@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'landing.dart';
+import 'login.dart'; // Add these new imports
+import 'signup.dart'; // Add these new imports
 import 'dashboard.dart';
 import 'config/auth_service.dart';
 import 'widgets/token_refresh_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(const MyApp());
 }
 
@@ -16,10 +17,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const TokenRefreshWrapper(
+    return TokenRefreshWrapper(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Splashscreen(), // Start with our merged Splashscreen
+        initialRoute: '/splash',
+        routes: {
+          '/splash': (context) => const Splashscreen(),
+          '/': (context) => const Landing(),
+          '/login': (context) => const Login(),
+          '/signup': (context) => const Signup(),
+          '/dashboard': (context) => const Dashboard(),
+        },
       ),
     );
   }
@@ -38,43 +46,19 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuthAndNavigate(); // splash delay + auth/token refresh + navigation
+    _checkAuthAndNavigate();
   }
 
   Future<void> _checkAuthAndNavigate() async {
-    // show splash for 2 seconds
     await Future.delayed(const Duration(seconds: 2));
-
     if (!mounted) return;
 
     bool isLoggedIn = await _authService.isLoggedIn();
     if (isLoggedIn) {
-      // refresh token if needed
       await _authService.refreshTokenIfNeeded(context);
-
-      // go to dashboard
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const Dashboard(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 800),
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
-      // not logged in -> landing page
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const Landing(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-              FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 800),
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/');
     }
   }
 

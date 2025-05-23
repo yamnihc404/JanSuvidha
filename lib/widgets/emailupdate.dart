@@ -255,7 +255,7 @@ class _EmailUpdateFlowState extends State<EmailUpdateFlow> {
                     width: screenWidth * 0.6,
                     height: screenHeight * 0.07,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 254, 232, 179),
+                      color: const Color.fromARGB(255, 254, 232, 179),
                       borderRadius: BorderRadius.circular(screenWidth * 0.05),
                       boxShadow: [
                         BoxShadow(
@@ -286,11 +286,9 @@ class _EmailUpdateFlowState extends State<EmailUpdateFlow> {
                               ),
                             )
                           : Text(
-                              _newEmail == null
-                                  ? 'Send Verification Code'
-                                  : 'Confirm Update',
+                              _newEmail == null ? 'Update' : 'Confirm Update',
                               style: TextStyle(
-                                fontSize: screenWidth * 0.04,
+                                fontSize: screenWidth * 0.05,
                                 color: baseColor,
                                 fontWeight: FontWeight.bold,
                               ),
