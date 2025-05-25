@@ -36,7 +36,7 @@ class _EmailUpdateFlowState extends State<EmailUpdateFlow> {
       final token = await authService.getToken();
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/request-email-update'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/profile/update-email'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ class _EmailUpdateFlowState extends State<EmailUpdateFlow> {
       final token = await authService.getToken();
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/confirm-email-update'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/profile/confirm-email'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json'

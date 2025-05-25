@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:jansuvidha/login.dart';
 import 'otp_verification.dart';
-import 'config/auth_service.dart';
-import 'config/app_config.dart';
+import '../config/auth_service.dart';
+import '../config/app_config.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -65,8 +64,9 @@ class _SignupState extends State<Signup> {
 
   String? _validateContactNumber(String? value) {
     if (value == null || value.isEmpty) return 'Contact number is required';
-    if (!RegExp(r'^\d{10}$').hasMatch(value))
+    if (!RegExp(r'^\d{10}$').hasMatch(value)) {
       return 'Invalid contact number (10 digits required)';
+    }
     return null;
   }
 
@@ -157,7 +157,7 @@ class _SignupState extends State<Signup> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     if (_isEmailVerified) {
-      return Text('Verified', style: TextStyle(color: Colors.green));
+      return const Text('Verified', style: TextStyle(color: Colors.green));
     } else if (emailError == null) {
       return ElevatedButton(
         onPressed: () async {
@@ -169,7 +169,7 @@ class _SignupState extends State<Signup> {
           try {
             // Call backend to send OTP
             final response = await http.post(
-              Uri.parse('${AppConfig.apiBaseUrl}/user/send-email-otp'),
+              Uri.parse('${AppConfig.apiBaseUrl}/user/verify/email-otp'),
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode({'email': email}),
             );
@@ -220,7 +220,7 @@ class _SignupState extends State<Signup> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     if (_isPhoneVerified) {
-      return Text('Verified', style: TextStyle(color: Colors.green));
+      return const Text('Verified', style: TextStyle(color: Colors.green));
     } else if (contactError == null) {
       return ElevatedButton(
         onPressed: () async {
@@ -232,7 +232,7 @@ class _SignupState extends State<Signup> {
           try {
             // Call backend to send OTP
             final response = await http.post(
-              Uri.parse('${AppConfig.apiBaseUrl}/user/send-phone-otp'),
+              Uri.parse('${AppConfig.apiBaseUrl}/user/verify/phone-otp'),
               headers: {'Content-Type': 'application/json'},
               body: jsonEncode({'phone': phone}),
             );
@@ -537,7 +537,7 @@ class _SignupState extends State<Signup> {
                                 ),
                               );
                             },
-                            child: emailError != null
+                            child: contactError != null
                                 ? Padding(
                                     key: ValueKey<String?>(contactError),
                                     padding: EdgeInsets.only(
@@ -632,7 +632,7 @@ class _SignupState extends State<Signup> {
                                 ),
                               );
                             },
-                            child: emailError != null
+                            child: passwordError != null
                                 ? Padding(
                                     key: ValueKey<String?>(passwordError),
                                     padding: EdgeInsets.only(
@@ -721,7 +721,7 @@ class _SignupState extends State<Signup> {
                                 ),
                               );
                             },
-                            child: emailError != null
+                            child: confirmPasswordError != null
                                 ? Padding(
                                     key:
                                         ValueKey<String?>(confirmPasswordError),

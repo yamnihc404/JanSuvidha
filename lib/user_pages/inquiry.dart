@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jansuvidha/config/auth_service.dart';
-import 'widgets/common_widgets.dart';
+import '../user_widgets/common_widgets.dart';
 import 'contact.dart';
 import 'myaccount.dart';
 import "dashboard.dart";
@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'filecomplain.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config/app_config.dart';
-import 'widgets/logout_dialog.dart';
+import '../config/app_config.dart';
+import '../user_widgets/logout_dialog.dart';
 
 class Complaint {
   final String id;

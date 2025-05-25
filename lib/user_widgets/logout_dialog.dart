@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../config/app_config.dart';
-import '../landing.dart';
+import '../config/auth_service.dart';
 
 class LogoutDialog {
   static Future<void> showLogoutDialog(BuildContext context) async {
@@ -98,46 +94,9 @@ class LogoutDialog {
     );
 
     if (shouldLogout == true) {
-      await _logoutUser(context);
+      final authservice = AuthService();
+
+      await AuthService.logoutUser(context);
     }
-  }
-
-  static Future<void> _logoutUser(BuildContext context) async {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final prefs = await SharedPreferences.getInstance();
-    final refreshToken = prefs.getString('refresh_token');
-
-    if (refreshToken != null) {
-      await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/logout'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'refreshToken': refreshToken}),
-      );
-    }
-
-    await prefs.clear();
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const Landing()),
-      (route) => false,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Logged out successfully'),
-      backgroundColor: Colors.red,
-      duration: const Duration(seconds: 3),
-      behavior: SnackBarBehavior.floating, // Makes it float above content
-      margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).size.height - 100, // Positions near top
-        left: 20,
-        right: 20,
-      ),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(10), // Rounded bottom corners
-        ),
-      ),
-    ));
   }
 }

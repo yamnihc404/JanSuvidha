@@ -1,7 +1,6 @@
 import 'package:jansuvidha/config/app_config.dart';
 import 'package:jansuvidha/config/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -52,7 +51,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       }
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/update-password'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/password/update'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -62,8 +61,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           'newPassword': _newPasswordController.text.trim(),
         }),
       );
-      print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
         if (mounted) Navigator.pop(context, true);
       } else {

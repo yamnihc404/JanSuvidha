@@ -10,6 +10,7 @@ require('dotenv').config();
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
+
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 const REFRESH_TOKEN_EXPIRY = '7d';                        
@@ -167,7 +168,7 @@ UserRouter.post('/logout', async (req, res) => {
 
 UserRouter.post('/update-password', verifyToken, async (req, res) => {
   try {
-    console.log("hello")
+  
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
 
@@ -329,6 +330,7 @@ UserRouter.post('/verify-email-otp', async (req, res) => {
     res.status(500).json({ message: 'Error verifying OTP' });
   }
 });
+
 UserRouter.post('/send-phone-otp', async (req, res) => {
   const { phone } = req.body;
   const otp = Math.floor(100000 + Math.random() * 900000).toString();

@@ -10,10 +10,10 @@ import 'contact.dart';
 import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config/app_config.dart';
-import 'widgets/map_screen.dart';
-import 'config/auth_service.dart';
-import 'package:jansuvidha/widgets/logout_dialog.dart';
+import '../config/app_config.dart';
+import '../user_widgets/map_screen.dart';
+import '../config/auth_service.dart';
+import 'package:jansuvidha/user_widgets/logout_dialog.dart';
 
 class Addcomplain extends StatefulWidget {
   const Addcomplain({super.key});

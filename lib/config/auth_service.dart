@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:jansuvidha/dashboard.dart';
+import 'package:jansuvidha/user_pages/dashboard.dart';
+import 'package:jansuvidha/user_pages/landing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_config.dart';
 
@@ -23,7 +24,7 @@ class AuthService {
 
     try {
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/signup'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/auth/signup'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
@@ -64,7 +65,7 @@ class AuthService {
 
     try {
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/signin'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/auth/signin'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
@@ -214,7 +215,7 @@ class AuthService {
       if (refreshToken == null) return null;
 
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/refresh-token'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/auth/refresh-token'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $refreshToken'
@@ -230,12 +231,12 @@ class AuthService {
         await _saveAuthData(newAccessToken, newRefreshToken, userData);
         return newAccessToken;
       } else {
-        await signOut(context);
+        await logoutUser(context);
         return null;
       }
     } catch (e) {
       print("Error refreshing token: $e");
-      await signOut(context);
+      await logoutUser(context);
       return null;
     }
   }
@@ -246,7 +247,7 @@ class AuthService {
 
     try {
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/user/refresh-token'),
+        Uri.parse('${AppConfig.apiBaseUrl}/user/auth/refresh-token'),
         headers: {'Authorization': 'Bearer $refreshToken'},
       );
       return response.statusCode == 200;
@@ -279,31 +280,41 @@ class AuthService {
     return {};
   }
 
-  Future<void> signOut(BuildContext context) async {
-    try {
-      final refreshToken = await getRefreshToken();
-      if (refreshToken != null) {
-        // Call the logout API to invalidate the token on the server
-        await http.post(
-          Uri.parse('${AppConfig.apiBaseUrl}/user/logout'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'refreshToken': refreshToken}),
-        );
-      }
+  static Future<void> logoutUser(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString('refresh_token');
 
-      // Clear local storage
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('auth_token');
-      await prefs.remove('refresh_token');
-      await prefs.remove('user_data');
-
-      // Navigate to landing page after logout
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-    } catch (e) {
-      print("Error signing out: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing out: $e')),
+    if (refreshToken != null) {
+      await http.post(
+        Uri.parse('${AppConfig.apiBaseUrl}/user/logout'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refreshToken': refreshToken}),
       );
     }
+
+    await prefs.clear();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const Landing()),
+      (route) => false,
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text('Logged out successfully'),
+      backgroundColor: Colors.red,
+      duration: const Duration(seconds: 3),
+      behavior: SnackBarBehavior.floating, // Makes it float above content
+      margin: EdgeInsets.only(
+        bottom: MediaQuery.of(context).size.height - 100, // Positions near top
+        left: 20,
+        right: 20,
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(10), // Rounded bottom corners
+        ),
+      ),
+    ));
   }
 }

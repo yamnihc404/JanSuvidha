@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'widgets/common_widgets.dart';
-import 'landing.dart';
-import 'login.dart'; // Add these new imports
-import 'signup.dart'; // Add these new imports
-import 'dashboard.dart';
+import 'user_widgets/common_widgets.dart';
+import 'user_pages/landing.dart';
+import 'user_pages/login.dart'; // Add these new imports
+import 'user_pages/signup.dart'; // Add these new imports
+import 'user_pages/dashboard.dart';
 import 'config/auth_service.dart';
-import 'widgets/token_refresh_wrapper.dart';
+import 'user_widgets/token_refresh_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

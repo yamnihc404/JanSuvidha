@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/filecomplain.dart';
+import 'package:jansuvidha/user_pages/filecomplain.dart';
 import 'inquiry.dart';
 import 'contact.dart';
 import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config/app_config.dart';
-import 'config/auth_service.dart';
-import 'package:jansuvidha/widgets/logout_dialog.dart';
-import 'package:jansuvidha/widgets/notification_dialog.dart';
+import '../config/app_config.dart';
+import '../config/auth_service.dart';
+import 'package:jansuvidha/user_widgets/logout_dialog.dart';
+import 'package:jansuvidha/user_widgets/notification_dialog.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});

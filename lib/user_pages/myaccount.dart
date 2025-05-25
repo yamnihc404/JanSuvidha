@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/widgets/emailupdate.dart';
+import 'package:jansuvidha/user_widgets/emailupdate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
 import 'contact.dart';
-import 'config/app_config.dart';
-import 'widgets/logout_dialog.dart';
-import 'config/auth_service.dart';
-import 'widgets/change_password.dart';
-import 'widgets/update_profile.dart';
+import '../config/app_config.dart';
+import '../user_widgets/logout_dialog.dart';
+import '../config/auth_service.dart';
+import '../user_widgets/change_password.dart';
+import '../user_widgets/update_profile.dart';
 
 class Myacc extends StatefulWidget {
   const Myacc({Key? key}) : super(key: key);

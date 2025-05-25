@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jansuvidha/config/app_config.dart';
-import 'widgets/common_widgets.dart';
+import '../user_widgets/common_widgets.dart';
 
 class OtpVerification extends StatefulWidget {
   final String verificationType;
@@ -81,7 +81,7 @@ class _OtpVerificationState extends State<OtpVerification> {
     // Call send-otp API
     http.post(
       Uri.parse(
-          '${AppConfig.apiBaseUrl}/user/send-${widget.verificationType}-otp'),
+          '${AppConfig.apiBaseUrl}/user/verify/verify-${widget.verificationType}'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({widget.verificationType: widget.contactInfo}),
     );

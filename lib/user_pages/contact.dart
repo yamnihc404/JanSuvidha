@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/dashboard.dart';
-import 'widgets/common_widgets.dart';
+import 'package:jansuvidha/user_pages/dashboard.dart';
+import '../user_widgets/common_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'myaccount.dart';
-import 'package:jansuvidha/widgets/logout_dialog.dart';
+import 'package:jansuvidha/user_widgets/logout_dialog.dart';
 
 class Contact extends StatefulWidget {
   const Contact({super.key});

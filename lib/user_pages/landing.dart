@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'widgets/common_widgets.dart';
+import '../user_widgets/common_widgets.dart';
 import 'login.dart';
 import 'signup.dart';
 import 'dashboard.dart';
-import 'config/auth_service.dart';
+import '../config/auth_service.dart';
 
 class Landing extends StatefulWidget {
   const Landing({super.key});
