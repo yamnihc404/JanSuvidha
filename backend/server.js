@@ -19,9 +19,14 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.get('/reset-password/:token', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+app.get('/user/reset-password/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'user-reset.html'));
 });
+
+app.get('/admin/reset-password/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-reset.html'));
+});
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/complaints', ComplaintRouter);
 app.use('/notifications', NotificationRouter);

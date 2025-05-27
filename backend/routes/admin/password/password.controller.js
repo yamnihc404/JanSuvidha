@@ -67,7 +67,7 @@ module.exports = {
         },
       });
   
-      const resetUrl = `https://e1f8-103-185-109-76.ngrok-free.app/reset-password/${resetToken}`;
+      const resetUrl = `https://e1f8-103-185-109-76.ngrok-free.app/admin/reset-password/${resetToken}`;
     
       const mailOptions = {
         from: process.env.EMAIL_USER,
