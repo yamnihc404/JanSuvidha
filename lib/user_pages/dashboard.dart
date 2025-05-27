@@ -6,19 +6,19 @@ import 'contact.dart';
 import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../config/app_config.dart';
+import '../config/appconfig.dart';
 import '../config/auth_service.dart';
-import 'package:jansuvidha/user_widgets/logout_dialog.dart';
-import 'package:jansuvidha/user_widgets/notification_dialog.dart';
+import 'package:jansuvidha/user_pages/user_widgets/logout_dialog.dart';
+import 'package:jansuvidha/user_pages/user_widgets/notification_dialog.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+class UserDashboard extends StatefulWidget {
+  const UserDashboard({super.key});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  _UserDashboardState createState() => _UserDashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _UserDashboardState extends State<UserDashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   // Initialize complaint status counts to 0 (will be updated from backend later)
@@ -35,7 +35,7 @@ class _DashboardState extends State<Dashboard> {
   Future<void> fetchNotifications() async {
     try {
       final authService = AuthService();
-      final token = await authService.getToken();
+      final token = await authService.getAccessToken();
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/notifications'),
@@ -85,7 +85,7 @@ class _DashboardState extends State<Dashboard> {
   Future<void> fetchComplaintCounts() async {
     try {
       final authservice = AuthService();
-      final token = await authservice.getToken();
+      final token = await authservice.getAccessToken();
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/complaints/counts'),

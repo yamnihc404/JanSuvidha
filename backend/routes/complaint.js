@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const ComplaintRouter = Router();
-const {Complaint, Notification} = require('../db');
+const {Complaint, Notification, adminModel} = require('../db');
 const { z } = require('zod');
 const multer = require('multer');
 const path = require('path');
@@ -138,7 +138,6 @@ ComplaintRouter.get('/counts',verifyToken, async (req, res) => {
   try {
     const userId = req.user.id;
     
-   
     const totalComplaints = await Complaint.countDocuments({ userId: userId });
 
     const resolvedComplaints = await Complaint.countDocuments({ userId: userId, status: 'Resolved' });
@@ -162,15 +161,17 @@ ComplaintRouter.get('/counts',verifyToken, async (req, res) => {
     });
   }
 });
-ComplaintRouter.put('/:id/status', verifyToken, async (req, res) => {
+
+ComplaintRouter.put('/update-status', verifyToken, async (req, res) => {
   try {
-    const complaint = await Complaint.findById(req.params.id);
+    const complaint = await Complaint.findById(req.body.complaintId);
     const newStatus = req.body.status;
-   
+    const remark = req.body.remark;
+
     if (complaint.status !== newStatus) {
       const message = newStatus === 'Resolved' 
-        ? `Please confirm if your complaint "${complaint.shortDescription}" has been resolved`
-        : `Your complaint "${complaint.shortDescription}" status changed to ${newStatus}`;
+        ? `Please confirm if your complaint "${complaint.shortDescription}" has been resolved.${remark}`
+        : `Your complaint "${complaint.shortDescription}" status changed to ${newStatus}.${remark}`;
 
       const notification = new Notification({
         userId: complaint.userId,
@@ -190,5 +191,69 @@ ComplaintRouter.put('/:id/status', verifyToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Status update failed' });
   }
 });
+
+
+ComplaintRouter.get('/department-complaints', verifyToken, async (req, res) => {
+  try {
+    const adminId = req.user.id; // Set by verifyToken
+
+    // 1. Get full admin record from DB
+    const admin = await adminModel.findById(adminId);
+    if (!admin || admin.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    const department = admin.department;
+
+    // 2. Fetch complaints by department
+    const complaints = await Complaint.find({ complaintType: department }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: complaints.length,
+      data: complaints
+    });
+  } catch (error) {
+    console.error('Error fetching department complaints:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
+ComplaintRouter.get('/complaint-stats', verifyToken, async (req, res) => {
+  try {
+    const adminId = req.user.id;
+
+    // 1. Get admin info from DB
+    const admin = await adminModel.findById(adminId);
+    if (!admin || admin.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+
+    const department = admin.department;
+
+    // 2. Count complaints for that department
+    const [total, resolved, dispute] = await Promise.all([
+      Complaint.countDocuments({ complaintType: department }),
+      Complaint.countDocuments({ complaintType: department, status: 'Resolved' }),
+      Complaint.countDocuments({ complaintType: department, status: 'Dispute' }),
+    ]);
+
+    // 3. Return the counts
+    res.status(200).json({
+      success: true,
+      stats: {
+        total,
+        resolved,
+        dispute,
+      },
+    });
+
+  } catch (err) {
+    console.error('Error fetching complaint stats:', err);
+    res.status(500).json({ success: false, message: 'Server error while fetching stats' });
+  }
+});
+
 
 module.exports = { ComplaintRouter };

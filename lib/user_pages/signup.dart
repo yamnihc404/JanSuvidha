@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'otp_verification.dart';
 import '../config/auth_service.dart';
-import '../config/app_config.dart';
+import '../config/appconfig.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -342,7 +342,7 @@ class _SignupState extends State<Signup> {
                             child: TextFormField(
                               controller: usernameController,
                               decoration: InputDecoration(
-                                hintText: "Username",
+                                hintText: "Full Name",
                                 hintStyle: TextStyle(
                                     fontSize: screenWidth * 0.045,
                                     color:
@@ -767,14 +767,14 @@ class _SignupState extends State<Signup> {
                               }
                               try {
                                 final authservice = AuthService();
-                                await authservice.signUpUser(
-                                  username: usernameController.text.trim(),
-                                  password: passwordController.text.trim(),
-                                  email: emailController.text.trim(),
-                                  contactNumber:
-                                      contactNumberController.text.trim(),
-                                  context: context,
-                                );
+                                await authservice.signUp(
+                                    fullName: usernameController.text.trim(),
+                                    password: passwordController.text.trim(),
+                                    email: emailController.text.trim(),
+                                    contactNumber:
+                                        contactNumberController.text.trim(),
+                                    context: context,
+                                    isAdmin: false);
                               } catch (e) {
                                 _showErrorSnackBar(e.toString());
                               }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/config/auth_service.dart';
-import '../user_widgets/common_widgets.dart';
+import 'user_widgets/common_widgets.dart';
 import 'contact.dart';
 import 'myaccount.dart';
 import "dashboard.dart";
@@ -8,8 +7,9 @@ import 'package:intl/intl.dart';
 import 'filecomplain.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../config/app_config.dart';
-import '../user_widgets/logout_dialog.dart';
+import '../config/appconfig.dart';
+import '../config/auth_service.dart';
+import 'user_widgets/logout_dialog.dart';
 
 class Complaint {
   final String id;
@@ -114,8 +114,8 @@ class _InquiryState extends State<Inquiry> {
     });
 
     try {
-      final appConfig = AuthService();
-      final token = await appConfig.getToken();
+      final authservice = AuthService();
+      final token = await authservice.getAccessToken();
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/complaints'),
@@ -180,9 +180,12 @@ class _InquiryState extends State<Inquiry> {
         // Text search filter - improved to handle case insensitivity more efficiently
         if (searchQuery.isNotEmpty) {
           final lowerQuery = searchQuery.toLowerCase();
-          final titleMatch = complaint.title.toLowerCase().contains(lowerQuery);
-          final locationMatch =
-              complaint.location.toLowerCase().contains(lowerQuery);
+          final titleMatch = complaint.title.toLowerCase().contains(
+                lowerQuery,
+              );
+          final locationMatch = complaint.location.toLowerCase().contains(
+                lowerQuery,
+              );
 
           if (!titleMatch && !locationMatch) {
             return false;
@@ -220,7 +223,9 @@ class _InquiryState extends State<Inquiry> {
             endDate!.year,
             endDate!.month,
             endDate!.day,
-            23, 59, 59, // End of day
+            23,
+            59,
+            59, // End of day
           );
 
           if (complaintDate.isAfter(endDateNormalized)) {
@@ -367,9 +372,13 @@ class _InquiryState extends State<Inquiry> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: Color.fromARGB(255, 255, 228, 179),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(complaint.title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          complaint.title,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +400,11 @@ class _InquiryState extends State<Inquiry> {
                               .contain, // 🔥 This ensures the image fits without cropping
                           child: Image.network(
                             complaint.imageUrl,
-                            loadingBuilder: (context, child, loadingProgress) {
+                            loadingBuilder: (
+                              context,
+                              child,
+                              loadingProgress,
+                            ) {
                               if (loadingProgress == null) return child;
                               return Center(
                                 child: CircularProgressIndicator(
@@ -405,23 +418,34 @@ class _InquiryState extends State<Inquiry> {
                             },
                             errorBuilder: (context, error, stackTrace) {
                               print("Error loading image: $error");
-                              return Icon(Icons.image_not_supported,
-                                  size: 50, color: Colors.white);
+                              return Icon(
+                                Icons.image_not_supported,
+                                size: 50,
+                                color: Colors.white,
+                              );
                             },
                           ),
                         ),
                       )
-                    : const Icon(Icons.image, size: 50, color: Colors.white),
+                    : const Icon(
+                        Icons.image,
+                        size: 50,
+                        color: Colors.white,
+                      ),
               ),
 
               const SizedBox(height: 12),
               Text('Status: ${complaint.status}'),
               Text("Category: ${complaint.category}"),
               Text("Location: ${complaint.location}"),
-              Text("Date: ${DateFormat('MMM d, yyyy').format(complaint.date)}"),
+              Text(
+                "Date: ${DateFormat('MMM d, yyyy').format(complaint.date)}",
+              ),
               const SizedBox(height: 12),
-              const Text("Description:",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                "Description:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 4),
               Text(complaint.description),
             ],
@@ -433,7 +457,7 @@ class _InquiryState extends State<Inquiry> {
             onPressed: () {
               Navigator.of(dialogContext).pop();
             },
-          )
+          ),
         ],
       ),
     );
@@ -468,8 +492,9 @@ class _InquiryState extends State<Inquiry> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                  height: MediaQuery.of(context).padding.top +
-                      (isSmallScreen ? 8 : 15)),
+                height: MediaQuery.of(context).padding.top +
+                    (isSmallScreen ? 8 : 15),
+              ),
               Container(
                 height: isSmallScreen ? 80 : 110,
                 width: double.infinity,
@@ -514,7 +539,8 @@ class _InquiryState extends State<Inquiry> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Myacc()),
+                            builder: (context) => const Myacc(),
+                          ),
                         );
                       },
                       drawerFontSize,
@@ -546,7 +572,8 @@ class _InquiryState extends State<Inquiry> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Contact()),
+                            builder: (context) => const Contact(),
+                          ),
                         );
                       },
                       drawerFontSize,
@@ -625,10 +652,7 @@ class _InquiryState extends State<Inquiry> {
                     padding: const EdgeInsets.all(6.0),
                     child: Text(
                       '',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[700],
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                     ),
                   ),
                   Padding(
@@ -750,7 +774,7 @@ class _InquiryState extends State<Inquiry> {
                                 'Water Supply',
                                 'Road Maintenance',
                                 'Power Outage',
-                                'Waste Management'
+                                'Waste Management',
                               ].map((category) {
                                 return DropdownMenuItem(
                                   value: category,
@@ -789,7 +813,9 @@ class _InquiryState extends State<Inquiry> {
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 12),
+                                      horizontal: 12,
+                                      vertical: 12,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Color.fromARGB(255, 254, 232, 179),
                                       borderRadius: BorderRadius.circular(10),
@@ -808,18 +834,27 @@ class _InquiryState extends State<Inquiry> {
                                       children: [
                                         Text(
                                           startDate != null
-                                              ? DateFormat('MMM d, yyyy')
-                                                  .format(startDate!)
+                                              ? DateFormat(
+                                                  'MMM d, yyyy',
+                                                ).format(startDate!)
                                               : 'From Date',
                                           style: const TextStyle(
                                             color: Color.fromARGB(
-                                                255, 14, 66, 170),
+                                              255,
+                                              14,
+                                              66,
+                                              170,
+                                            ),
                                           ),
                                         ),
                                         const Icon(
                                           Icons.calendar_today,
-                                          color:
-                                              Color.fromARGB(255, 14, 66, 170),
+                                          color: Color.fromARGB(
+                                            255,
+                                            14,
+                                            66,
+                                            170,
+                                          ),
                                           size: 16,
                                         ),
                                       ],
@@ -846,7 +881,9 @@ class _InquiryState extends State<Inquiry> {
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 12),
+                                      horizontal: 12,
+                                      vertical: 12,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Color.fromARGB(255, 254, 232, 179),
                                       borderRadius: BorderRadius.circular(10),
@@ -865,18 +902,27 @@ class _InquiryState extends State<Inquiry> {
                                       children: [
                                         Text(
                                           endDate != null
-                                              ? DateFormat('MMM d, yyyy')
-                                                  .format(endDate!)
+                                              ? DateFormat(
+                                                  'MMM d, yyyy',
+                                                ).format(endDate!)
                                               : 'To Date',
                                           style: const TextStyle(
                                             color: Color.fromARGB(
-                                                255, 14, 66, 170),
+                                              255,
+                                              14,
+                                              66,
+                                              170,
+                                            ),
                                           ),
                                         ),
                                         const Icon(
                                           Icons.calendar_today,
-                                          color:
-                                              Color.fromARGB(255, 14, 66, 170),
+                                          color: Color.fromARGB(
+                                            255,
+                                            14,
+                                            66,
+                                            170,
+                                          ),
                                           size: 16,
                                         ),
                                       ],
@@ -892,8 +938,12 @@ class _InquiryState extends State<Inquiry> {
                               Expanded(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromARGB(255, 14, 66, 170),
+                                    backgroundColor: Color.fromARGB(
+                                      255,
+                                      14,
+                                      66,
+                                      170,
+                                    ),
                                     foregroundColor: Colors.white,
                                   ),
                                   onPressed: applyFilters,
@@ -904,11 +954,15 @@ class _InquiryState extends State<Inquiry> {
                               Expanded(
                                 child: OutlinedButton(
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor:
-                                        Color.fromARGB(255, 14, 66, 170),
+                                    foregroundColor: Color.fromARGB(
+                                      255,
+                                      14,
+                                      66,
+                                      170,
+                                    ),
                                     side: const BorderSide(
-                                        color:
-                                            Color.fromARGB(255, 14, 66, 170)),
+                                      color: Color.fromARGB(255, 14, 66, 170),
+                                    ),
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -918,8 +972,9 @@ class _InquiryState extends State<Inquiry> {
                                       selectedCategory = 'All Categories';
                                       startDate = null;
                                       endDate = null;
-                                      filteredComplaints =
-                                          List.from(complaints);
+                                      filteredComplaints = List.from(
+                                        complaints,
+                                      );
                                     });
                                   },
                                   child: Text('Reset Filters'),
@@ -941,7 +996,9 @@ class _InquiryState extends State<Inquiry> {
                                   child: Text(
                                     'No complaints found',
                                     style: TextStyle(
-                                        fontSize: 16, color: Colors.grey[600]),
+                                      fontSize: 16,
+                                      color: Colors.grey[600],
+                                    ),
                                   ),
                                 )
                               : ListView.builder(
@@ -955,7 +1012,9 @@ class _InquiryState extends State<Inquiry> {
                                     final complaint = filteredComplaints[index];
                                     return GestureDetector(
                                       onTap: () => _showComplaintPopup(
-                                          context, complaint),
+                                        context,
+                                        complaint,
+                                      ),
                                       child: Card(
                                         elevation: 2,
                                         margin: EdgeInsets.only(bottom: 12),
@@ -974,22 +1033,26 @@ class _InquiryState extends State<Inquiry> {
                                                     child: Text(
                                                       complaint.title,
                                                       style: const TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ),
                                                   Container(
                                                     padding: const EdgeInsets
                                                         .symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 4),
+                                                      horizontal: 10,
+                                                      vertical: 4,
+                                                    ),
                                                     decoration: BoxDecoration(
                                                       color: getStatusColor(
-                                                          complaint.status),
+                                                        complaint.status,
+                                                      ),
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              12),
+                                                        12,
+                                                      ),
                                                     ),
                                                     child: Text(
                                                       complaint.status,
@@ -1009,14 +1072,18 @@ class _InquiryState extends State<Inquiry> {
                                               ),
                                               SizedBox(height: 8),
                                               Text(
-                                                  DateFormat('MMM d, yyyy')
-                                                      .format(complaint.date),
-                                                  style: TextStyle(
-                                                      color: Colors.grey[600])),
+                                                DateFormat(
+                                                  'MMM d, yyyy',
+                                                ).format(complaint.date),
+                                                style: TextStyle(
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
                                               SizedBox(height: 4),
-                                              Text(complaint.location,
-                                                  style:
-                                                      TextStyle(fontSize: 14)),
+                                              Text(
+                                                complaint.location,
+                                                style: TextStyle(fontSize: 14),
+                                              ),
                                             ],
                                           ),
                                         ),

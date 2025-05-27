@@ -10,10 +10,10 @@ import 'contact.dart';
 import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../config/app_config.dart';
-import '../user_widgets/map_screen.dart';
+import '../config/appconfig.dart';
 import '../config/auth_service.dart';
-import 'package:jansuvidha/user_widgets/logout_dialog.dart';
+import 'user_widgets/map_screen.dart';
+import 'package:jansuvidha/user_pages/user_widgets/logout_dialog.dart';
 
 class Addcomplain extends StatefulWidget {
   const Addcomplain({super.key});
@@ -482,7 +482,7 @@ class _AddcomplainState extends State<Addcomplain> {
           '${AppConfig.apiBaseUrl}/complaints'); // Change to your actual backend URL
       final request = http.MultipartRequest('POST', uri);
       final authservice = AuthService();
-      final token = await authservice.getToken();
+      final token = await authservice.getAccessToken();
       // Headers (assuming you have token based auth)
       request.headers['Authorization'] = 'Bearer $token';
       // Replace with actual token

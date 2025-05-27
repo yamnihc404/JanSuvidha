@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:jansuvidha/config/app_config.dart';
-import '../user_widgets/common_widgets.dart';
+import '../config/appconfig.dart';
+import 'user_widgets/common_widgets.dart';
 
 class OtpVerification extends StatefulWidget {
   final String verificationType;
@@ -181,11 +181,12 @@ class _OtpVerificationState extends State<OtpVerification> {
 
                       try {
                         final endpoint = widget.verificationType == 'email'
-                            ? 'verify-email-otp'
-                            : 'verify-phone-otp';
+                            ? 'verify-email'
+                            : 'verify-phone';
 
                         final response = await http.post(
-                          Uri.parse('${AppConfig.apiBaseUrl}/user/$endpoint'),
+                          Uri.parse(
+                              '${AppConfig.apiBaseUrl}/user/verify/$endpoint'),
                           headers: {'Content-Type': 'application/json'},
                           body: jsonEncode({
                             widget.verificationType: widget.contactInfo,

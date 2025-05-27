@@ -26,7 +26,7 @@ dependencies:
   google_maps_flutter: ^2.12.1
   flutter_polyline_points: ^2.1.0
   intl: ^0.18.1
-
+  flutter_launcher_icons: ^0.14.3
 
   firebase_core: ^2.15.1
   firebase_auth: ^4.7.3
@@ -47,3 +47,11 @@ flutter:
     - images/pfp.webp
     - images/google_logo.png
     - images/digilocker_logo.png
+    - images/app_icon.png
+
+flutter_icons:
+  android: true 
+  IOS: true 
+  image_path: "images/app_icon.png"
+  adaptive_icon_foreground: "images/Foreground_icon.png"
+  adaptive_icon_background: "images/Background_icon.png"

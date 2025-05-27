@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:jansuvidha/user_pages/dashboard.dart';
 import 'forgot_password.dart';
 import '../config/auth_service.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class UserLogin extends StatefulWidget {
+  const UserLogin({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<UserLogin> createState() => _UserLoginState();
 }
 
-class _LoginState extends State<Login> {
+class _UserLoginState extends State<UserLogin> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = false;
@@ -102,7 +100,8 @@ class _LoginState extends State<Login> {
                           children: [
                             Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.04),
+                                horizontal: screenWidth * 0.04,
+                              ),
                               width: screenWidth * 0.8,
                               height: screenHeight * 0.06,
                               decoration: BoxDecoration(
@@ -123,8 +122,12 @@ class _LoginState extends State<Login> {
                                   hintText: "Enter Email",
                                   hintStyle: TextStyle(
                                     fontSize: screenWidth * 0.045,
-                                    color:
-                                        const Color.fromARGB(255, 14, 66, 170),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      14,
+                                      66,
+                                      170,
+                                    ),
                                   ),
                                   border: InputBorder.none,
                                   prefixIcon: const Icon(
@@ -137,8 +140,10 @@ class _LoginState extends State<Login> {
                             ),
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
-                              transitionBuilder:
-                                  (Widget child, Animation<double> animation) {
+                              transitionBuilder: (
+                                Widget child,
+                                Animation<double> animation,
+                              ) {
                                 return FadeTransition(
                                   opacity: animation,
                                   child: SlideTransition(
@@ -154,8 +159,9 @@ class _LoginState extends State<Login> {
                                   ? Padding(
                                       key: ValueKey<String?>(emailError),
                                       padding: EdgeInsets.only(
-                                          left: screenWidth * 0.12,
-                                          top: screenHeight * 0.005),
+                                        left: screenWidth * 0.12,
+                                        top: screenHeight * 0.005,
+                                      ),
                                       child: Text(
                                         emailError!,
                                         style: TextStyle(
@@ -175,7 +181,8 @@ class _LoginState extends State<Login> {
                           children: [
                             Container(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.04),
+                                horizontal: screenWidth * 0.04,
+                              ),
                               width: screenWidth * 0.8,
                               height: screenHeight * 0.06,
                               decoration: BoxDecoration(
@@ -196,8 +203,12 @@ class _LoginState extends State<Login> {
                                   hintText: "Enter Password",
                                   hintStyle: TextStyle(
                                     fontSize: screenWidth * 0.045,
-                                    color:
-                                        const Color.fromARGB(255, 14, 66, 170),
+                                    color: const Color.fromARGB(
+                                      255,
+                                      14,
+                                      66,
+                                      170,
+                                    ),
                                   ),
                                   border: InputBorder.none,
                                   prefixIcon: const Icon(
@@ -210,7 +221,11 @@ class _LoginState extends State<Login> {
                                           ? Icons.visibility
                                           : Icons.visibility_off,
                                       color: const Color.fromARGB(
-                                          255, 14, 66, 170),
+                                        255,
+                                        14,
+                                        66,
+                                        170,
+                                      ),
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -224,8 +239,10 @@ class _LoginState extends State<Login> {
                             ),
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
-                              transitionBuilder:
-                                  (Widget child, Animation<double> animation) {
+                              transitionBuilder: (
+                                Widget child,
+                                Animation<double> animation,
+                              ) {
                                 return FadeTransition(
                                   opacity: animation,
                                   child: SlideTransition(
@@ -241,8 +258,9 @@ class _LoginState extends State<Login> {
                                   ? Padding(
                                       key: ValueKey<String?>(passwordError),
                                       padding: EdgeInsets.only(
-                                          left: screenWidth * 0.12,
-                                          top: screenHeight * 0.005),
+                                        left: screenWidth * 0.12,
+                                        top: screenHeight * 0.005,
+                                      ),
                                       child: Text(
                                         passwordError!,
                                         style: TextStyle(
@@ -302,18 +320,19 @@ class _LoginState extends State<Login> {
                             onPressed: () {
                               _validateEmail(emailController.text);
                               _validatePassword(passwordController.text);
-
                               if (emailError == null && passwordError == null) {
                                 setState(() => isLoading = true);
-                                final _authservice = AuthService();
-                                _authservice
-                                    .signInUser(
-                                      username: emailController.text.trim(),
-                                      password: passwordController.text.trim(),
-                                      context: context,
-                                    )
-                                    .then((_) =>
-                                        setState(() => isLoading = false));
+                                final authservice = AuthService();
+                                authservice
+                                    .signIn(
+                                        email: emailController.text.trim(),
+                                        password:
+                                            passwordController.text.trim(),
+                                        context: context,
+                                        isAdmin: false)
+                                    .then(
+                                      (_) => setState(() => isLoading = false),
+                                    );
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -324,9 +343,13 @@ class _LoginState extends State<Login> {
                                 ? SizedBox(
                                     width: screenWidth * 0.06,
                                     height: screenWidth * 0.06,
-                                    child: CircularProgressIndicator(
-                                      color: const Color.fromARGB(
-                                          255, 14, 66, 170),
+                                    child: const CircularProgressIndicator(
+                                      color: Color.fromARGB(
+                                        255,
+                                        14,
+                                        66,
+                                        170,
+                                      ),
                                       strokeWidth: 3,
                                     ),
                                   )
@@ -335,7 +358,11 @@ class _LoginState extends State<Login> {
                                     style: TextStyle(
                                       fontSize: screenWidth * 0.06,
                                       color: const Color.fromARGB(
-                                          255, 14, 66, 170),
+                                        255,
+                                        14,
+                                        66,
+                                        170,
+                                      ),
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -357,9 +384,7 @@ class _LoginState extends State<Login> {
               padding: EdgeInsets.symmetric(vertical: screenHeight * 0.025),
               decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 15, 62, 129),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(13),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(13)),
               ),
             ),
           ),
@@ -374,9 +399,11 @@ class _LoginState extends State<Login> {
                 shape: const CircleBorder(),
                 backgroundColor: const Color.fromARGB(255, 255, 230, 160),
                 mini: true,
-                child: Icon(Icons.arrow_back_ios_new_sharp,
-                    color: const Color.fromARGB(255, 15, 62, 129),
-                    size: screenWidth * 0.05),
+                child: Icon(
+                  Icons.arrow_back_ios_new_sharp,
+                  color: const Color.fromARGB(255, 15, 62, 129),
+                  size: screenWidth * 0.05,
+                ),
               ),
             ),
           ),

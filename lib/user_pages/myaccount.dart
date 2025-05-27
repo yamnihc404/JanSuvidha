@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jansuvidha/user_widgets/emailupdate.dart';
+import 'package:jansuvidha/user_pages/user_widgets/emailupdate.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dashboard.dart';
 import 'contact.dart';
-import '../config/app_config.dart';
-import '../user_widgets/logout_dialog.dart';
+import 'user_widgets/logout_dialog.dart';
+import '../config/appconfig.dart';
 import '../config/auth_service.dart';
-import '../user_widgets/change_password.dart';
-import '../user_widgets/update_profile.dart';
+import 'user_widgets/change_password.dart';
+import 'user_widgets/update_profile.dart';
 
 class Myacc extends StatefulWidget {
   const Myacc({Key? key}) : super(key: key);
@@ -25,6 +25,8 @@ class _MyaccState extends State<Myacc> {
   bool isLoading = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  static const Color primaryBlue = Color.fromARGB(255, 14, 66, 170);
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +41,7 @@ class _MyaccState extends State<Myacc> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final appConfig = AuthService();
-      final token = await appConfig.getToken();
+      final token = await appConfig.getAccessToken();
 
       if (token == null) {
         // If no token, try to use cached data
@@ -249,7 +251,7 @@ class _MyaccState extends State<Myacc> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const Dashboard()),
+                              builder: (context) => const UserDashboard()),
                           (Route<dynamic> route) => false,
                         );
                       },
@@ -404,8 +406,6 @@ class _MyaccState extends State<Myacc> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final isSmallScreen = screenSize.width < 350;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return WillPopScope(
@@ -455,51 +455,15 @@ class _MyaccState extends State<Myacc> {
                   ),
                 )
               : SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                    left: screenHeight * 0.038,
+                    right: screenHeight * 0.038,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(height: screenHeight * 0.14),
-                      Transform.translate(
-                        offset: Offset(0, -screenHeight * 0.02),
-                        child: Icon(
-                          Icons.account_circle,
-                          size: screenWidth * 0.2,
-                          color: const Color.fromARGB(255, 14, 66, 170),
-                        ),
-                      ),
-                      Transform.translate(
-                        offset: Offset(0, -screenHeight * 0.02),
-                        child: Column(
-                          children: [
-                            Text(
-                              username,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.055,
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 14, 66, 170),
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.005),
-                            Text(
-                              email,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.035,
-                                color: const Color.fromARGB(255, 14, 66, 170),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.005),
-                            Text(
-                              phone,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.035,
-                                color: const Color.fromARGB(255, 14, 66, 170),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      SizedBox(height: screenHeight * 0.117),
+                      _buildProfileSection(),
                       SizedBox(height: screenHeight * 0.02),
                       Container(
                         width: screenWidth * 0.9,
@@ -569,11 +533,106 @@ class _MyaccState extends State<Myacc> {
                           ),
                         ),
                       ),
+                      SizedBox(height: screenHeight * 0.03),
                     ],
                   ),
                 ),
         ),
+        bottomNavigationBar: Container(
+          padding: EdgeInsets.only(top: screenWidth * 0.04),
+          height: screenHeight * 0.06,
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 15, 62, 129),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(13)),
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildProfileSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 255, 226, 172),
+            Colors.white,
+            Color.fromARGB(255, 196, 255, 199),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              CircleAvatar(
+                radius: 45,
+                backgroundColor: primaryBlue.withOpacity(0.1),
+                child: const Icon(
+                  Icons.account_circle,
+                  size: 85,
+                  color: primaryBlue,
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: primaryBlue,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(Icons.edit, color: Colors.white, size: 16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 15),
+          Text(
+            username,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: primaryBlue,
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildProfileDetail(
+            Icons.email,
+            email,
+          ),
+          const SizedBox(height: 12),
+          _buildProfileDetail(
+            Icons.phone,
+            phone,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileDetail(IconData icon, String text) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 20, color: primaryBlue),
+        const SizedBox(width: 10),
+        Text(text, style: const TextStyle(fontSize: 16, color: primaryBlue)),
+        const SizedBox(width: 10),
+      ],
     );
   }
 
@@ -621,15 +680,15 @@ class _MyaccState extends State<Myacc> {
         onTap: onTap,
         child: Padding(
           padding: EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.height * 0.005),
+              vertical: MediaQuery.of(context).size.height * 0.0005),
           child: ListTile(
             leading: Icon(icon,
                 color: baseColor,
-                size: MediaQuery.of(context).size.width * 0.06),
+                size: MediaQuery.of(context).size.width * 0.062),
             title: Text(
               title,
               style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.04,
+                fontSize: MediaQuery.of(context).size.width * 0.042,
                 fontWeight: FontWeight.w500,
                 color: baseColor,
               ),
@@ -637,7 +696,7 @@ class _MyaccState extends State<Myacc> {
             trailing: Icon(
               Icons.arrow_forward_ios,
               color: baseColor,
-              size: MediaQuery.of(context).size.width * 0.04,
+              size: MediaQuery.of(context).size.width * 0.044,
             ),
           ),
         ),

@@ -1,51 +1,25 @@
 import 'package:flutter/material.dart';
-import '../user_widgets/common_widgets.dart';
+import 'user_widgets/common_widgets.dart';
 import 'login.dart';
 import 'signup.dart';
-import 'dashboard.dart';
-import '../config/auth_service.dart';
 
 class Landing extends StatefulWidget {
   const Landing({super.key});
 
   @override
-  _LandingScreenState createState() => _LandingScreenState();
+  _LandingState createState() => _LandingState();
 }
 
-class _LandingScreenState extends State<Landing> {
-  final AuthService _authService = AuthService();
-  bool _isLoading = true;
-
+class _LandingState extends State<Landing> {
   @override
   void initState() {
     super.initState();
-    _checkAuthentication();
-  }
-
-  Future<void> _checkAuthentication() async {
-    bool isLoggedIn = await _authService.isLoggedIn();
-    if (isLoggedIn && mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    }
-    if (mounted) {
-      setState(() => _isLoading = false);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(
-            color: Color.fromARGB(255, 14, 66, 170),
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       body: Stack(
@@ -72,7 +46,8 @@ class _LandingScreenState extends State<Landing> {
                   child: ElevatedButton(
                     onPressed: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const Login()),
+                      MaterialPageRoute(
+                          builder: (context) => const UserLogin()),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
