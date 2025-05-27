@@ -388,25 +388,6 @@ class _UserLoginState extends State<UserLogin> {
               ),
             ),
           ),
-          Positioned(
-            bottom: screenHeight * 0.02,
-            left: screenWidth * 0.05,
-            child: SizedBox(
-              width: screenWidth * 0.12,
-              height: screenHeight * 0.06,
-              child: FloatingActionButton(
-                onPressed: () => Navigator.pop(context),
-                shape: const CircleBorder(),
-                backgroundColor: const Color.fromARGB(255, 255, 230, 160),
-                mini: true,
-                child: Icon(
-                  Icons.arrow_back_ios_new_sharp,
-                  color: const Color.fromARGB(255, 15, 62, 129),
-                  size: screenWidth * 0.05,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );

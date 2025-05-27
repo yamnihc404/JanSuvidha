@@ -23,14 +23,6 @@ class CommonLandingPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Welcome to',
-                        style: TextStyle(
-                          fontSize: 32,
-                          color: Color.fromARGB(255, 14, 66, 170),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                       Align(
                         alignment: Alignment.topCenter,
                         child: Transform.scale(
@@ -42,10 +34,17 @@ class CommonLandingPage extends StatelessWidget {
                           ),
                         ),
                       ),
+                      const Text(
+                        'Welcome!',
+                        style: TextStyle(
+                          fontSize: 32,
+                          color: Color.fromARGB(255, 14, 66, 170),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-
                 // Buttons Section
                 Expanded(
                   flex: 2, // Added flex value
