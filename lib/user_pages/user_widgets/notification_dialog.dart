@@ -307,7 +307,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
                           fontSize: isSmallScreen ? 13 : 14,
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
+                        maxLines: 8,
                       ),
                       const SizedBox(height: 4),
                       Text(
