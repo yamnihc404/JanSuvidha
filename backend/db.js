@@ -177,6 +177,8 @@ const AdminSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  resetToken: { type: String, default: null },              
+  resetTokenExpiry: { type: Date, default: null },
 });
 
 complaintSchema.index({ location: '2dsphere' });

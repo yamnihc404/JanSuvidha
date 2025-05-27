@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../config/appconfig.dart';
 import '../config/auth_service.dart';
+import 'otp_verification.dart';
 
 class AdminSignup extends StatefulWidget {
   const AdminSignup({super.key});
@@ -20,6 +24,8 @@ class _AdminSignupState extends State<AdminSignup> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isEmailVerified = false;
+  bool _isPhoneVerified = false;
 
   // Error states
   String? fullNameError;
@@ -301,6 +307,124 @@ class _AdminSignupState extends State<AdminSignup> {
     );
   }
 
+  Widget _buildEmailVerifyButton() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    if (_isEmailVerified) {
+      return const Text('Verified', style: TextStyle(color: Colors.green));
+    } else if (emailError == null) {
+      return ElevatedButton(
+        onPressed: () async {
+          final email = emailController.text.trim();
+          if (email.isEmpty) {
+            _showErrorSnackBar('Invalid Email');
+            return;
+          }
+          try {
+            final response = await http.post(
+              Uri.parse('${AppConfig.apiBaseUrl}/user/verify/email-otp'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({'email': email}),
+            );
+
+            if (response.statusCode == 200) {
+              bool verified = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtpVerification(
+                    verificationType: 'email',
+                    contactInfo: email,
+                  ),
+                ),
+              );
+              if (verified) setState(() => _isEmailVerified = true);
+            } else {
+              final error =
+                  jsonDecode(response.body)['message'] ?? 'Failed to send OTP';
+              _showErrorSnackBar(error);
+            }
+          } catch (e) {
+            _showErrorSnackBar('Verify Email');
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 14, 66, 170),
+          padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.026, vertical: screenWidth * 0.016),
+          minimumSize: Size.zero,
+        ),
+        child: Text(
+          'Verify',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: screenWidth * 0.032,
+          ),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildPhoneVerifyButton() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    if (_isPhoneVerified) {
+      return const Text('Verified', style: TextStyle(color: Colors.green));
+    } else if (contactError == null) {
+      return ElevatedButton(
+        onPressed: () async {
+          final phone = contactController.text.trim();
+          if (phone.isEmpty) {
+            _showErrorSnackBar('Invalid Phone Number');
+            return;
+          }
+          try {
+            final response = await http.post(
+              Uri.parse('${AppConfig.apiBaseUrl}/user/verify/phone-otp'),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode({'phone': phone}),
+            );
+
+            if (response.statusCode == 200) {
+              bool verified = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtpVerification(
+                    verificationType: 'phone',
+                    contactInfo: phone,
+                  ),
+                ),
+              );
+              if (verified) setState(() => _isPhoneVerified = true);
+            } else {
+              final error =
+                  jsonDecode(response.body)['message'] ?? 'Failed to send OTP';
+              _showErrorSnackBar(error);
+            }
+          } catch (e) {
+            _showErrorSnackBar('Error: ${e.toString()}');
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 14, 66, 170),
+          padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.026, vertical: screenWidth * 0.016),
+          minimumSize: Size.zero,
+        ),
+        child: Text(
+          'Verify',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: screenWidth * 0.032,
+          ),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -359,6 +483,13 @@ class _AdminSignupState extends State<AdminSignup> {
                         error: emailError,
                         validator: _validateEmail,
                         keyboardType: TextInputType.emailAddress,
+                        suffix: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildEmailVerifyButton(),
+                            SizedBox(width: screenWidth * 0.02),
+                          ],
+                        ),
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       // Contact Number
@@ -369,6 +500,13 @@ class _AdminSignupState extends State<AdminSignup> {
                         error: contactError,
                         validator: _validateContact,
                         keyboardType: TextInputType.phone,
+                        suffix: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildPhoneVerifyButton(),
+                            SizedBox(width: screenWidth * 0.02),
+                          ],
+                        ),
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       _buildDepartmentDropdown(),

@@ -47,7 +47,7 @@ class _ComplaintDetailPageState extends State<ComplaintDetailPage> {
         body: jsonEncode({
           'complaintId': widget.complaint.id,
           'status': selectedStatus,
-          'remarks': _remarksController.text,
+          'remark': _remarksController.text,
         }),
       );
 

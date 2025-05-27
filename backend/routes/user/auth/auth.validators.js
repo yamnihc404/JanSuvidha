@@ -1,10 +1,7 @@
 const { z } = require('zod');
 
 const signupschema = z.object({
-  fullName: z.string()
-    .min(2, "At least 2 characters needed")
-    .max(10, "Username is too long")
-    .refine((val) => /[A-Za-z]/.test(val), "Should contain at least one alphabet character."),
+  fullName: z.string().min(2, "Name too short"),
   
   email: z.string().email("Invalid email address"),
 

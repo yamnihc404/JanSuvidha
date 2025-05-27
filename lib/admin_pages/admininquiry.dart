@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import './admin_widgets/logoutdialog.dart';
 import './admin_widgets/statuschange.dart';
 import '../config/appconfig.dart';
-import 'config/adminauthservice.dart';
+import '../config/auth_service.dart';
 import 'contact.dart';
 import 'myaccount.dart';
 import 'package:intl/intl.dart';
@@ -113,7 +113,7 @@ class _InquiryPageState extends State<InquiryPage> {
 
     try {
       final appConfig = AuthService();
-      final token = await appConfig.getToken();
+      final token = await appConfig.getAccessToken();
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/complaints/department-complaints'),
@@ -851,7 +851,7 @@ class _InquiryPageState extends State<InquiryPage> {
                               Expanded(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromARGB(
+                                    backgroundColor: const Color.fromARGB(
                                       255,
                                       14,
                                       66,
@@ -867,7 +867,7 @@ class _InquiryPageState extends State<InquiryPage> {
                               Expanded(
                                 child: OutlinedButton(
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: Color.fromARGB(
+                                    foregroundColor: const Color.fromARGB(
                                       255,
                                       14,
                                       66,

@@ -371,13 +371,13 @@ class _InquiryState extends State<Inquiry> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: Color.fromARGB(255, 255, 228, 179),
+        backgroundColor: const Color.fromARGB(255, 255, 228, 179),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
         title: Text(
           complaint.title,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -393,38 +393,17 @@ class _InquiryState extends State<Inquiry> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: complaint.imageUrl.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: FittedBox(
-                          fit: BoxFit
-                              .contain, // 🔥 This ensures the image fits without cropping
-                          child: Image.network(
-                            complaint.imageUrl,
-                            loadingBuilder: (
-                              context,
-                              child,
-                              loadingProgress,
-                            ) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              print("Error loading image: $error");
-                              return Icon(
-                                Icons.image_not_supported,
-                                size: 50,
-                                color: Colors.white,
-                              );
-                            },
+                    ? GestureDetector(
+                        onTap: () => _showFullScreenImage(context, complaint),
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height * 0.4,
+                            minHeight: 200,
                           ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: _buildImagePreview(complaint),
                         ),
                       )
                     : const Icon(
@@ -459,6 +438,92 @@ class _InquiryState extends State<Inquiry> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildImagePreview(Complaint complaint) {
+    return complaint.imageUrl.isNotEmpty
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              complaint.imageUrl,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: const Color.fromARGB(255, 255, 230, 160),
+                child: const Icon(
+                  Icons.broken_image,
+                  size: 50,
+                  color: Color.fromARGB(255, 14, 66, 170),
+                ),
+              ),
+            ),
+          )
+        : Container(
+            color: const Color.fromARGB(255, 255, 230, 160),
+            child: const Icon(
+              Icons.image,
+              size: 50,
+              color: Color.fromARGB(255, 14, 66, 170),
+            ),
+          );
+  }
+
+  void _showFullScreenImage(BuildContext context, Complaint complaint) {
+    if (complaint.imageUrl.isEmpty) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog.fullscreen(
+        backgroundColor: Colors.black.withOpacity(0.9),
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 5.0,
+              child: Center(
+                child: Image.network(
+                  complaint.imageUrl,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.close,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

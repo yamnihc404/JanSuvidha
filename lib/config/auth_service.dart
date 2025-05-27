@@ -88,6 +88,36 @@ class AuthService {
     }
   }
 
+  Future<bool> refreshToken(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('accessToken');
+    final refresh = prefs.getString('refreshToken');
+
+    if (token == null || refresh == null) return false;
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/auth/refresh-token'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $refresh',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await prefs.setString('accessToken', data['accessToken']);
+        return true;
+      } else {
+        await signOut(context);
+        return false;
+      }
+    } catch (e) {
+      print('Error refreshing token: $e');
+      return false;
+    }
+  }
+
   Future<void> signOut(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();

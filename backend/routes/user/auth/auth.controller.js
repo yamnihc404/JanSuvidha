@@ -83,27 +83,34 @@ module.exports = {
       res.status(500).json({ message: 'Server Error' });
     } },
 
-  refreshToken: async (req, res) => { const  refreshToken  = req.headers.authorization;
-       if (!refreshToken) return res.status(401).json({ message: 'No token provided.' });
-    try {
-      const token = refreshToken.split(' ')[1];
-  
-      const storedToken = await RefreshTokenModel.findOne({ token: token });
-  
-      if (!storedToken) {
-        return res.status(403).json({ message: 'Invalid or expired refresh token' });
-      }
-      
-      const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-      const newAccessToken = jwt.sign({ id: payload.id }, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: '1h',
-      });
-  
-      res.status(200).json({ accessToken: newAccessToken });
-    } catch (error) {
-      res.status(403).json({ message: 'Invalid or expired refresh token' });
-    } },
+  refreshToken: async (req, res) => {
+  const authHeader = req.headers.authorization;
 
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token provided.' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const storedToken = await RefreshTokenModel.findOne({ token });
+    if (!storedToken) {
+      return res.status(403).json({ message: 'Invalid or expired refresh token' });
+    }
+
+    const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    const newAccessToken = jwt.sign(
+      { id: payload.id, role: payload.role }, 
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    console.error("Token refresh error:", error.message);
+    return res.status(403).json({ message: 'Invalid or expired refresh token' });
+  }
+},
   logout: async (req, res) => { const { refreshToken } = req.body;
   try {
     await RefreshTokenModel.findOneAndDelete({ token: refreshToken });

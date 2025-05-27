@@ -14,9 +14,9 @@ module.exports = {
 
     res.status(200).json({
       id: user._id,
-      username: user.username,
+      username: user.fullName,
       email: user.email,
-      phone: user.contactnumber,
+      phone: user.contactNumber,
     });
 
   } catch (error) {

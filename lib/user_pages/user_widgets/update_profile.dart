@@ -1,5 +1,5 @@
-import 'package:jansuvidha/user_pages/config/app_config.dart';
-import 'package:jansuvidha/user_pages/config/userauthservice.dart';
+import '../../config/appconfig.dart';
+import '../../config/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -56,7 +56,7 @@ class _UpdateProfileFieldState extends State<UpdateProfileField> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final authservice = AuthService();
-      final token = await authservice.getToken();
+      final token = await authservice.getAccessToken();
 
       if (token == null) {
         setState(() {

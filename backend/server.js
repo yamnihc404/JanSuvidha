@@ -37,6 +37,7 @@ app.use('/user/verify', require('./routes/user/verification/verification.router'
 
 app.use('/admin/auth', require('./routes/admin/auth/auth.router'));
 app.use('/admin/profile', require('./routes/admin/profile/profile.router'));
+app.use('/admin/password', require('./routes/admin/password/password.router'));
 
 
 app.listen(PORT, ()=>{console.log(`Server is live at ${PORT}`)})

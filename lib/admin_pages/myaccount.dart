@@ -7,6 +7,8 @@ import 'contact.dart';
 import '../config/appconfig.dart';
 import 'admin_widgets/logoutdialog.dart';
 import '../config/auth_service.dart';
+import 'admin_widgets/emailupdate.dart';
+import 'admin_widgets/change_password.dart';
 
 class Myacc extends StatefulWidget {
   const Myacc({Key? key}) : super(key: key);
@@ -320,13 +322,38 @@ class _MyaccState extends State<Myacc> {
     );
   }
 
-  void _navigateToUpdateUsername() async {}
+  void _navigateToChangePassword() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ChangePasswordScreen(),
+      ),
+    );
 
-  void _navigateToChangePassword() async {}
+    if (result == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password updated successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
 
   void _navigateToUpdatePhone() async {}
 
-  void _navigateToUpdateEmail() async {}
+  void _navigateToUpdateEmail() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EmailUpdateFlow(),
+      ),
+    );
+
+    if (result == true) {
+      _fetchUserData();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -559,11 +586,6 @@ class _MyaccState extends State<Myacc> {
 
   List<Widget> _buildAccountOptions(BuildContext context) {
     final options = [
-      {
-        'title': 'Update Username',
-        'icon': Icons.person_outline,
-        'action': _navigateToUpdateUsername,
-      },
       {
         'title': 'Change Password',
         'icon': Icons.lock_outline,

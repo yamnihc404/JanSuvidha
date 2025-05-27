@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'config/auth_service.dart';
+import 'dart:async';
+import './config/auth_service.dart';
 
 class TokenRefreshWrapper extends StatefulWidget {
   final Widget child;
@@ -12,11 +12,13 @@ class TokenRefreshWrapper extends StatefulWidget {
 
 class _TokenRefreshWrapperState extends State<TokenRefreshWrapper> {
   final AuthService _authService = AuthService();
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _handleStartupNavigation();
+    _startPeriodicRefresh();
   }
 
   Future<void> _handleStartupNavigation() async {
@@ -30,6 +32,21 @@ class _TokenRefreshWrapperState extends State<TokenRefreshWrapper> {
     } else {
       Navigator.pushReplacementNamed(context, '/user-dashboard');
     }
+  }
+
+  void _startPeriodicRefresh() {
+    _refreshTimer = Timer.periodic(const Duration(minutes: 50), (timer) async {
+      final success = await _authService.refreshToken(context);
+      if (!success && mounted) {
+        Navigator.pushReplacementNamed(context, '/common-landing');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    super.dispose();
   }
 
   @override

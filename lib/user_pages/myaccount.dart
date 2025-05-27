@@ -320,32 +320,6 @@ class _MyaccState extends State<Myacc> {
     );
   }
 
-  void _navigateToUpdateUsername() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UpdateProfileField(
-          title: 'Update Username',
-          fieldName: 'username',
-          initialValue: username,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Username cannot be empty';
-            }
-            if (value.length < 3) {
-              return 'Username must be at least 3 characters';
-            }
-            return null;
-          },
-        ),
-      ),
-    );
-
-    if (result == true) {
-      _fetchUserData();
-    }
-  }
-
   void _navigateToChangePassword() async {
     final result = await Navigator.push(
       context,
@@ -364,32 +338,7 @@ class _MyaccState extends State<Myacc> {
     }
   }
 
-  void _navigateToUpdatePhone() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => UpdateProfileField(
-          title: 'Update Phone Number',
-          fieldName: 'phone',
-          initialValue: phone,
-          keyboardType: TextInputType.phone,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Phone number cannot be empty';
-            }
-            if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-              return 'Please enter a valid 10-digit phone number';
-            }
-            return null;
-          },
-        ),
-      ),
-    );
-
-    if (result == true) {
-      _fetchUserData();
-    }
-  }
+  void _navigateToUpdatePhone() async {}
 
   void _navigateToUpdateEmail() async {
     final result = await Navigator.push(
@@ -638,11 +587,6 @@ class _MyaccState extends State<Myacc> {
 
   List<Widget> _buildAccountOptions(BuildContext context) {
     final options = [
-      {
-        'title': 'Update Username',
-        'icon': Icons.person_outline,
-        'action': _navigateToUpdateUsername
-      },
       {
         'title': 'Change Password',
         'icon': Icons.lock_outline,

@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 
 module.exports = {
   updatePassword: async (req, res) => { try {
-    
+
       const userId = req.user.id;
       const { currentPassword, newPassword } = req.body;
   
@@ -67,7 +67,7 @@ module.exports = {
         },
       });
   
-      const resetUrl = `https://93e2-103-185-109-76.ngrok-free.app/reset-password/${resetToken}`;
+      const resetUrl = `https://e1f8-103-185-109-76.ngrok-free.app/reset-password/${resetToken}`;
     
       const mailOptions = {
         from: process.env.EMAIL_USER,

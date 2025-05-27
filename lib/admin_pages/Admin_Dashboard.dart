@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import './admin_widgets/logoutdialog.dart';
-import 'admininquiry.dart';
 import 'contact.dart';
 import 'myaccount.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../config/appconfig.dart';
-import './config/adminauthservice.dart';
+import '../config/auth_service.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -43,7 +42,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Future<void> fetchComplaintCounts() async {
     try {
       final authservice = AuthService();
-      final token = await authservice.getToken();
+      final token = await authservice.getAccessToken();
 
       final response = await http.get(
         Uri.parse('${AppConfig.apiBaseUrl}/complaints/complaint-stats'),

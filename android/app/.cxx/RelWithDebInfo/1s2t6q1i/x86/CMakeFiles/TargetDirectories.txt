@@ -1,0 +1,2 @@
+C:/Users/Chinmay Kamble/OneDrive/Desktop/Project/JanSuvidha/android/app/.cxx/RelWithDebInfo/1s2t6q1i/x86/CMakeFiles/edit_cache.dir
+C:/Users/Chinmay Kamble/OneDrive/Desktop/Project/JanSuvidha/android/app/.cxx/RelWithDebInfo/1s2t6q1i/x86/CMakeFiles/rebuild_cache.dir

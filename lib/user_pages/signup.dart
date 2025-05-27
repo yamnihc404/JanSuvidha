@@ -52,16 +52,6 @@ class _SignupState extends State<Signup> {
     ));
   }
 
-  void _showTemporaryUnavailableMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Temporarily not available'),
-        backgroundColor: Color.fromARGB(255, 14, 66, 170),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
   String? _validateContactNumber(String? value) {
     if (value == null || value.isEmpty) return 'Contact number is required';
     if (!RegExp(r'^\d{10}$').hasMatch(value)) {
@@ -307,7 +297,7 @@ class _SignupState extends State<Signup> {
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.disabled,
                 child: Column(children: [
-                  SizedBox(height: screenHeight * 0.12),
+                  SizedBox(height: screenHeight * 0.19),
                   Center(
                     child: Column(children: [
                       Text(
@@ -318,7 +308,7 @@ class _SignupState extends State<Signup> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.04),
                       // Username field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +381,7 @@ class _SignupState extends State<Signup> {
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.03),
                       // Email field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,7 +463,7 @@ class _SignupState extends State<Signup> {
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.03),
                       // Contact field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -518,7 +508,7 @@ class _SignupState extends State<Signup> {
                                   ),
                                 ),
                                 _buildPhoneVerifyButton(),
-                                SizedBox(width: screenWidth * 0.02),
+                                SizedBox(width: screenWidth * 0.03),
                               ],
                             ),
                           ),
@@ -555,7 +545,7 @@ class _SignupState extends State<Signup> {
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.03),
                       // Password field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -650,7 +640,7 @@ class _SignupState extends State<Signup> {
                           )
                         ],
                       ),
-                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(height: screenHeight * 0.03),
                       // Confirm Password field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -794,94 +784,6 @@ class _SignupState extends State<Signup> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      Text(
-                        'Or sign up with',
-                        style: TextStyle(
-                          color: const Color.fromARGB(255, 14, 66, 170),
-                          fontSize: screenWidth * 0.04,
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.03),
-                      Container(
-                        width: screenWidth * 0.8,
-                        height: screenHeight * 0.06,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              offset: const Offset(3, 3),
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: _showTemporaryUnavailableMessage,
-                          icon: Image.asset(
-                            'images/google_logo.png',
-                            height: screenHeight * 0.03,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.g_mobiledata,
-                                    color: Colors.red, size: 24),
-                          ),
-                          label: Text(
-                            'Continue with Google',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: screenWidth * 0.04,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      Container(
-                        width: screenWidth * 0.8,
-                        height: screenHeight * 0.06,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 61, 90, 254),
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              offset: const Offset(3, 3),
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: _showTemporaryUnavailableMessage,
-                          icon: Image.asset(
-                            'images/digilocker_logo.png',
-                            height: screenHeight * 0.03,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.folder_shared,
-                                    color: Colors.white, size: 24),
-                          ),
-                          label: Text(
-                            'Continue with DigiLocker',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: screenWidth * 0.04,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.08),
                     ]),
                   ),
                 ]),
